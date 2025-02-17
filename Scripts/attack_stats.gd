@@ -3,6 +3,7 @@ class_name AttackStats extends RefCounted
 var damage : float = 30
 var stun : float = 0
 var tiring : float = 1
+var bleed_ticks : int = 0
 var speed_multiple : float = 1.0
 var attack_name : String
 var acts_on_allies : bool = false
@@ -19,6 +20,11 @@ static func create(_name : String, _attack_target : AttackTarget) -> AttackStats
 
 func tires(mod : float) -> AttackStats:
 	tiring *= mod
+	return self
+
+func set_bleed(ticks : int) -> AttackStats:
+	assert(bleed_ticks == 0)
+	bleed_ticks = ticks
 	return self
 
 func set_on_allies() -> AttackStats:
@@ -113,6 +119,8 @@ func get_moves(actor : UnitStats, units : Array[UnitStats]) -> Array[MMCAction]:
 	var ret_val : Array[MMCAction]
 	var target_side : UnitStats.Side = actor.side if acts_on_allies else UnitStats.get_other_side(actor.side)
 	var potential_targets : Array[UnitStats] = units.filter(func(a : UnitStats) : return a.side == target_side && a.is_alive())
+	if acts_on_allies && damage > 0 && !potential_targets.is_empty():
+		potential_targets = potential_targets.filter(func(a : UnitStats) : return a.bleeding_ticks > 0 || ((a.current_health * 3) < (a.max_health * 2)))
 	if potential_targets.is_empty():
 		return ret_val
 	var valid_targets : Array[UnitStats] = get_targets(potential_targets)
@@ -132,11 +140,24 @@ func apply(actor : UnitStats, target : UnitStats) -> void:
 		target.next_attack += damage * stun
 		dmg = (1.0 - stun) * damage
 
+	var new_bleed_ticks : bool = true if bleed_ticks > 0 && bleed_ticks > target.bleeding_ticks else false
+
 	if acts_on_allies:
 		target.current_health = min(target.current_health + dmg, target.max_health)
-	elif armor_piercing:
-		target.current_health -= dmg
-	elif dmg - target.armor > 1:
-		target.current_health -= (dmg - target.armor)
+		if target.bleeding_ticks > 0:
+			target.bleeding_ticks = 0
 	else:
-		target.current_health -= 1
+		if armor_piercing:
+			target.current_health -= dmg
+		elif dmg - target.armor > 1:
+			target.current_health -= (dmg - target.armor)
+		else:
+			# Armor blocked bleeding ticks
+			target.current_health -= 1
+			new_bleed_ticks = false
+		if new_bleed_ticks:
+			target.bleeding_ticks = bleed_ticks
+	
+	if actor.bleeding_ticks > 0:
+		actor.current_health -= (actor.max_health / 10.0)
+		actor.bleeding_ticks -= 1

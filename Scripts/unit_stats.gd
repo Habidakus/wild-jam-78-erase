@@ -10,6 +10,7 @@ var tired : float = 1
 var attacks : Array[AttackStats]
 var slowness : float
 var next_attack : float
+var bleeding_ticks : int = 0
 var unit_name : String
 var side : UnitStats.Side
 var elo : Array[String]
@@ -23,7 +24,7 @@ static func create_random(rnd : RandomNumberGenerator, _side : UnitStats.Side) -
 	var occupation : UnitMod = UnitMod.pick_random_occupation(rnd)
 	var equipment : UnitMod = UnitMod.pick_random_equipment(rnd)
 	ret_val.init(species, occupation, equipment, _side)
-	ret_val.add_attack(AttackStats.get_default_attack())
+	#ret_val.add_attack(AttackStats.get_default_attack())
 	return ret_val
 
 static func create_random_hero(rnd : RandomNumberGenerator) -> UnitStats:
@@ -145,6 +146,7 @@ func clone() -> UnitStats:
 	ret_val.max_health = max_health
 	ret_val.armor = armor
 	ret_val.current_health = current_health
+	ret_val.bleeding_ticks = bleeding_ticks
 	ret_val.attacks = attacks
 	ret_val.slowness = slowness
 	ret_val.next_attack = next_attack
@@ -155,7 +157,10 @@ func clone() -> UnitStats:
 
 func get_health_desc() -> String:
 	if is_alive():
-		return str(max(1, round(current_health))) + "/" + str(round(max_health))
+		var text : String = str(max(1, round(current_health))) + "/" + str(round(max_health))
+		if bleeding_ticks > 0:
+			text += ", bleed"
+		return text
 	else:
 		return "dead"
 

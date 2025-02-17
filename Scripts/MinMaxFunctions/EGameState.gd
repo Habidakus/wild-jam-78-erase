@@ -64,7 +64,7 @@ func apply_action(action : MMCAction) -> MMCGameState:
 func get_moves() -> Array[MMCAction]:
 	if moves.is_empty():
 		var unit_to_go_next : UnitStats = UnitStats.select_lowest(units.filter(func(a : UnitStats) : return a.is_alive()), func(a : UnitStats) : return a.get_time_until_action())
-		if unit_to_go_next.side == who_just_went: # Otherside will just have to pass
+		if unit_to_go_next == null || unit_to_go_next.side == who_just_went: # Otherside will just have to pass
 			var action : EAction = EAction.create_pass()
 			action.resulting_state = apply_action(action)
 			moves.append(action)
@@ -78,15 +78,22 @@ func get_score() -> MMCScore:
 	if score == null:
 		score = EScore.new()
 		score.reverse = calculus_diff_score == CalculusDiffScore.Reversed
+		var our_lowest_health : float = 1000
+		var their_lowest_health : float = 1000
 		for unit : UnitStats in units:
 			if unit.side == who_just_went:
 				if unit.is_alive():
 					score.numerical_advantage += 1
-					score.health_advantage += unit.current_health
+					score.health_advantage -= unit.current_health
+					if our_lowest_health > unit.current_health:
+						our_lowest_health = unit.current_health
 			else:
 				if unit.is_alive():
 					score.numerical_advantage -= 1
-					score.health_advantage -= unit.current_health
+					score.health_advantage += unit.current_health
+					if their_lowest_health > unit.current_health:
+						their_lowest_health = unit.current_health
+		score.min_health_advantage = our_lowest_health - their_lowest_health
 		if calculus_get_score != CalculusGetScore.Default:
 			score = score.reversed()
 

@@ -8,7 +8,7 @@ var game_state : EGameState = null
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	rnd.seed = 3
+	rnd.seed = 4
 	find_child("PreGame").init(self)
 	find_child("Combat").init(self)
 	find_child("PostCombat").init(self)
@@ -40,12 +40,12 @@ func initialize_heroes() -> void:
 		#foe_cds = EGameState.CalculusDiffScore.Reversed
 	#else:
 		#foe_cds = EGameState.CalculusDiffScore.Default
-	for i in range(0, 3):
+	for i in range(0, 5):
 		heroes.append(UnitStats.create_random(rnd, UnitStats.Side.HUMAN))
 
 func initialize_foes() -> void:
 	foes.clear()
-	for i in range(0, 3):
+	for i in range(0, 5):
 		foes.append(UnitStats.create_random(rnd, UnitStats.Side.COMPUTER))
 
 func calculate_elo() -> void:
@@ -168,7 +168,7 @@ func is_fight_finished() -> bool:
 
 var round_count : int = 0
 func run_one_turn() -> void:
-	const depth : int = 7
+	const depth : int = 8
 	if game_state == null:
 		round_count = 0
 		var units : Array[UnitStats]
@@ -180,17 +180,18 @@ func run_one_turn() -> void:
 		var cds : EGameState.CalculusDiffScore = hero_cds if who_just_went == UnitStats.Side.HUMAN else foe_cds
 		game_state = EGameState.create(who_just_went, units, cgs, cds)
 	var best_action = calc.get_best_action(game_state, depth) as EAction
-	print(str(best_action))
-	if best_action.attack == AttackStats.get_default_attack():
-		for i in range(1, depth + 1):
-			var debug : MMCDebug = MMCDebug.new()
-			var repeat_action = calc.get_best_action(game_state, i, debug) as EAction
-			if repeat_action.attack == AttackStats.get_default_attack():
-				var fileAccess : FileAccess = FileAccess.open("./graph.txt", FileAccess.WRITE)
-				debug.dump(game_state, fileAccess)
-				fileAccess.flush()
-				fileAccess.close()
-				print("Wrote to " + fileAccess.get_path_absolute())
-				pass
+	#if best_action.attack != null:
+		#print(str(best_action))
+	#if best_action.attack == AttackStats.get_default_attack():
+		#for i in range(1, depth + 1):
+			#var debug : MMCDebug = MMCDebug.new()
+			#var repeat_action = calc.get_best_action(game_state, i, debug) as EAction
+			#if repeat_action.attack == AttackStats.get_default_attack():
+				#var fileAccess : FileAccess = FileAccess.open("./graph.txt", FileAccess.WRITE)
+				#debug.dump(game_state, fileAccess)
+				#fileAccess.flush()
+				#fileAccess.close()
+				#print("Wrote to " + fileAccess.get_path_absolute())
+				#pass
 	game_state = best_action.resulting_state
 	round_count += 1
