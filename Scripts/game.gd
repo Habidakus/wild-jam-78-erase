@@ -4,13 +4,15 @@ var heroes : Array[UnitStats]
 var foes : Array[UnitStats]
 var rnd : RandomNumberGenerator = RandomNumberGenerator.new()
 var calc : MinMaxCalculator = MinMaxCalculator.new()
+var combat_state_machine_state : SMSCombat
 var game_state : EGameState = null
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	rnd.seed = 4
+	rnd.seed = 41
+	combat_state_machine_state = find_child("Combat") as SMSCombat
+	combat_state_machine_state.init(self)
 	find_child("PreGame").init(self)
-	find_child("Combat").init(self)
 	find_child("PostCombat").init(self)
 
 var hero_cgs : EGameState.CalculusGetScore
@@ -154,8 +156,8 @@ func update_elo(elo_name : String, mod : float) -> void:
 func is_fight_finished() -> bool:
 	if game_state == null:
 		return false
-	if round_count > 200:
-		return true
+	#if round_count > 200:
+		#return true
 	var human_count : int = 0
 	var computer_count : int = 0
 	for unit : UnitStats in game_state.units:
@@ -233,13 +235,13 @@ func update_battle_space() -> void:
 			battle_space_figures[unit.id] = unit_graphics
 			arena.add_child(unit_graphics)
 			var column_width : float = arena.size.x / 3.0
-			var row_height : float = arena.size.y / ((game_state.units.size() / 2.0) + 1.5)
+			var row_height : float = arena.size.y / ((game_state.units.size() / 2.0) + 1)
 			unit_graphics.position.x = column_width if unit.side == UnitStats.Side.HUMAN else column_width * 2
 			if unit.side == UnitStats.Side.HUMAN:
 				unit_graphics.position.y = hero_count * row_height
 				hero_count += 1
 			else:
-				unit_graphics.position.y = (foe_count + 0.5) * row_height
+				unit_graphics.position.y = (foe_count - 0.5) * row_height
 				foe_count += 1
 	for unit : UnitStats in game_state.units:
 		var unit_graphics : UnitGraphics = battle_space_figures[unit.id]
@@ -267,22 +269,38 @@ func run_one_turn() -> void:
 		update_trip_sheet()
 		update_battle_space()
 		return
-	
-	var best_action = calc.get_best_action(game_state, depth) as EAction
-	#if best_action.attack != null:
-		#print(str(best_action))
-	#if best_action.attack == AttackStats.get_default_attack():
-		#for i in range(1, depth + 1):
-			#var debug : MMCDebug = MMCDebug.new()
-			#var repeat_action = calc.get_best_action(game_state, i, debug) as EAction
-			#if repeat_action.attack == AttackStats.get_default_attack():
-				#var fileAccess : FileAccess = FileAccess.open("./graph.txt", FileAccess.WRITE)
-				#debug.dump(game_state, fileAccess)
-				#fileAccess.flush()
-				#fileAccess.close()
-				#print("Wrote to " + fileAccess.get_path_absolute())
-				#pass
-	game_state = best_action.resulting_state
-	update_trip_sheet()
-	update_battle_space()
+
 	round_count += 1
+
+	if game_state.who_just_went == UnitStats.Side.HUMAN:
+		var best_action = calc.get_best_action(game_state, depth) as EAction
+		#if best_action.attack != null:
+			#print(str(best_action))
+		#if best_action.attack == AttackStats.get_default_attack():
+			#for i in range(1, depth + 1):
+				#var debug : MMCDebug = MMCDebug.new()
+				#var repeat_action = calc.get_best_action(game_state, i, debug) as EAction
+				#if repeat_action.attack == AttackStats.get_default_attack():
+					#var fileAccess : FileAccess = FileAccess.open("./graph.txt", FileAccess.WRITE)
+					#debug.dump(game_state, fileAccess)
+					#fileAccess.flush()
+					#fileAccess.close()
+					#print("Wrote to " + fileAccess.get_path_absolute())
+					#pass
+		game_state = best_action.resulting_state
+		update_trip_sheet()
+		update_battle_space()
+		return
+	
+	if !combat_state_machine_state.has_human_moves():
+		var human_moves : Array[MMCAction] = game_state.get_moves()
+		assert(human_moves != null)
+		if human_moves.size() == 1:
+			var emove : EAction = human_moves[0] as EAction
+			if emove.attack == null:
+				game_state = human_moves[0].resulting_state
+				update_trip_sheet()
+				update_battle_space()
+				human_moves.clear()
+		else:
+			combat_state_machine_state.set_human_moves(human_moves)
