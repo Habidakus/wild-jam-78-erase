@@ -1,6 +1,7 @@
 class_name AttackStats extends RefCounted
 
 var damage : float = 30
+var stun : float = 0
 var tiring : float = 1
 var speed_multiple : float = 1.0
 var attack_name : String
@@ -36,12 +37,18 @@ func adjust_damage(mod : float) -> AttackStats:
 	damage *= mod
 	return self
 
+func set_stun(_stun : float) -> AttackStats:
+	stun = _stun
+	return self
+
 static var s_default_attack : AttackStats = null
 static func get_default_attack() -> AttackStats:
 	if s_default_attack == null:
 		s_default_attack = AttackStats.new()
-		s_default_attack.attack_name = "Strike"
-		s_default_attack.attack_target = AttackTarget.FRONT_MOST
+		s_default_attack.attack_name = "SLOW WEAK MISAIMED"
+		s_default_attack.attack_target = AttackTarget.FARTHEST_FROM_DEATH
+		s_default_attack.adjust_damage(0.1)
+		s_default_attack.adjust_speed(5)
 	return s_default_attack
 
 static var s_arrow_attack : AttackStats = null
@@ -119,11 +126,17 @@ func apply(actor : UnitStats, target : UnitStats) -> void:
 		actor.tired *= tiring
 	else:
 		actor.next_attack += speed_multiple * actor.slowness
+
+	var dmg : float = damage
+	if stun > 0:
+		target.next_attack += damage * stun
+		dmg = (1.0 - stun) * damage
+
 	if acts_on_allies:
-		target.current_health = min(target.current_health + damage, target.max_health)
+		target.current_health = min(target.current_health + dmg, target.max_health)
 	elif armor_piercing:
-		target.current_health -= damage
-	elif damage - target.armor > 1:
-		target.current_health -= (damage - target.armor)
+		target.current_health -= dmg
+	elif dmg - target.armor > 1:
+		target.current_health -= (dmg - target.armor)
 	else:
 		target.current_health -= 1

@@ -8,31 +8,81 @@ var game_state : EGameState = null
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	rnd.seed = 2
+	rnd.seed = 3
 	find_child("PreGame").init(self)
 	find_child("Combat").init(self)
 	find_child("PostCombat").init(self)
 
+var hero_cgs : EGameState.CalculusGetScore
+var foe_cgs : EGameState.CalculusGetScore
+var hero_cds : EGameState.CalculusDiffScore
+var foe_cds : EGameState.CalculusDiffScore
+
 func initialize_heroes() -> void:
 	heroes.clear()
-	for i in range(0, 5):
+	hero_cgs = EGameState.CalculusGetScore.Default
+	hero_cds = EGameState.CalculusDiffScore.Reversed
+	foe_cgs = EGameState.CalculusGetScore.Default
+	foe_cds = EGameState.CalculusDiffScore.Reversed
+	#if rnd.randf() < 0.5:
+		#hero_cgs = EGameState.CalculusGetScore.Default
+	#else:
+		#hero_cgs = EGameState.CalculusGetScore.Reversed
+	#if rnd.randf() < 0.5:
+		#foe_cgs = EGameState.CalculusGetScore.Reversed
+	#else:
+		#foe_cgs = EGameState.CalculusGetScore.Default
+	#if rnd.randf() < 0.5:
+		#hero_cds = EGameState.CalculusDiffScore.Default
+	#else:
+		#hero_cds = EGameState.CalculusDiffScore.Reversed
+	#if rnd.randf() < 0.5:
+		#foe_cds = EGameState.CalculusDiffScore.Reversed
+	#else:
+		#foe_cds = EGameState.CalculusDiffScore.Default
+	for i in range(0, 3):
 		heroes.append(UnitStats.create_random(rnd, UnitStats.Side.HUMAN))
 
 func initialize_foes() -> void:
 	foes.clear()
-	for i in range(0, 5):
+	for i in range(0, 3):
 		foes.append(UnitStats.create_random(rnd, UnitStats.Side.COMPUTER))
 
 func calculate_elo() -> void:
-	var human_elo : float = get_elo("Human")
-	var human_count : int = 1
+	var human_calculus : String
+	var foe_calculus : String
+	if hero_cgs == EGameState.CalculusGetScore.Default:
+		if hero_cds == EGameState.CalculusDiffScore.Default:
+			human_calculus = "DefaultCalculus"
+		else:
+			human_calculus = "ReverseDiff"
+	else:
+		if hero_cds == EGameState.CalculusDiffScore.Default:
+			human_calculus = "ReverseScore"
+		else:
+			human_calculus = "ReverseCalculus"
+	if foe_cgs == EGameState.CalculusGetScore.Default:
+		if foe_cds == EGameState.CalculusDiffScore.Default:
+			foe_calculus = "DefaultCalculus"
+		else:
+			foe_calculus = "ReverseDiff"
+	else:
+		if foe_cds == EGameState.CalculusDiffScore.Default:
+			foe_calculus = "ReverseScore"
+		else:
+			foe_calculus = "ReverseCalculus"
+
+	var human_elo : float = get_elo("Player")
+	human_elo += get_elo(human_calculus)
+	var human_count : int = 2
 	for unit : UnitStats in heroes:
 		for elo_name : String in unit.elo:
 			human_elo += get_elo(elo_name)
 			human_count += 1
 	human_elo /= float(human_count)
 	var computer_elo : float = get_elo("Computer")
-	var computer_count : int = 1
+	computer_elo += get_elo(foe_calculus)
+	var computer_count : int = 2
 	for unit : UnitStats in foes:
 		for elo_name : String in unit.elo:
 			computer_elo += get_elo(elo_name)
@@ -52,13 +102,24 @@ func calculate_elo() -> void:
 				human_alive = true
 			else:
 				computer_alive = true
-	assert(human_alive != computer_alive)
+	var human_score : float = 0.5
+	var computer_score : float = 0.5
+	if human_alive != computer_alive:
+		if human_alive:
+			human_score = 1
+			computer_score = 0
+		else:
+			human_score = 0
+			computer_score = 1
 
-	var human_mod = (1.0 - human_expectation) if human_alive else (0.0 - human_expectation)
-	var computer_mod = (1.0 - computer_expectation) if computer_alive else (0.0 - computer_expectation)
+	var human_mod = human_score - human_expectation
+	var computer_mod = computer_score - computer_expectation
 	const K : float = 4.0
 	
-	update_elo("Human", human_mod * K)
+	update_elo(human_calculus, human_mod * K)
+	update_elo(foe_calculus, computer_mod * K)
+		
+	update_elo("Player", human_mod * K)
 	for unit : UnitStats in heroes:
 		for elo_name : String in unit.elo:
 			update_elo(elo_name, human_mod * K)
@@ -90,9 +151,11 @@ func get_elo(elo_name : String) -> float:
 func update_elo(elo_name : String, mod : float) -> void:
 	elo_values[elo_name] += mod
 
-func one_side_is_dead() -> bool:
+func is_fight_finished() -> bool:
 	if game_state == null:
 		return false
+	if round_count > 200:
+		return true
 	var human_count : int = 0
 	var computer_count : int = 0
 	for unit : UnitStats in game_state.units:
@@ -103,14 +166,31 @@ func one_side_is_dead() -> bool:
 				computer_count += 1
 	return human_count == 0 || computer_count == 0
 
+var round_count : int = 0
 func run_one_turn() -> void:
+	const depth : int = 7
 	if game_state == null:
+		round_count = 0
 		var units : Array[UnitStats]
 		units.append_array(heroes)
 		units.append_array(foes)
 		var side_to_go_next : UnitStats.Side = UnitStats.select_lowest(units, func(a : UnitStats) : return a.get_time_until_action()).side
 		var who_just_went : UnitStats.Side = UnitStats.get_other_side(side_to_go_next)
-		game_state = EGameState.create(who_just_went, units)
-	var best_action = calc.get_best_action(game_state, 6) as EAction
+		var cgs : EGameState.CalculusGetScore = hero_cgs if who_just_went == UnitStats.Side.HUMAN else foe_cgs
+		var cds : EGameState.CalculusDiffScore = hero_cds if who_just_went == UnitStats.Side.HUMAN else foe_cds
+		game_state = EGameState.create(who_just_went, units, cgs, cds)
+	var best_action = calc.get_best_action(game_state, depth) as EAction
 	print(str(best_action))
+	if best_action.attack == AttackStats.get_default_attack():
+		for i in range(1, depth + 1):
+			var debug : MMCDebug = MMCDebug.new()
+			var repeat_action = calc.get_best_action(game_state, i, debug) as EAction
+			if repeat_action.attack == AttackStats.get_default_attack():
+				var fileAccess : FileAccess = FileAccess.open("./graph.txt", FileAccess.WRITE)
+				debug.dump(game_state, fileAccess)
+				fileAccess.flush()
+				fileAccess.close()
+				print("Wrote to " + fileAccess.get_path_absolute())
+				pass
 	game_state = best_action.resulting_state
+	round_count += 1

@@ -23,6 +23,7 @@ static func create_random(rnd : RandomNumberGenerator, _side : UnitStats.Side) -
 	var occupation : UnitMod = UnitMod.pick_random_occupation(rnd)
 	var equipment : UnitMod = UnitMod.pick_random_equipment(rnd)
 	ret_val.init(species, occupation, equipment, _side)
+	ret_val.add_attack(AttackStats.get_default_attack())
 	return ret_val
 
 static func create_random_hero(rnd : RandomNumberGenerator) -> UnitStats:

@@ -10,7 +10,7 @@ func enter_state() -> void:
 	game.initialize_foes()
 	
 func _process(_delta: float) -> void:
-	if game.one_side_is_dead():
+	if game.is_fight_finished():
 		our_state_machine.switch_state("PostCombat")
 	else:
 		game.run_one_turn()

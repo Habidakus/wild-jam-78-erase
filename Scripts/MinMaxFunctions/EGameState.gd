@@ -1,9 +1,18 @@
 class_name EGameState extends MMCGameState
 
+enum CalculusGetScore { Default, Reversed }
+enum CalculusDiffScore { Default, Reversed }
+
+var calculus_get_score : CalculusGetScore = CalculusGetScore.Default
+var calculus_diff_score : CalculusDiffScore = CalculusDiffScore.Default
 var who_just_went : UnitStats.Side = UnitStats.Side.NEITHER
 var units : Array[UnitStats]
 var moves : Array[MMCAction]
 var score : EScore = null
+
+func _to_string() -> String:
+	var ret_val : String = UnitStats.Side.keys()[who_just_went] + " went, score = " + str(get_score())
+	return ret_val
 
 func release() -> void:
 	if score != null:
@@ -13,8 +22,10 @@ func release() -> void:
 		(move as EAction).release()
 	moves.clear()
 
-static func create(_who_just_went : UnitStats.Side, _units : Array[UnitStats]) -> EGameState:
+static func create(_who_just_went : UnitStats.Side, _units : Array[UnitStats], cgs : CalculusGetScore, cds : CalculusDiffScore) -> EGameState:
 	var ret_val : EGameState = EGameState.new()
+	ret_val.calculus_get_score = cgs
+	ret_val.calculus_diff_score = cds
 	ret_val.who_just_went = _who_just_went
 	for unit : UnitStats in _units:
 		ret_val.units.append(unit)
@@ -23,6 +34,8 @@ static func create(_who_just_went : UnitStats.Side, _units : Array[UnitStats]) -
 
 func clone() -> EGameState:
 	var ret_val : EGameState = EGameState.new()
+	ret_val.calculus_get_score = calculus_get_score
+	ret_val.calculus_diff_score = calculus_diff_score
 	ret_val.who_just_went = who_just_went
 	for unit : UnitStats in units:
 		ret_val.units.append(unit.clone())
@@ -64,6 +77,7 @@ func get_moves() -> Array[MMCAction]:
 func get_score() -> MMCScore:
 	if score == null:
 		score = EScore.new()
+		score.reverse = calculus_diff_score == CalculusDiffScore.Reversed
 		for unit : UnitStats in units:
 			if unit.side == who_just_went:
 				if unit.is_alive():
@@ -73,4 +87,7 @@ func get_score() -> MMCScore:
 				if unit.is_alive():
 					score.numerical_advantage -= 1
 					score.health_advantage -= unit.current_health
-	return score.reversed()
+		if calculus_get_score != CalculusGetScore.Default:
+			score = score.reversed()
+
+	return score
