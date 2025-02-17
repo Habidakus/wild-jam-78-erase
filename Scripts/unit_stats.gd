@@ -212,4 +212,17 @@ func get_time_until_action() -> float:
 	return next_attack
 
 func calculate_damage_from_attack(attack : AttackStats) -> float:
-	return attack.damage
+	var ret_val : float = attack.damage
+	if attack.stun > 0:
+		ret_val *= (1.0 - attack.stun)
+	if attack.acts_on_allies:
+		ret_val = min(max_health - current_health, ret_val)
+	else:
+		if !attack.armor_piercing:
+			ret_val -= armor
+			if ret_val < 1:
+				ret_val = 1
+	if ret_val < 0:
+		ret_val = 0
+	
+	return ret_val

@@ -166,19 +166,108 @@ func is_fight_finished() -> bool:
 				computer_count += 1
 	return human_count == 0 || computer_count == 0
 
+var trip_sheet_labels : Dictionary # <unit id, label>
+func ready_trip_sheet() -> void:
+	if trip_sheet_labels.is_empty():
+		return
+
+	for unitID : int in trip_sheet_labels.keys():
+		(trip_sheet_labels[unitID] as Label).queue_free()
+	trip_sheet_labels.clear()
+
+func update_trip_sheet() -> void:
+	var trip_sheet : VBoxContainer = find_child("TripSheet") as VBoxContainer
+	var sort_order : Array
+	for unit : UnitStats in game_state.units:
+		if !trip_sheet_labels.has(unit.id):
+			var label : Label = Label.new()
+			label.label_settings = LabelSettings.new()
+			label.label_settings.font_color = Color.SKY_BLUE if unit.side == UnitStats.Side.HUMAN else Color.PALE_VIOLET_RED
+			label.label_settings.font_size = 20
+			label.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
+			label.size_flags_vertical = Control.SIZE_EXPAND_FILL
+			label.size_flags_stretch_ratio = 2
+			label.text = unit.unit_name
+			trip_sheet_labels[unit.id] = label
+		var unit_label : Label = trip_sheet_labels[unit.id]
+		if trip_sheet.get_children().has(unit_label):
+			trip_sheet.remove_child(unit_label)
+		if !unit.is_alive():
+			unit_label.hide()
+		else:
+			sort_order.append([unit.next_attack, unit.id])
+	if sort_order.is_empty():
+		return
+	sort_order.sort_custom(func(a, b) : return a[0] < b[0])
+	var start_time : float = sort_order[0][0]
+	var prev_time : float = start_time - 1.0
+	for entry in sort_order:
+		var label : Label = trip_sheet_labels[entry[1]]
+		#var unit : UnitStats = game_state.get_unit_by_id(entry[1])
+		label.size_flags_stretch_ratio = entry[0] - prev_time
+		prev_time = entry[0]
+		trip_sheet.add_child(label)
+
+var battle_space_figures : Dictionary # <unit id, UnitGraphics>
+func ready_battle_space() -> void:
+	if battle_space_figures.is_empty():
+		return
+
+	for unitID : int in battle_space_figures.keys():
+		(battle_space_figures[unitID] as UnitGraphics).queue_free()
+	battle_space_figures.clear()
+
+func update_battle_space() -> void:
+	var arena : ColorRect = find_child("Arena") as ColorRect
+	var hero_count : int = 1
+	var foe_count : int = 1
+	for unit : UnitStats in game_state.units:
+		if !battle_space_figures.has(unit.id):
+			var unit_graphics : UnitGraphics = UnitGraphics.create()
+			var unit_name : String = unit.unit_name
+			if unit_name.begins_with("HUMAN/"):
+				unit_name = unit_name.substr(6)
+			elif unit_name.begins_with("COMPUTER/"):
+				unit_name = unit_name.substr(9)
+			unit_graphics.set_unit_name(unit_name)
+			battle_space_figures[unit.id] = unit_graphics
+			arena.add_child(unit_graphics)
+			var column_width : float = arena.size.x / 3.0
+			var row_height : float = arena.size.y / ((game_state.units.size() / 2.0) + 1.5)
+			unit_graphics.position.x = column_width if unit.side == UnitStats.Side.HUMAN else column_width * 2
+			if unit.side == UnitStats.Side.HUMAN:
+				unit_graphics.position.y = hero_count * row_height
+				hero_count += 1
+			else:
+				unit_graphics.position.y = (foe_count + 0.5) * row_height
+				foe_count += 1
+	for unit : UnitStats in game_state.units:
+		var unit_graphics : UnitGraphics = battle_space_figures[unit.id]
+		unit_graphics.set_health(unit.current_health, unit.max_health)
+
+func setup_game_state() -> void:
+	assert(game_state == null)
+	var units : Array[UnitStats]
+	units.append_array(heroes)
+	units.append_array(foes)
+	var side_to_go_next : UnitStats.Side = UnitStats.select_lowest(units, func(a : UnitStats) : return a.get_time_until_action()).side
+	var who_just_went : UnitStats.Side = UnitStats.get_other_side(side_to_go_next)
+	var cgs : EGameState.CalculusGetScore = hero_cgs if who_just_went == UnitStats.Side.HUMAN else foe_cgs
+	var cds : EGameState.CalculusDiffScore = hero_cds if who_just_went == UnitStats.Side.HUMAN else foe_cds
+	game_state = EGameState.create(who_just_went, units, cgs, cds)
+
 var round_count : int = 0
 func run_one_turn() -> void:
 	const depth : int = 8
 	if game_state == null:
+		ready_trip_sheet()
+		ready_battle_space()
 		round_count = 0
-		var units : Array[UnitStats]
-		units.append_array(heroes)
-		units.append_array(foes)
-		var side_to_go_next : UnitStats.Side = UnitStats.select_lowest(units, func(a : UnitStats) : return a.get_time_until_action()).side
-		var who_just_went : UnitStats.Side = UnitStats.get_other_side(side_to_go_next)
-		var cgs : EGameState.CalculusGetScore = hero_cgs if who_just_went == UnitStats.Side.HUMAN else foe_cgs
-		var cds : EGameState.CalculusDiffScore = hero_cds if who_just_went == UnitStats.Side.HUMAN else foe_cds
-		game_state = EGameState.create(who_just_went, units, cgs, cds)
+		setup_game_state()
+		update_trip_sheet()
+		update_battle_space()
+		return
+	
 	var best_action = calc.get_best_action(game_state, depth) as EAction
 	#if best_action.attack != null:
 		#print(str(best_action))
@@ -194,4 +283,6 @@ func run_one_turn() -> void:
 				#print("Wrote to " + fileAccess.get_path_absolute())
 				#pass
 	game_state = best_action.resulting_state
+	update_trip_sheet()
+	update_battle_space()
 	round_count += 1

@@ -135,25 +135,19 @@ func apply(actor : UnitStats, target : UnitStats) -> void:
 	else:
 		actor.next_attack += speed_multiple * actor.slowness
 
-	var dmg : float = damage
 	if stun > 0:
 		target.next_attack += damage * stun
-		dmg = (1.0 - stun) * damage
 
 	var new_bleed_ticks : bool = true if bleed_ticks > 0 && bleed_ticks > target.bleeding_ticks else false
+	var dmg : float = target.calculate_damage_from_attack(self)
 
 	if acts_on_allies:
 		target.current_health = min(target.current_health + dmg, target.max_health)
 		if target.bleeding_ticks > 0:
 			target.bleeding_ticks = 0
 	else:
-		if armor_piercing:
-			target.current_health -= dmg
-		elif dmg - target.armor > 1:
-			target.current_health -= (dmg - target.armor)
-		else:
-			# Armor blocked bleeding ticks
-			target.current_health -= 1
+		target.current_health -= dmg
+		if dmg <= 1:
 			new_bleed_ticks = false
 		if new_bleed_ticks:
 			target.bleeding_ticks = bleed_ticks
