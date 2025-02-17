@@ -90,7 +90,7 @@ static func pick_random_occupation(rnd : RandomNumberGenerator) -> UnitMod:
 	assert(false)
 	return null
 
-static var s_attack_potion : AttackStats = AttackStats.create("Potion", AttackStats.AttackTarget.FRONT_MOST).adjust_damage(2.5).set_on_allies().tires(1.2)
+static var s_attack_potion : AttackStats = AttackStats.create("Potion", AttackStats.AttackTarget.SELF).adjust_damage(2.5).set_on_allies().tires(1.2)
 static var s_attack_halberd : AttackStats = AttackStats.create("Halberd", AttackStats.AttackTarget.FRONT_MOST).set_armor_piercing().adjust_damage(1.15).adjust_speed(1.25)
 static var s_attack_zweihander : AttackStats = AttackStats.create("Zweihander", AttackStats.AttackTarget.FRONT_MOST).adjust_damage(2).adjust_speed(2.2).tires(1.085)
 static var s_attack_shield : AttackStats = AttackStats.create("Shield Bash", AttackStats.AttackTarget.FRONT_MOST).adjust_damage(0.35).set_stun(0.5)

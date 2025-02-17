@@ -9,7 +9,7 @@ var attack_name : String
 var acts_on_allies : bool = false
 var armor_piercing : bool = false
 
-enum AttackTarget { INVALID, FRONT_MOST, REAR_MOST, ANY, MOST_VULNERABLE, CLOSEST_TO_DEATH, FARTHEST_FROM_DEATH }
+enum AttackTarget { INVALID, FRONT_MOST, REAR_MOST, ANY, MOST_VULNERABLE, CLOSEST_TO_DEATH, FARTHEST_FROM_DEATH, SELF }
 var attack_target : AttackTarget = AttackTarget.INVALID
 
 static func create(_name : String, _attack_target : AttackTarget) -> AttackStats:
@@ -97,10 +97,12 @@ static func get_smash_attack() -> AttackStats:
 		s_smash_attack.attack_target = AttackTarget.FARTHEST_FROM_DEATH
 	return s_smash_attack
 
-func get_targets(targets : Array[UnitStats]) -> Array[UnitStats]:
+func get_targets(actor : UnitStats, targets : Array[UnitStats]) -> Array[UnitStats]:
 	match attack_target:
 		AttackTarget.INVALID:
 			assert(false)
+		AttackTarget.SELF:
+			return UnitStats.to_array(actor)
 		AttackTarget.FRONT_MOST:
 			return UnitStats.to_array(UnitStats.select_lowest(targets, func(a : UnitStats) : return a.get_time_until_action()))
 		AttackTarget.REAR_MOST:
@@ -123,7 +125,7 @@ func get_moves(actor : UnitStats, units : Array[UnitStats]) -> Array[MMCAction]:
 		potential_targets = potential_targets.filter(func(a : UnitStats) : return a.bleeding_ticks > 0 || ((a.current_health * 3) < (a.max_health * 2)))
 	if potential_targets.is_empty():
 		return ret_val
-	var valid_targets : Array[UnitStats] = get_targets(potential_targets)
+	var valid_targets : Array[UnitStats] = get_targets(actor, potential_targets)
 	for target : UnitStats in valid_targets:
 		ret_val.append(EAction.create(actor, target, self))
 	return ret_val
