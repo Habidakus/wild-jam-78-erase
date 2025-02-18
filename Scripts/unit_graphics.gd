@@ -7,8 +7,9 @@ var attack_list : Array
 var action_buttons : Array[Button]
 var attack_buttons : Array[Button]
 
-static func create() -> UnitGraphics:
+static func create(unit_stats : UnitStats) -> UnitGraphics:
 	var ret_val : UnitGraphics = our_scene.instantiate()
+	(ret_val.find_child("HealthBar") as Control).tooltip_text = unit_stats.create_tooltip()
 	return ret_val
 
 func _ready() -> void:

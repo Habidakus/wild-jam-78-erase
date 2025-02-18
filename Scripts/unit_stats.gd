@@ -66,6 +66,22 @@ func clone() -> UnitStats:
 	ret_val.cooldown = cooldown
 	return ret_val
 
+func create_tooltip() -> String:
+	var ret_val : String = ""
+	for e : String in elo:
+		if !ret_val.is_empty():
+			ret_val += ", "
+		ret_val += e
+	if armor > 0:
+		if !ret_val.is_empty():
+			ret_val += ", "
+		ret_val += "Armor: " + str(armor)
+	if bleeding_ticks > 0:
+		if !ret_val.is_empty():
+			ret_val += ", "
+		ret_val += "Bleeding"
+	return ret_val
+
 func get_health_desc() -> String:
 	if is_alive():
 		var text : String = str(max(1, round(current_health))) + "/" + str(round(max_health))

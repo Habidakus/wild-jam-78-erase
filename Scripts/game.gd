@@ -225,7 +225,7 @@ func update_battle_space() -> void:
 	var foe_count : int = 1
 	for unit : UnitStats in game_state.units:
 		if !battle_space_figures.has(unit.id):
-			var unit_graphics : UnitGraphics = UnitGraphics.create()
+			var unit_graphics : UnitGraphics = UnitGraphics.create(unit)
 			var unit_name : String = unit.unit_name
 			if unit_name.begins_with("HUMAN/"):
 				unit_name = unit_name.substr(6)
