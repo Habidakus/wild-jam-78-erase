@@ -220,32 +220,74 @@ func ready_battle_space() -> void:
 	battle_space_figures.clear()
 
 func update_battle_space() -> void:
+	var display_order : Array
+	for unit : UnitStats in game_state.units:
+		display_order.append([unit.id, unit.next_attack, unit.is_alive(), unit.side])
+	display_order.sort_custom(func(a, b) :
+		if a[2] != b[2]:
+			return a[2]
+		if a[1] != b[1]:
+			return a[1] < b[1]
+		return a[0] < b[0]
+	)
+	
+	var hero_alive_rank : int = 0
+	var foe_alive_rank : int = 0
+	var hero_dead_rank : int = 0
+	var foe_dead_rank : int = 0
+	var screen_location : Dictionary # <unit ID, rank>
+	for entry in display_order:
+		if entry[3] == UnitStats.Side.HUMAN:
+			if entry[2]: # Alive
+				screen_location[entry[0]] = hero_alive_rank
+				hero_alive_rank += 1
+			else:
+				screen_location[entry[0]] = hero_dead_rank
+				hero_dead_rank += 1
+		else:
+			if entry[2]: # Alive
+				screen_location[entry[0]] = foe_alive_rank
+				foe_alive_rank += 1
+			else:
+				screen_location[entry[0]] = foe_dead_rank
+				foe_dead_rank += 1
+
 	var arena : ColorRect = find_child("Arena") as ColorRect
-	var hero_count : int = 1
-	var foe_count : int = 1
 	for unit : UnitStats in game_state.units:
 		if !battle_space_figures.has(unit.id):
 			var unit_graphics : UnitGraphics = UnitGraphics.create(unit)
-			var unit_name : String = unit.unit_name
-			if unit_name.begins_with("HUMAN/"):
-				unit_name = unit_name.substr(6)
-			elif unit_name.begins_with("COMPUTER/"):
-				unit_name = unit_name.substr(9)
-			unit_graphics.set_unit_name(unit_name)
+			unit_graphics.set_unit_name(unit.unit_name)
 			battle_space_figures[unit.id] = unit_graphics
 			arena.add_child(unit_graphics)
-			var column_width : float = arena.size.x / 3.0
-			var row_height : float = arena.size.y / ((game_state.units.size() / 2.0) + 1)
-			unit_graphics.position.x = column_width if unit.side == UnitStats.Side.HUMAN else column_width * 2
-			if unit.side == UnitStats.Side.HUMAN:
-				unit_graphics.position.y = hero_count * row_height
-				hero_count += 1
-			else:
-				unit_graphics.position.y = (foe_count - 0.5) * row_height
-				foe_count += 1
+			print("Adding #" + str(unit.id) + ": hero=" + str(unit.side == UnitStats.Side.HUMAN) + " rank="+ str(screen_location[unit.id]) + " alive=" + str(unit.is_alive()))
+			unit_graphics.position = calculate_position(unit.side == UnitStats.Side.HUMAN, screen_location[unit.id], unit.is_alive(), arena.size)
 	for unit : UnitStats in game_state.units:
 		var unit_graphics : UnitGraphics = battle_space_figures[unit.id]
 		unit_graphics.set_health(unit)
+		unit_graphics.position = calculate_position(unit.side == UnitStats.Side.HUMAN, screen_location[unit.id], unit.is_alive(), arena.size)
+
+func calculate_position(is_hero : bool, rank : int, is_alive : bool, arena_size : Vector2) -> Vector2:
+	var ret_val : Vector2 = Vector2.ZERO
+	var column_width : float = arena_size.x / 5.0
+	var row_count : float = (game_state.units.size() / 2.0) + 1.0
+	var row_height : float = arena_size.y / row_count
+	if is_alive:
+		# graphics are placed in a triangle, with the next to go near the top, angled towards each other
+		if is_hero:
+			ret_val.x = 1.75 - (float(rank) / 4.0)
+		else:
+			ret_val.x = 3.25 + (float(rank) / 4.0)
+		ret_val.y = rank + 1
+	else:
+		if is_hero:
+			ret_val.x = 0.5
+		else:
+			ret_val.x = 4.5
+		ret_val.y = row_count - (rank + 1)
+	ret_val.x *= column_width
+	ret_val.y *= row_height
+	return ret_val
+
 
 func setup_game_state() -> void:
 	assert(game_state == null)
