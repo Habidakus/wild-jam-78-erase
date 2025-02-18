@@ -7,6 +7,7 @@ var max_health : float
 var armor : float = 0
 var current_health : float
 var tired : float = 1
+var cooldown : int = 0
 var attacks : Array[AttackStats]
 var slowness : float
 var next_attack : float
@@ -153,6 +154,7 @@ func clone() -> UnitStats:
 	ret_val.unit_name = unit_name
 	ret_val.side = side
 	ret_val.tired = tired
+	ret_val.cooldown = cooldown
 	return ret_val
 
 func get_health_desc() -> String:
@@ -185,16 +187,15 @@ func init(_species : UnitMod, _occupation : UnitMod, _equipment : UnitMod, _side
 	armor = _species.extra_armor + _occupation.extra_armor + _equipment.extra_armor
 	slowness = 10 + _species.extra_slowness + _occupation.extra_slowness + _equipment.extra_slowness
 	next_attack = slowness + noise.randf_range(0, 0.01)
-	add_attack(_species.attack)
-	add_attack(_occupation.attack)
-	add_attack(_equipment.attack)
+	add_attacks(_species.attacks)
+	add_attacks(_occupation.attacks)
+	add_attacks(_equipment.attacks)
 	elo.append(_species.elo_name)
 	elo.append(_occupation.elo_name)
 	elo.append(_equipment.elo_name)
 
-func add_attack(attack : AttackStats) -> void:
-	if attack != null:
-		attacks.append(attack)
+func add_attacks(_attacks : Array[AttackStats]) -> void:
+	attacks.append_array(_attacks)
 
 func init_old(_unit_name : String, health : float, _armor : float, _slowness : float, _side : UnitStats.Side) -> void:
 	id = next_id

@@ -287,6 +287,8 @@ func run_one_turn() -> void:
 					#fileAccess.close()
 					#print("Wrote to " + fileAccess.get_path_absolute())
 					#pass
+		if best_action == null:
+			best_action = calc.get_best_action(game_state, depth) as EAction
 		game_state = best_action.resulting_state
 		update_trip_sheet()
 		update_battle_space()

@@ -1,6 +1,7 @@
 class_name AttackStats extends RefCounted
 
 var damage : float = 30
+var cooldown : int = 0
 var stun : float = 0
 var tiring : float = 1
 var bleed_ticks : int = 0
@@ -45,6 +46,10 @@ func adjust_damage(mod : float) -> AttackStats:
 
 func set_stun(_stun : float) -> AttackStats:
 	stun = _stun
+	return self
+
+func has_cooldown(_cooldown : int) -> AttackStats:
+	cooldown = _cooldown
 	return self
 
 static var s_default_attack : AttackStats = null
@@ -117,8 +122,33 @@ func get_targets(actor : UnitStats, targets : Array[UnitStats]) -> Array[UnitSta
 			return UnitStats.to_array(UnitStats.select_lowest(targets, func(a : UnitStats) : return 0.0 - a.current_health))
 	return []
 
+func generate_tooltip() -> String:
+	var ret_val : String = str(round((1.0 - stun) * damage * 10) / 10)
+	if acts_on_allies:
+		ret_val += " Healing"
+	elif armor_piercing:
+		ret_val += " Armor Piercing"
+	elif stun > 0:
+		ret_val += " Stunning"
+	elif bleed_ticks > 0:
+		ret_val += " Bleed"
+	else:
+		ret_val += " Damage"
+	if cooldown > 0:
+		ret_val += ", cooldown"
+	if tiring > 0:
+		ret_val += ", tiring"
+	if speed_multiple > 1:
+		ret_val += ", slow"
+	elif speed_multiple < 1:
+		ret_val += ", quick"
+	
+	return ret_val
+
 func get_moves(actor : UnitStats, units : Array[UnitStats]) -> Array[MMCAction]:
 	var ret_val : Array[MMCAction]
+	if actor.cooldown > 0 && cooldown > 0:
+		return ret_val
 	var target_side : UnitStats.Side = actor.side if acts_on_allies else UnitStats.get_other_side(actor.side)
 	var potential_targets : Array[UnitStats] = units.filter(func(a : UnitStats) : return a.side == target_side && a.is_alive())
 	if acts_on_allies && damage > 0 && !potential_targets.is_empty():
@@ -154,6 +184,11 @@ func apply(actor : UnitStats, target : UnitStats) -> void:
 		if new_bleed_ticks:
 			target.bleeding_ticks = bleed_ticks
 	
+	if actor.cooldown > 0:
+		actor.cooldown -= 1
+	if cooldown > 0:
+		actor.cooldown += cooldown
+		
 	if actor.bleeding_ticks > 0:
 		actor.current_health -= (actor.max_health / 10.0)
 		actor.bleeding_ticks -= 1

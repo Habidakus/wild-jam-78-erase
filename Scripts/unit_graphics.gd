@@ -71,13 +71,15 @@ func clean_up_human_UX() -> void:
 	action_buttons.clear()
 	queue_redraw()
 
-func create_button(pos : Vector2, text : String, hover_callback : Callable, click_callback : Callable) -> Button:
+func create_button(pos : Vector2, attack : AttackStats, hover_callback : Callable, click_callback : Callable) -> Button:
 	var new_button : Button = Button.new()
 	new_button.position = pos
-	new_button.text = text
+	new_button.text = attack.attack_name
 	new_button.mouse_entered.connect(hover_callback.bind(true))
 	new_button.mouse_exited.connect(hover_callback.bind(false))
 	new_button.pressed.connect(click_callback)
+	new_button.tooltip_text = attack.generate_tooltip()
+	# TODO: Consult _make_custom_tooltip to see if we can make this look better
 	add_child(new_button)
 	return new_button
 
@@ -92,9 +94,9 @@ func activate_action_button(hover_callback : Callable, click_callback : Callable
 			count += 1
 
 		var pos : Vector2 = base_pos + Vector2(0, calculate_offset(count, action_buttons.size() + 1, half_unit_graphic_height))
-		action_buttons.append(create_button(pos, attack.attack_name, hover_callback, click_callback))
+		action_buttons.append(create_button(pos, attack, hover_callback, click_callback))
 	else:
-		action_buttons.append(create_button(base_pos, attack.attack_name, hover_callback, click_callback))
+		action_buttons.append(create_button(base_pos, attack, hover_callback, click_callback))
 		
 var attack_buttons : Array
 func activate_attack_button(hover_callback : Callable, click_callback : Callable, attack : AttackStats) -> void:
@@ -107,6 +109,6 @@ func activate_attack_button(hover_callback : Callable, click_callback : Callable
 			count += 1
 
 		var pos : Vector2 = base_pos + Vector2(0, calculate_offset(count, attack_buttons.size() + 1, half_unit_graphic_height))
-		attack_buttons.append(create_button(pos, attack.attack_name, hover_callback, click_callback))
+		attack_buttons.append(create_button(pos, attack, hover_callback, click_callback))
 	else:
-		attack_buttons.append(create_button(base_pos, attack.attack_name, hover_callback, click_callback))
+		attack_buttons.append(create_button(base_pos, attack, hover_callback, click_callback))

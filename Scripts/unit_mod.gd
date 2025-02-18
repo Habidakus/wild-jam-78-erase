@@ -4,7 +4,7 @@ var extra_health : float = 0
 var elo_name : String = "?"
 var extra_armor : float = 0
 var extra_slowness : float = 0
-var attack : AttackStats = null
+var attacks : Array[AttackStats]
 
 static func create(mod_name : String) -> UnitMod:
 	var ret_val : UnitMod = UnitMod.new()
@@ -23,9 +23,8 @@ func add_slowness(amount : float) -> UnitMod:
 	extra_slowness += amount
 	return self
 
-func set_attack(_attack : AttackStats) -> UnitMod:
-	assert(attack == null)
-	attack = _attack
+func set_attack(attack : AttackStats) -> UnitMod:
+	attacks.append(attack)
 	return self
 
 static var s_sling_attack : AttackStats = AttackStats.create("Sling", AttackStats.AttackTarget.ANY).adjust_damage(0.8)
@@ -59,20 +58,21 @@ static var s_attack_longsword : AttackStats = AttackStats.create("Longsword", At
 static var s_attack_backstab : AttackStats = AttackStats.create("Dagger", AttackStats.AttackTarget.MOST_VULNERABLE).adjust_speed(0.9).adjust_damage(0.9)
 static var s_attack_magic_missile : AttackStats = AttackStats.create("Zzzap", AttackStats.AttackTarget.ANY).adjust_damage(0.935).adjust_speed(0.95)
 static var s_attack_smash : AttackStats = AttackStats.create("Smash", AttackStats.AttackTarget.FARTHEST_FROM_DEATH).adjust_damage(1.55).adjust_speed(1.25)
-static var s_attack_heal : AttackStats = AttackStats.create("Heal", AttackStats.AttackTarget.CLOSEST_TO_DEATH).adjust_damage(1.25).set_on_allies().tires(1.1)
+static var s_attack_heal : AttackStats = AttackStats.create("Heal", AttackStats.AttackTarget.CLOSEST_TO_DEATH).adjust_damage(1.25).set_on_allies().has_cooldown(1)
 static var s_attack_net : AttackStats = AttackStats.create("Net", AttackStats.AttackTarget.REAR_MOST).set_stun(0.95).adjust_damage(1)
-static var s_attack_blood_curse : AttackStats = AttackStats.create("Blood Curse", AttackStats.AttackTarget.FRONT_MOST).set_bleed(5)
+static var s_attack_blood_curse : AttackStats = AttackStats.create("Blood Curse", AttackStats.AttackTarget.FARTHEST_FROM_DEATH).set_bleed(5)
+static var s_attack_mace : AttackStats = AttackStats.create("Mace", AttackStats.AttackTarget.FRONT_MOST).adjust_damage(1.25).adjust_speed(1.15)
 
 static var s_occupation_knight : UnitMod = create("Knight").set_attack(s_attack_longsword).add_armor(7.5).add_slowness(1)
 static var s_occupation_assassin : UnitMod = create("Assassin").set_attack(s_attack_backstab).add_slowness(-1)
 static var s_occupation_mage : UnitMod = create("Mage").set_attack(s_attack_magic_missile)
 static var s_occupation_barbarian : UnitMod = create("Barbarian").set_attack(s_attack_smash).add_health(70)
-static var s_occupation_cleric : UnitMod = create("Cleric").set_attack(s_attack_heal).add_armor(5)
+static var s_occupation_cleric : UnitMod = create("Cleric").set_attack(s_attack_heal).add_armor(5).set_attack(s_attack_mace)
 static var s_occupation_retiarius : UnitMod = create("Retiarius").set_attack(s_attack_net)
 static var s_occupation_warlock : UnitMod = create("Warlock").set_attack(s_attack_blood_curse)
 
 static func pick_random_occupation(rnd : RandomNumberGenerator) -> UnitMod:
-	match rnd.randi_range(0, 5):
+	match rnd.randi_range(0, 6):
 		0: # Knight
 			return s_occupation_knight
 		1: # Assassin
@@ -85,12 +85,12 @@ static func pick_random_occupation(rnd : RandomNumberGenerator) -> UnitMod:
 			return s_occupation_retiarius
 		5:
 			return s_occupation_warlock
-		#6: # CAN'T ADD CLERIC UNTIL THEY GET A DEFAULT ATTACK
-		#	return s_occupation_cleric
+		6: # CAN'T ADD CLERIC UNTIL THEY GET A DEFAULT ATTACK
+			return s_occupation_cleric
 	assert(false)
 	return null
 
-static var s_attack_potion : AttackStats = AttackStats.create("Potion", AttackStats.AttackTarget.SELF).adjust_damage(2.5).set_on_allies().tires(1.2)
+static var s_attack_potion : AttackStats = AttackStats.create("Potion", AttackStats.AttackTarget.SELF).adjust_damage(2.5).set_on_allies().tires(1.2).has_cooldown(1)
 static var s_attack_halberd : AttackStats = AttackStats.create("Halberd", AttackStats.AttackTarget.FRONT_MOST).set_armor_piercing().adjust_damage(1.15).adjust_speed(1.25)
 static var s_attack_zweihander : AttackStats = AttackStats.create("Zweihander", AttackStats.AttackTarget.FRONT_MOST).adjust_damage(2).adjust_speed(2.2).tires(1.085)
 static var s_attack_shield : AttackStats = AttackStats.create("Shield Bash", AttackStats.AttackTarget.FRONT_MOST).adjust_damage(0.35).set_stun(0.5)
