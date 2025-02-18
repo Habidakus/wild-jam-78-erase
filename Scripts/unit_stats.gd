@@ -24,98 +24,7 @@ static func create_random(rnd : RandomNumberGenerator, _side : UnitStats.Side) -
 	var species : UnitMod = UnitMod.pick_random_species(rnd)
 	var occupation : UnitMod = UnitMod.pick_random_occupation(rnd)
 	var equipment : UnitMod = UnitMod.pick_random_equipment(rnd)
-	ret_val.init(species, occupation, equipment, _side)
-	#ret_val.add_attack(AttackStats.get_default_attack())
-	return ret_val
-
-static func create_random_hero(rnd : RandomNumberGenerator) -> UnitStats:
-	var ret_val : UnitStats = UnitStats.new()
-	ret_val.init_old(create_random_hero_name(rnd), 100, 0, 10, UnitStats.Side.HUMAN)
-	ret_val.add_attack(AttackStats.get_default_attack())
-	ret_val.add_attack(AttackStats.get_arrow_attack())
-	ret_val.add_attack(AttackStats.get_lunge_attack())
-	return ret_val
-
-static func create_random_foe(rnd : RandomNumberGenerator) -> UnitStats:
-	var ret_val : UnitStats = UnitStats.new()
-	ret_val.init_old(create_random_foe_name(rnd), 100, 0, 10, UnitStats.Side.COMPUTER)
-	ret_val.add_attack(AttackStats.get_default_attack())
-	ret_val.add_attack(AttackStats.get_smash_attack())
-	ret_val.add_attack(AttackStats.get_backstab_attack())
-	return ret_val
-
-static func create_random_hero_name(rnd : RandomNumberGenerator) -> String:
-	var ret_val : String = ""
-	match rnd.randi_range(0, 4): #inclusive,inclusive
-		0:
-			ret_val = "Ja"
-		1:
-			ret_val = "Po"
-		2:
-			ret_val = "Ana"
-		3:
-			ret_val = "Mi"
-		4:
-			ret_val = "By"
-	match rnd.randi_range(0, 4): #inclusive,inclusive
-		0:
-			ret_val += "so"
-		1:
-			ret_val += "rte"
-		2:
-			ret_val += "ti"
-		3:
-			ret_val += "se"
-		4:
-			ret_val += "ra"
-	match rnd.randi_range(0, 4): #inclusive,inclusive
-		0:
-			ret_val += "n"
-		1:
-			ret_val += "r"
-		2:
-			ret_val += "na"
-		3:
-			ret_val += "nus"
-		4:
-			ret_val += "cy"
-	return ret_val
-
-static func create_random_foe_name(rnd : RandomNumberGenerator) -> String:
-	var ret_val : String = ""
-	match rnd.randi_range(0, 4): #inclusive,inclusive
-		0:
-			ret_val = "Xa"
-		1:
-			ret_val = "Vo"
-		2:
-			ret_val = "Wa"
-		3:
-			ret_val = "Gru"
-		4:
-			ret_val = "Cru"
-	match rnd.randi_range(0, 4): #inclusive,inclusive
-		0:
-			ret_val += "xa"
-		1:
-			ret_val += "pe"
-		2:
-			ret_val += "zi"
-		3:
-			ret_val += "va"
-		4:
-			ret_val += "wu"
-	match rnd.randi_range(0, 4): #inclusive,inclusive
-		0:
-			ret_val += "x"
-		1:
-			ret_val += "ve"
-		2:
-			ret_val += "w"
-		3:
-			ret_val += "z"
-		4:
-			ret_val += "ck"
+	ret_val.init(species, occupation, equipment, _side, rnd)
 	return ret_val
 
 static func get_other_side(s : UnitStats.Side) -> UnitStats.Side:
@@ -176,14 +85,17 @@ func get_moves(units : Array[UnitStats]) -> Array[MMCAction]:
 		ret_val.append_array(actions)
 	return ret_val
 
-func init(_species : UnitMod, _occupation : UnitMod, _equipment : UnitMod, _side : UnitStats.Side) -> void:
+func init(_species : UnitMod, _occupation : UnitMod, _equipment : UnitMod, _side : UnitStats.Side, rnd : RandomNumberGenerator) -> void:
 	id = next_id
 	next_id += 1
 	
 	side = _side
 	max_health = 100 + _species.extra_health + _occupation.extra_health + _equipment.extra_health
 	current_health = max_health
-	unit_name = UnitStats.Side.keys()[_side] + "/" + _species.elo_name + "/" + _occupation.elo_name + "/" + _equipment.elo_name + "#" + str(id)
+	if _species.will_name():
+		unit_name = _species.generate_name(rnd)
+	else:
+		unit_name = UnitStats.Side.keys()[_side] + "/" + _species.elo_name + "/" + _occupation.elo_name + "/" + _equipment.elo_name + "#" + str(id)
 	armor = _species.extra_armor + _occupation.extra_armor + _equipment.extra_armor
 	slowness = 10 + _species.extra_slowness + _occupation.extra_slowness + _equipment.extra_slowness
 	next_attack = slowness + noise.randf_range(0, 0.01)

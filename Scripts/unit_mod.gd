@@ -5,6 +5,7 @@ var elo_name : String = "?"
 var extra_armor : float = 0
 var extra_slowness : float = 0
 var attacks : Array[AttackStats]
+var naming_function : String
 
 static func create(mod_name : String) -> UnitMod:
 	var ret_val : UnitMod = UnitMod.new()
@@ -27,15 +28,80 @@ func set_attack(attack : AttackStats) -> UnitMod:
 	attacks.append(attack)
 	return self
 
+func set_namer(function_name : String) -> UnitMod:
+	naming_function = function_name
+	return self
+
+func will_name() -> bool:
+	return !naming_function.is_empty()
+
+func generate_name(rnd : RandomNumberGenerator) -> String:
+	return Callable(self, naming_function).bind(rnd).call()
+
+static func create_orc_name(rnd : RandomNumberGenerator) -> String:
+	const orc_beginning : Array[String] = ["N", "G", "Gh", "Kl", "T", "Arb", "M", "Az"]
+	var ret_val : String = orc_beginning[rnd.randi_range(0, orc_beginning.size() - 1)]
+	const orc_middle_a : Array[String] = ["az", "ub", "ar", "ag", "aw", "ut", "og", "im", "ur", "or", "uz", "aug"]
+	ret_val += orc_middle_a[rnd.randi_range(0, orc_middle_a.size() - 1)]
+	const orc_middle_b : Array[String] = ["dre", "a", "gha", "ro", "ja", "sni", "go", "zu", "glu", "zi", "la", "za", "re"]
+	ret_val += orc_middle_b[rnd.randi_range(0, orc_middle_b.size() - 1)]
+	const orc_ending : Array[String] = ["w", "d", "b", "g", "ruk", "m", "z", "rk", "r", "ng", "l"]
+	ret_val += orc_ending[rnd.randi_range(0, orc_ending.size() - 1)]
+	return ret_val
+
+static func create_human_name(rnd : RandomNumberGenerator) -> String:
+	const human_first_name : Array[String] = [ "Agatha", "Bartholomew", "Cassandra", "Derrick", "Edmund", "Felicity", "Gawain", "Hannabel", "Ishmael", "Jesmond", "Nowell", "Samara", "Victor"]
+	var ret_val : String = human_first_name[rnd.randi_range(0, human_first_name.size() - 1)]
+	ret_val += " "
+	const human_last_name : Array[String] = ["Yorke", "Whitgyft", "Unthank", "Tonstall", "Smith", "Ruddok", "Plumton", "Norfolk", "Abbot", "Bishop", "Grimm"]
+	ret_val += human_last_name[rnd.randi_range(0, human_last_name.size() - 1)]
+	return ret_val
+
+static func create_ratman_name(rnd : RandomNumberGenerator) -> String:
+	const rat_beginning : Array[String] = ["G", "R", "L", "Zz", "Ch", "B", "V", "K", "Sl", "Asm", "N", "K"]
+	var ret_val : String = rat_beginning[rnd.randi_range(0, rat_beginning.size() - 1)]
+	const rat_ending : Array[String] = ["a", "ack", "al", "as", "ard", "in", "ip", "isk", "ist", "ith", "odz", "om", "eus", "u"]
+	ret_val += rat_ending[rnd.randi_range(0, rat_ending.size() - 1)]
+	return ret_val
+
+static func create_elf_name(rnd : RandomNumberGenerator) -> String:
+	const elf_beginning : Array[String] = ["E", "Ga", "Glo", "Fëa", "Eare", "Fi", "Ea", "A", "Lú", "Dri", "Elmi"]
+	var ret_val : String = elf_beginning[rnd.randi_range(0, elf_beginning.size() - 1)]
+	const elf_middle : Array[String] = ["lro", "la", "drie", "rfi", "nde", "no", "ndi", "ngo", "lfi", "rwe", "thei", "nste"]
+	ret_val += elf_middle[rnd.randi_range(0, elf_middle.size() - 1)]
+	const elf_ending : Array[String] = ["nd", "l", "r", "n", "st"]
+	ret_val += elf_ending[rnd.randi_range(0, elf_ending.size() - 1)]
+	return ret_val
+
+static func create_dwarf_name(rnd : RandomNumberGenerator) -> String:
+	const dwarf_first_name : Array[String] = ["Urist", "Ùshrir", "Sodel", "Limul", "Dumat", "Bofur", "Dori", "Ori", "Thorin", "Rhys", "Tagwen", "Hjodill"]
+	var ret_val : String = dwarf_first_name[rnd.randi_range(0, dwarf_first_name.size() - 1)]
+	ret_val += " "
+	const dwarf_last_prefix : Array[String] = ["Mac", "Mc", "O'"]
+	ret_val += dwarf_last_prefix[rnd.randi_range(0, dwarf_last_prefix.size() - 1)]
+	const dwarf_last_suffix : Array[String] = ["Blackanvil", "Deepshaft", "Doubleax", "Goldbones", "Hammer", "Leadshoe", "Mountain", "Motherlode", "Nostril", "Rocknoggin", "Smashy", "Stonefinger", "Stalewind", "Shaletooth", "Tankard", "Thickale", "Tinmonger"]
+	ret_val += dwarf_last_suffix[rnd.randi_range(0, dwarf_last_suffix.size() - 1)]
+	return ret_val
+
+static func create_halfling_name(rnd : RandomNumberGenerator) -> String:
+	const halfling_first_name : Array[String] = ["Bunny", "Batty", "Cheery", "Chuckle", "Candy", "Curly", "Doc", "Dawn", "Flower", "Honest", "Happy", "Hope", "Musky", "Petal", "Smiley", "Spanky", "Sunny",]
+	var ret_val : String = halfling_first_name[rnd.randi_range(0, halfling_first_name.size() - 1)]
+	ret_val += " "
+	const halfling_last_prefix : Array[String] = ["Blush", "Bright", "Dank", "Dirty", "Funny", "Fuzzy", "Oil", "Onion", "Pickle", "Rose", "Shine", "Squeak", "Stink", "Sweet", "Tart", "Tickle", "Whisper", "Wicked", "Wonder",]
+	ret_val += halfling_last_prefix[rnd.randi_range(0, halfling_last_prefix.size() - 1)]
+	const halfling_last_suffix : Array[String] = ["barrel", "belly", "button", "cheek", "finger", "foot", "farm", "leaf", "navel", "palm", "pants", "smoke", "stockings", "tater", "toe", "tooth", "tummy"]
+	ret_val += halfling_last_suffix[rnd.randi_range(0, halfling_last_suffix.size() - 1)]
+	return ret_val
+	
 static var s_sling_attack : AttackStats = AttackStats.create("Sling", AttackStats.AttackTarget.ANY).adjust_damage(0.8)
 static var s_short_sword_attack : AttackStats = AttackStats.create("Short Sword", AttackStats.AttackTarget.FRONT_MOST).adjust_speed(0.95)
 
-static var s_species_human : UnitMod = create("Human").set_attack(s_short_sword_attack)
-static var s_species_dwarf : UnitMod = create("Dwarf").add_health(35).add_armor(10).add_slowness(2)
-static var s_species_elf : UnitMod = create("Elf").add_slowness(-1.5).add_health(-10)
-static var s_species_halfling : UnitMod = create("Halfling").set_attack(s_sling_attack).add_health(-20).add_slowness(-2)
-static var s_species_orc : UnitMod = create("Orc").add_health(70).add_slowness(2.25)
-static var s_species_ratman : UnitMod = create("Ratman").add_health(-40).add_slowness(-3.25)
+static var s_species_human : UnitMod = create("Human").set_attack(s_short_sword_attack).set_namer("create_human_name")
+static var s_species_dwarf : UnitMod = create("Dwarf").add_health(35).add_armor(10).add_slowness(2).set_namer("create_dwarf_name")
+static var s_species_elf : UnitMod = create("Elf").add_slowness(-1.5).add_health(-10).set_namer("create_elf_name")
+static var s_species_halfling : UnitMod = create("Halfling").set_attack(s_sling_attack).add_health(-20).add_slowness(-2).set_namer("create_halfling_name")
+static var s_species_orc : UnitMod = create("Orc").add_health(70).add_slowness(2.25).set_namer("create_orc_name")
+static var s_species_ratman : UnitMod = create("Ratman").add_health(-40).add_slowness(-3.25).set_namer("create_ratman_name")
 
 static func pick_random_species(rnd : RandomNumberGenerator) -> UnitMod:
 	match rnd.randi_range(0, 5):
