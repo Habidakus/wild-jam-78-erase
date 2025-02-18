@@ -245,7 +245,7 @@ func update_battle_space() -> void:
 				foe_count += 1
 	for unit : UnitStats in game_state.units:
 		var unit_graphics : UnitGraphics = battle_space_figures[unit.id]
-		unit_graphics.set_health(unit.current_health, unit.max_health)
+		unit_graphics.set_health(unit)
 
 func setup_game_state() -> void:
 	assert(game_state == null)
@@ -302,5 +302,21 @@ func run_one_turn() -> void:
 				update_trip_sheet()
 				update_battle_space()
 				human_moves.clear()
-		else:
-			combat_state_machine_state.set_human_moves(human_moves)
+				return
+
+		var hover_callback : Callable = Callable(self, "human_hover_over_action")
+		var click_callback : Callable = Callable(self, "human_click_on_action")
+		combat_state_machine_state.set_human_moves(human_moves, hover_callback, click_callback)
+
+func human_hover_over_action(b : bool, move : EAction) -> void:
+	if b:
+		var dmg : float = game_state.get_unit_by_id(move.targetID).calculate_damage_from_attack(move.attack)
+		print(move.attack.attack_name + " for " + str(round(dmg * 10) / 10) + " damage.")
+
+func human_click_on_action(move : EAction) -> void:
+	game_state = move.resulting_state
+	combat_state_machine_state.clear_human_moves()
+	for unitID : int in battle_space_figures.keys():
+		(battle_space_figures[unitID] as UnitGraphics).clean_up_human_UX()
+	update_trip_sheet()
+	update_battle_space()

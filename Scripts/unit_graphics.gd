@@ -7,31 +7,16 @@ static func create() -> UnitGraphics:
 	var ret_val : UnitGraphics = our_scene.instantiate()
 	return ret_val
 
-# Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	max_health_width = (find_child("Blood Background") as ColorRect).size.x
 
-func _process(_delta: float) -> void:
-	if attack_list.is_empty() && action_list.is_empty():
-		return
-	
-	queue_redraw()
-
-func calculate_offset(index : int, c : int, range : float) -> float:
+func calculate_offset(index : int, c : int, r : float) -> float:
 	if c == 1:
 		return 0
-	return lerpf(-range, range, float(index) / float(c - 1))
+	return lerpf(-r, r, float(index) / float(c - 1))
 
 func _draw() -> void:
-	var default_font = ThemeDB.fallback_font
-	var default_font_size = ThemeDB.fallback_font_size
-	var count : int = 0
 	const half_unit_graphic_height : float = 16.0
-	for action : AttackStats in action_list:
-		var pos : Vector2 = Vector2(-64, calculate_offset(count, action_list.size(), half_unit_graphic_height))
-		count += 1
-		draw_circle(Vector2.ZERO + pos, 32, Color.GREEN)
-		draw_string(default_font, pos, action.attack_name, HORIZONTAL_ALIGNMENT_CENTER, -1, default_font_size, Color.BLACK)
 	var attack_target_count : Dictionary # <UnitGraphics, int>
 	for attack : Array in attack_list:
 		var target : UnitGraphics = attack[0] as UnitGraphics
@@ -48,22 +33,80 @@ func _draw() -> void:
 			attack_target_placed[target] += 1
 		else:
 			attack_target_placed[target] = 1
-		var target_pos : Vector2 = Vector2(16, 16 + calculate_offset(tcount, attack_target_count[target], half_unit_graphic_height)) + target.global_position - self.global_position
-		var pos : Vector2 = target_pos + Vector2(48, 0)
-		draw_line(Vector2.ZERO, target_pos, Color.RED, 4)
-		draw_string(default_font, pos, attack[1].attack_name, HORIZONTAL_ALIGNMENT_CENTER, -1, default_font_size, Color.RED)
+		var target_pos : Vector2 = Vector2(0, 16 + calculate_offset(tcount, attack_target_count[target], half_unit_graphic_height)) + target.global_position - self.global_position
+		draw_line(Vector2(32, 16), target_pos, Color.RED, 4)
 
 func set_unit_name(n : String) -> void:
 	(find_child("Name") as Label).text = n
 
-func set_health(current : float, max_health : float) -> void:
-	(find_child("Health") as ColorRect).size.x = max_health_width * current / max_health
-	(find_child("HealthText") as Label).text = str(max(1,round(current))) + "/" + str(round(max_health))
+func set_health(unit : UnitStats) -> void:
+	var health_rect : ColorRect = find_child("Health") as ColorRect
+	var health_text : Label = find_child("HealthText") as Label
+	if unit.is_alive():
+		health_rect.show()
+		health_rect.size.x = max_health_width * unit.current_health / unit.max_health
+		health_text.text = str(max(1,round(unit.current_health))) + "/" + str(round(unit.max_health))
+	else:
+		health_rect.hide()
+		health_text.text = "DEAD"
 
 var attack_list : Array
-func add_draw_attack(target : UnitGraphics, attack : AttackStats) -> void:
+func add_draw_attack(target : UnitGraphics, attack : AttackStats, hover_callback : Callable, click_callback : Callable) -> void:
 	attack_list.append([target, attack])
+	target.activate_attack_button(hover_callback, click_callback, attack)
+	queue_redraw()
 
-var action_list : Array[AttackStats]
-func add_draw_action(attack : AttackStats) -> void:
-	action_list.append(attack)
+func add_draw_action(attack : AttackStats, hover_callback : Callable, click_callback : Callable) -> void:
+	activate_action_button(hover_callback, click_callback, attack)
+
+func clean_up_human_UX() -> void:
+	attack_list.clear()
+	for button : Button in attack_buttons:
+		remove_child(button)
+		button.queue_free()
+	attack_buttons.clear()
+	for button : Button in action_buttons:
+		remove_child(button)
+		button.queue_free()
+	action_buttons.clear()
+	queue_redraw()
+
+func create_button(pos : Vector2, text : String, hover_callback : Callable, click_callback : Callable) -> Button:
+	var new_button : Button = Button.new()
+	new_button.position = pos
+	new_button.text = text
+	new_button.mouse_entered.connect(hover_callback.bind(true))
+	new_button.mouse_exited.connect(hover_callback.bind(false))
+	new_button.pressed.connect(click_callback)
+	add_child(new_button)
+	return new_button
+
+var action_buttons : Array
+func activate_action_button(hover_callback : Callable, click_callback : Callable, attack : AttackStats) -> void:
+	const half_unit_graphic_height : float = 16.0
+	var base_pos : Vector2 = Vector2(-64, 0)
+	if !action_buttons.is_empty():
+		var count : int = 0
+		for existing_button : Button in action_buttons:
+			existing_button.position = base_pos + Vector2(0, calculate_offset(count, action_buttons.size() + 1, half_unit_graphic_height))
+			count += 1
+
+		var pos : Vector2 = base_pos + Vector2(0, calculate_offset(count, action_buttons.size() + 1, half_unit_graphic_height))
+		action_buttons.append(create_button(pos, attack.attack_name, hover_callback, click_callback))
+	else:
+		action_buttons.append(create_button(base_pos, attack.attack_name, hover_callback, click_callback))
+		
+var attack_buttons : Array
+func activate_attack_button(hover_callback : Callable, click_callback : Callable, attack : AttackStats) -> void:
+	const half_unit_graphic_height : float = 16.0
+	var base_pos : Vector2 = Vector2(64, 0)
+	if !attack_buttons.is_empty():
+		var count : int = 0
+		for existing_button : Button in attack_buttons:
+			existing_button.position = base_pos + Vector2(0, calculate_offset(count, attack_buttons.size() + 1, half_unit_graphic_height))
+			count += 1
+
+		var pos : Vector2 = base_pos + Vector2(0, calculate_offset(count, attack_buttons.size() + 1, half_unit_graphic_height))
+		attack_buttons.append(create_button(pos, attack.attack_name, hover_callback, click_callback))
+	else:
+		attack_buttons.append(create_button(base_pos, attack.attack_name, hover_callback, click_callback))
