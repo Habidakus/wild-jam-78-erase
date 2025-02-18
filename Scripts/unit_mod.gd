@@ -58,7 +58,7 @@ static func create_human_name(rnd : RandomNumberGenerator) -> String:
 	return ret_val
 
 static func create_ratman_name(rnd : RandomNumberGenerator) -> String:
-	const rat_beginning : Array[String] = ["G", "R", "L", "Zz", "Ch", "B", "V", "K", "Sl", "Asm", "N", "K"]
+	const rat_beginning : Array[String] = ["G", "R", "L", "Zz", "Ch", "B", "V", "K", "Sl", "Asm", "N", "Kr"]
 	var ret_val : String = rat_beginning[rnd.randi_range(0, rat_beginning.size() - 1)]
 	const rat_ending : Array[String] = ["a", "ack", "al", "as", "ard", "in", "ip", "isk", "ist", "ith", "odz", "om", "eus", "u"]
 	ret_val += rat_ending[rnd.randi_range(0, rat_ending.size() - 1)]
