@@ -264,7 +264,10 @@ func update_battle_space() -> void:
 	for unit : UnitStats in game_state.units:
 		var unit_graphics : UnitGraphics = battle_space_figures[unit.id]
 		unit_graphics.set_health(unit)
-		unit_graphics.position = calculate_position(unit.side == UnitStats.Side.HUMAN, screen_location[unit.id], unit.is_alive(), arena.size)
+		var new_unit_position : Vector2 = calculate_position(unit.side == UnitStats.Side.HUMAN, screen_location[unit.id], unit.is_alive(), arena.size)
+		if new_unit_position != unit_graphics.position:
+			var tween : Tween = create_tween()
+			tween.tween_property(unit_graphics, "position", new_unit_position, 0.95)
 
 func calculate_position(is_hero : bool, rank : int, is_alive : bool, arena_size : Vector2) -> Vector2:
 	var ret_val : Vector2 = Vector2.ZERO
