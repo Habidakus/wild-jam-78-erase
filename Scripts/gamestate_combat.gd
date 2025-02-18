@@ -31,10 +31,11 @@ func set_human_moves(moves : Array[MMCAction], hover_callback : Callable, click_
 		human_moves.append(emove)
 		var actor_graphic : UnitGraphics = game.battle_space_figures[emove.actorID]
 		var target_graphic : UnitGraphics = game.battle_space_figures[emove.targetID]
+		var target_stats : UnitStats = game.game_state.get_unit_by_id(emove.targetID)
 		if emove.actorID != emove.targetID:
-			actor_graphic.add_draw_attack(target_graphic, emove.attack, hover_callback.bind(emove), click_callback.bind(emove))
+			actor_graphic.add_draw_attack(target_graphic, emove.attack, target_stats, hover_callback.bind(emove), click_callback.bind(emove))
 		else:
-			actor_graphic.add_draw_action(emove.attack, hover_callback.bind(emove), click_callback.bind(emove))
+			actor_graphic.add_draw_action(emove.attack, target_stats, hover_callback.bind(emove), click_callback.bind(emove))
 
 func has_human_moves() -> bool:
 	return !human_moves.is_empty()

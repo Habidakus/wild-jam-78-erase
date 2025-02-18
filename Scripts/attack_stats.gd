@@ -122,8 +122,9 @@ func get_targets(actor : UnitStats, targets : Array[UnitStats]) -> Array[UnitSta
 			return UnitStats.to_array(UnitStats.select_lowest(targets, func(a : UnitStats) : return 0.0 - a.current_health))
 	return []
 
-func generate_tooltip() -> String:
-	var ret_val : String = str(round((1.0 - stun) * damage * 10) / 10)
+func generate_tooltip(target : UnitStats) -> String:
+	var dmg : float = target.calculate_damage_from_attack(self)
+	var ret_val : String = str(round(dmg * 10.0)/10.0)
 	if acts_on_allies:
 		ret_val += " Healing"
 	elif armor_piercing:
