@@ -115,10 +115,10 @@ static var s_short_sword_attack : AttackStats = AttackStats.create("Short Sword"
 
 static var s_species_human : UnitMod = create("Human").set_attack(s_short_sword_attack).set_namer("create_human_name").set_icon(UnitStats.Icon.Human)
 static var s_species_dwarf : UnitMod = create("Dwarf").add_health(35).add_armor(10).add_slowness(2).set_namer("create_dwarf_name").set_icon(UnitStats.Icon.Dwarf)
-static var s_species_elf : UnitMod = create("Elf").add_slowness(-1.5).add_health(-10).set_namer("create_elf_name")
+static var s_species_elf : UnitMod = create("Elf").add_slowness(-1.5).add_health(-10).set_namer("create_elf_name").set_icon(UnitStats.Icon.Elf)
 static var s_species_halfling : UnitMod = create("Halfling").set_attack(s_sling_attack).add_health(-20).add_slowness(-2).set_namer("create_halfling_name").set_icon(UnitStats.Icon.Halfling)
 static var s_species_orc : UnitMod = create("Orc").add_health(70).add_slowness(2.25).set_namer("create_orc_name").set_icon(UnitStats.Icon.Orc)
-static var s_species_ratman : UnitMod = create("Ratman").add_health(-40).add_slowness(-3.25).set_namer("create_ratman_name")
+static var s_species_ratman : UnitMod = create("Ratman").add_health(-40).add_slowness(-3.25).set_namer("create_ratman_name").set_icon(UnitStats.Icon.Ratman)
 
 static func pick_random_species(rnd : RandomNumberGenerator) -> UnitMod:
 	match rnd.randi_range(0, 5):

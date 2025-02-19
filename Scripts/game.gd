@@ -361,7 +361,7 @@ func run_one_turn() -> void:
 func human_hover_over_action(b : bool, move : EAction) -> void:
 	if b:
 		var dmg : float = game_state.get_unit_by_id(move.targetID).calculate_damage_from_attack(move.attack)
-		print(move.attack.attack_name + " for " + str(round(dmg * 10) / 10) + " damage.")
+		#print(move.attack.attack_name + " for " + str(round(dmg * 10) / 10) + " damage.")
 
 func human_click_on_action(move : EAction) -> void:
 	game_state = move.resulting_state

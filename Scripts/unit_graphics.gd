@@ -3,7 +3,7 @@ class_name UnitGraphics extends Control
 var max_health_width : float
 const our_scene : Resource = preload("res://Scenes/unit.tscn")
 
-var attack_list : Array
+var attack_list : Array[UnitGraphics]
 var action_buttons : Array[Button]
 var attack_buttons : Array[Button]
 
@@ -27,23 +27,8 @@ func calculate_offset(index : int, c : int, r : float) -> float:
 
 func _draw() -> void:
 	const half_unit_graphic_height : float = 16.0
-	var attack_target_count : Dictionary # <UnitGraphics, int>
-	for attack : Array in attack_list:
-		var target : UnitGraphics = attack[0] as UnitGraphics
-		if attack_target_count.has(target):
-			attack_target_count[target] += 1
-		else:
-			attack_target_count[target] = 1
-	var attack_target_placed : Dictionary # <UnitGraphics, int>
-	for attack : Array in attack_list:
-		var target : UnitGraphics = attack[0] as UnitGraphics
-		var tcount : int = 0
-		if attack_target_placed.has(target):
-			tcount = attack_target_placed[target]
-			attack_target_placed[target] += 1
-		else:
-			attack_target_placed[target] = 1
-		var target_pos : Vector2 = Vector2(0, 16 + calculate_offset(tcount, attack_target_count[target], half_unit_graphic_height)) + target.global_position - self.global_position
+	for target : UnitGraphics in attack_list:
+		var target_pos : Vector2 = Vector2(0, 16 + half_unit_graphic_height / 2) + target.global_position - self.global_position
 		draw_line(Vector2(32, 16), target_pos, Color.RED, 4)
 
 func set_unit_name(n : String) -> void:
@@ -64,7 +49,8 @@ func add_draw_action(attack : AttackStats, target_stats : UnitStats, hover_callb
 	action_buttons.append(create_button(false, attack, target_stats, hover_callback, click_callback))
 	
 func add_draw_attack(target_graphics : UnitGraphics, attack : AttackStats, target_stats : UnitStats, hover_callback : Callable, click_callback : Callable) -> void:
-	attack_list.append([target_graphics, attack])
+	if !attack_list.has(target_graphics):
+		attack_list.append(target_graphics)
 	target_graphics.activate_attack_button(hover_callback, click_callback, attack, target_stats)
 	queue_redraw()
 		
