@@ -1,7 +1,7 @@
 class_name UnitStats extends RefCounted
 
 enum Side { NEITHER, HUMAN, COMPUTER }
-enum Icon { UNSET, Dwarf, Halfling, Human, Orc }
+enum Icon { UNSET, Dwarf, Halfling, Human, Orc, Goblin }
 
 var id : int = -1
 var max_health : float
@@ -128,6 +128,7 @@ const icon_human : Texture = preload("res://Art/Species_Human.png")
 const icon_dwarf : Texture = preload("res://Art/Species_Dwarf.png")
 const icon_halfling : Texture = preload("res://Art/Species_Halfling.png")
 const icon_orc : Texture = preload("res://Art/Species_Orc.png")
+const icon_goblin : Texture = preload("res://Art/Species_Goblin.png")
 func get_texture() -> Texture:
 	match icon:
 		UnitStats.Icon.Human:
@@ -138,6 +139,8 @@ func get_texture() -> Texture:
 			return icon_halfling
 		UnitStats.Icon.Orc:
 			return icon_orc
+		UnitStats.Icon.Goblin:
+			return icon_goblin
 	return null
 
 func get_health_desc() -> String:
