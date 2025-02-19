@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://b5t3tpb66grx0"]
+[gd_scene load_steps=13 format=3 uid="uid://b5t3tpb66grx0"]
 
 [ext_resource type="Script" path="res://addons/statemachine/StateMachine.gd" id="1_p7e6l"]
 [ext_resource type="Script" path="res://addons/statemachine/StateMachineState_AnyKeyToContinue.gd" id="2_mqr82"]
@@ -9,6 +9,7 @@
 [ext_resource type="Script" path="res://Scripts/loop_exposition.gd" id="5_m5uv5"]
 [ext_resource type="Script" path="res://Scripts/gamestate_combat.gd" id="7_pp03m"]
 [ext_resource type="Script" path="res://Scripts/gamestate_postcombat.gd" id="8_ew0y7"]
+[ext_resource type="Script" path="res://Scripts/gamestate_pathselection.gd" id="9_8hvbj"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_68cc5"]
 font_size = 128
@@ -152,6 +153,7 @@ grow_vertical = 0
 text = "(hit any key to continue)"
 
 [node name="Combat" type="Control" parent="OverStateMachine/Game/GameStateMachine"]
+visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -198,6 +200,15 @@ grow_vertical = 2
 script = ExtResource("8_ew0y7")
 
 [node name="PathSelection" type="Control" parent="OverStateMachine/Game/GameStateMachine"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("9_8hvbj")
+
+[node name="BossBattle" type="Control" parent="OverStateMachine/Game/GameStateMachine"]
 visible = false
 layout_mode = 3
 anchors_preset = 15
@@ -207,7 +218,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("4_jdfnt")
 
-[node name="BossBattle" type="Control" parent="OverStateMachine/Game/GameStateMachine"]
+[node name="Misc" type="Control" parent="OverStateMachine/Game/GameStateMachine"]
 visible = false
 layout_mode = 3
 anchors_preset = 15

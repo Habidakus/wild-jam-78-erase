@@ -5,13 +5,16 @@ var foes : Array[UnitStats]
 var rnd : RandomNumberGenerator = RandomNumberGenerator.new()
 var calc : MinMaxCalculator = MinMaxCalculator.new()
 var combat_state_machine_state : SMSCombat
+var path_state_machine_state : SMSPath
 var game_state : EGameState = null
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	rnd.seed = 41
+	rnd.seed = 411
 	combat_state_machine_state = find_child("Combat") as SMSCombat
 	combat_state_machine_state.init(self)
+	path_state_machine_state = find_child("PathSelection") as SMSPath
+	path_state_machine_state.init(self, rnd)
 	find_child("PreGame").init(self)
 	find_child("PostCombat").init(self)
 
@@ -259,7 +262,7 @@ func update_battle_space() -> void:
 			unit_graphics.set_unit_name(unit.unit_name)
 			battle_space_figures[unit.id] = unit_graphics
 			arena.add_child(unit_graphics)
-			print("Adding #" + str(unit.id) + ": hero=" + str(unit.side == UnitStats.Side.HUMAN) + " rank="+ str(screen_location[unit.id]) + " alive=" + str(unit.is_alive()))
+			#print("Adding #" + str(unit.id) + ": hero=" + str(unit.side == UnitStats.Side.HUMAN) + " rank="+ str(screen_location[unit.id]) + " alive=" + str(unit.is_alive()))
 			unit_graphics.position = calculate_position(unit.side == UnitStats.Side.HUMAN, screen_location[unit.id], unit.is_alive(), arena.size)
 	for unit : UnitStats in game_state.units:
 		var unit_graphics : UnitGraphics = battle_space_figures[unit.id]
@@ -367,3 +370,46 @@ func human_click_on_action(move : EAction) -> void:
 		(battle_space_figures[unitID] as UnitGraphics).clean_up_human_UX()
 	update_trip_sheet()
 	update_battle_space()
+
+var game_path : Array[PathEncounterStat]
+var current_path_encounter_stat : PathEncounterStat
+
+func all_path_encounter_stats_at_depth(depth : int) -> Array[PathEncounterStat]:
+	return game_path.filter(func(a : PathEncounterStat) : return a.graph_pos.x == depth)
+
+func initialize_path(_rnd: RandomNumberGenerator) -> void:
+	assert(game_path.is_empty())
+	const path_depth : int = 6
+	const path_width : int = 4
+	var wiggle_range : Vector2 = Vector2(0.15 / float(path_depth + 2.0), 0.15 / float(path_width + 2.0))
+	for d : int in range(0, path_depth):
+		var current_width : int = path_width
+		if d == 0 || d == path_depth - 1:
+			current_width = 1
+		elif d == 1 || d == path_depth - 2:
+			current_width = 2
+		for w : int in range(0, current_width):
+			var pos : Vector2
+			pos.x = float(d + 0.40) / float(path_depth + 1)
+			pos.y = float(w + 1) / float(current_width + 2)
+			pos.x += _rnd.randf_range(-wiggle_range.x, wiggle_range.x)
+			pos.x += _rnd.randf_range(-wiggle_range.y, wiggle_range.y)
+			var pe : PathEncounterStat = PathEncounterStat.new()
+			pe.init(d, w, pos, _rnd.randf())
+			game_path.append(pe)
+	var start_pes : PathEncounterStat = all_path_encounter_stats_at_depth(0)[0]
+	start_pes.set_encounter_type("Gate Guards", PathEncounterStat.EncounterType.GATE_FIGHT)
+	for n : PathEncounterStat in all_path_encounter_stats_at_depth(1):
+		n.connect_path_to(start_pes)
+	var end_pes : PathEncounterStat = all_path_encounter_stats_at_depth(path_depth - 1)[0]
+	end_pes.set_encounter_type("Chronotyrant", PathEncounterStat.EncounterType.CRONOTYRANT)
+	for n : PathEncounterStat in all_path_encounter_stats_at_depth(path_depth - 2):
+		n.connect_path_to(end_pes)
+	game_path.sort_custom(func(a : PathEncounterStat, b: PathEncounterStat) : return a.sort_value < b.sort_value)
+	var needs_paths : Array[PathEncounterStat] = game_path.filter(func(a : PathEncounterStat) : return a.needs_paths())
+	while !needs_paths.is_empty():
+		needs_paths[0].add_paths(game_path, _rnd)
+		needs_paths.remove_at(0)
+		needs_paths = game_path.filter(func(a : PathEncounterStat) : return a.needs_paths())
+	path_state_machine_state.place_paths()
+	current_path_encounter_stat = start_pes
