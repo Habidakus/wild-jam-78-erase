@@ -23,10 +23,14 @@ var elo : Array[String]
 static var next_id : int = 1
 static var noise : RandomNumberGenerator = RandomNumberGenerator.new()
 
-static func create_foes__goblin(rnd : RandomNumberGenerator) -> UnitStats:
+static func create_foes__goblin(rnd : RandomNumberGenerator, sgt : bool) -> UnitStats:
 	var ret_val : UnitStats = UnitStats.new()
-	ret_val.init(UnitMod.s_species_goblin, UnitMod.s_occupation_guard, UnitMod.s_equipment_guard_gear, UnitStats.Side.COMPUTER, rnd)
-	ret_val.unit_name = "Goblin Guard"
+	if sgt:
+		ret_val.init(UnitMod.s_species_goblin, UnitMod.s_occupation_guard_sgt, UnitMod.s_equipment_guard_gear, UnitStats.Side.COMPUTER, rnd)
+		ret_val.unit_name = "Goblin Sargent"
+	else:
+		ret_val.init(UnitMod.s_species_goblin, UnitMod.s_occupation_guard, UnitMod.s_equipment_guard_gear, UnitStats.Side.COMPUTER, rnd)
+		ret_val.unit_name = "Goblin Guard"
 	return ret_val
 
 static func create_random(rnd : RandomNumberGenerator, _side : UnitStats.Side) -> UnitStats:

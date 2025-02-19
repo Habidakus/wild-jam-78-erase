@@ -51,7 +51,7 @@ func initialize_heroes() -> void:
 func initialize_foes() -> void:
 	foes.clear()
 	for i in range(0, 5):
-		foes.append(UnitStats.create_foes__goblin(rnd))
+		foes.append(UnitStats.create_foes__goblin(rnd, i == 1))
 
 func calculate_elo() -> void:
 	var human_calculus : String
@@ -308,7 +308,7 @@ func setup_game_state() -> void:
 
 var round_count : int = 0
 func run_one_turn() -> void:
-	const depth : int = 8
+	const depth : int = 9
 	if game_state == null:
 		ready_trip_sheet()
 		ready_battle_space()
@@ -324,11 +324,11 @@ func run_one_turn() -> void:
 		var best_action = calc.get_best_action(game_state, depth) as EAction
 		#if best_action.attack != null:
 			#print(str(best_action))
-		#if best_action.attack == AttackStats.get_default_attack():
+		#if best_action.attack != null && game_state.get_unit_by_id(best_action.actorID).attacks.has(UnitMod.s_angry_punch_attack):
 			#for i in range(1, depth + 1):
 				#var debug : MMCDebug = MMCDebug.new()
 				#var repeat_action = calc.get_best_action(game_state, i, debug) as EAction
-				#if repeat_action.attack == AttackStats.get_default_attack():
+				#if repeat_action.attack != UnitMod.s_angry_punch_attack:
 					#var fileAccess : FileAccess = FileAccess.open("./graph.txt", FileAccess.WRITE)
 					#debug.dump(game_state, fileAccess)
 					#fileAccess.flush()
@@ -338,6 +338,7 @@ func run_one_turn() -> void:
 		if best_action == null:
 			best_action = calc.get_best_action(game_state, depth) as EAction
 		game_state = best_action.resulting_state
+		#print(str(best_action))
 		update_trip_sheet()
 		update_battle_space()
 		return

@@ -105,9 +105,11 @@ static func create_halfling_name(rnd : RandomNumberGenerator) -> String:
 	return ret_val
 
 static var s_rusty_sword_attack : AttackStats = AttackStats.create("Rusty Sword", AttackStats.AttackTarget.TWO_FARTHEST_FROM_DEATH).adjust_damage(0.8).tires(1.1)
+static var s_angry_punch_attack : AttackStats = AttackStats.create("Angry Punch", AttackStats.AttackTarget.FIRST_TWO).tires(1.1)
 
 static var s_species_goblin : UnitMod = create("Goblin").add_health(-40).set_icon(UnitStats.Icon.Goblin)
 static var s_occupation_guard : UnitMod = create("Guard").add_armor(5)
+static var s_occupation_guard_sgt : UnitMod = create("Sargent").add_armor(15).add_health(30).set_attack(s_angry_punch_attack).add_slowness(1)
 static var s_equipment_guard_gear : UnitMod = create("Rusty Sword").set_attack(s_rusty_sword_attack)
 	
 static var s_sling_attack : AttackStats = AttackStats.create("Sling", AttackStats.AttackTarget.ANY).adjust_damage(0.8).adjust_speed(0.9)
