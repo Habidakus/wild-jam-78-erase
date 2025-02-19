@@ -10,6 +10,11 @@ var attack_buttons : Array[Button]
 static func create(unit_stats : UnitStats) -> UnitGraphics:
 	var ret_val : UnitGraphics = our_scene.instantiate()
 	(ret_val.find_child("HealthBar") as Control).tooltip_text = unit_stats.create_tooltip()
+	var texture : Texture2D = unit_stats.get_texture()
+	if texture != null:
+		var sprite : Sprite2D = ret_val.find_child("Sprite2D") as Sprite2D
+		sprite.texture = texture
+		sprite.scale = Vector2(.678, .678)
 	return ret_val
 
 func _ready() -> void:

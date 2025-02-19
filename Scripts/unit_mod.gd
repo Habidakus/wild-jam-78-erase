@@ -6,11 +6,22 @@ var extra_armor : float = 0
 var extra_slowness : float = 0
 var attacks : Array[AttackStats]
 var naming_function : String
+var icon : UnitStats.Icon = UnitStats.Icon.UNSET
 
 static func create(mod_name : String) -> UnitMod:
 	var ret_val : UnitMod = UnitMod.new()
 	ret_val.elo_name = mod_name
 	return ret_val
+
+func has_icon() -> bool:
+	return icon != UnitStats.Icon.UNSET
+
+func get_icon() -> UnitStats.Icon:
+	return icon
+
+func set_icon(i : UnitStats.Icon) -> UnitMod:
+	icon = i
+	return self
 
 func add_health(amount : float) -> UnitMod:
 	extra_health += amount
@@ -102,11 +113,11 @@ static var s_equipment_guard_gear : UnitMod = create("Rusty Sword").set_attack(s
 static var s_sling_attack : AttackStats = AttackStats.create("Sling", AttackStats.AttackTarget.ANY).adjust_damage(0.8).adjust_speed(0.9)
 static var s_short_sword_attack : AttackStats = AttackStats.create("Short Sword", AttackStats.AttackTarget.FIRST_TWO).adjust_speed(0.95)
 
-static var s_species_human : UnitMod = create("Human").set_attack(s_short_sword_attack).set_namer("create_human_name")
-static var s_species_dwarf : UnitMod = create("Dwarf").add_health(35).add_armor(10).add_slowness(2).set_namer("create_dwarf_name")
+static var s_species_human : UnitMod = create("Human").set_attack(s_short_sword_attack).set_namer("create_human_name").set_icon(UnitStats.Icon.Human)
+static var s_species_dwarf : UnitMod = create("Dwarf").add_health(35).add_armor(10).add_slowness(2).set_namer("create_dwarf_name").set_icon(UnitStats.Icon.Dwarf)
 static var s_species_elf : UnitMod = create("Elf").add_slowness(-1.5).add_health(-10).set_namer("create_elf_name")
-static var s_species_halfling : UnitMod = create("Halfling").set_attack(s_sling_attack).add_health(-20).add_slowness(-2).set_namer("create_halfling_name")
-static var s_species_orc : UnitMod = create("Orc").add_health(70).add_slowness(2.25).set_namer("create_orc_name")
+static var s_species_halfling : UnitMod = create("Halfling").set_attack(s_sling_attack).add_health(-20).add_slowness(-2).set_namer("create_halfling_name").set_icon(UnitStats.Icon.Halfling)
+static var s_species_orc : UnitMod = create("Orc").add_health(70).add_slowness(2.25).set_namer("create_orc_name").set_icon(UnitStats.Icon.Orc)
 static var s_species_ratman : UnitMod = create("Ratman").add_health(-40).add_slowness(-3.25).set_namer("create_ratman_name")
 
 static func pick_random_species(rnd : RandomNumberGenerator) -> UnitMod:

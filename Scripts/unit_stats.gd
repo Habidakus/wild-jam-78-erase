@@ -1,6 +1,7 @@
 class_name UnitStats extends RefCounted
 
 enum Side { NEITHER, HUMAN, COMPUTER }
+enum Icon { UNSET, Dwarf, Halfling, Human, Orc }
 
 var id : int = -1
 var max_health : float
@@ -15,7 +16,9 @@ var next_attack : float
 var bleeding_ticks : int = 0
 var unit_name : String
 var side : UnitStats.Side
+var icon : Icon = Icon.UNSET
 var elo : Array[String]
+
 
 static var next_id : int = 1
 static var noise : RandomNumberGenerator = RandomNumberGenerator.new()
@@ -121,6 +124,22 @@ func create_tooltip() -> String:
 		ret_val += "Bleeding"
 	return ret_val
 
+const icon_human : Texture = preload("res://Art/Species_Human.png")
+const icon_dwarf : Texture = preload("res://Art/Species_Dwarf.png")
+const icon_halfling : Texture = preload("res://Art/Species_Halfling.png")
+const icon_orc : Texture = preload("res://Art/Species_Orc.png")
+func get_texture() -> Texture:
+	match icon:
+		UnitStats.Icon.Human:
+			return icon_human
+		UnitStats.Icon.Dwarf:
+			return icon_dwarf
+		UnitStats.Icon.Halfling:
+			return icon_halfling
+		UnitStats.Icon.Orc:
+			return icon_orc
+	return null
+
 func get_health_desc() -> String:
 	if is_alive():
 		var text : String = str(max(1, round(current_health))) + "/" + str(round(max_health))
@@ -160,6 +179,12 @@ func init(_species : UnitMod, _occupation : UnitMod, _equipment : UnitMod, _side
 	elo.append(_species.elo_name)
 	elo.append(_occupation.elo_name)
 	elo.append(_equipment.elo_name)
+	if _species.has_icon():
+		icon = _species.get_icon()
+	elif _occupation.has_icon():
+		icon = _occupation.get_icon()
+	elif _equipment.has_icon():
+		icon = _equipment.get_icon()
 	assert(attacks.filter(func(a : AttackStats) : return a.single_use).size() < 2)
 
 func clear_cooldowns() -> void:
