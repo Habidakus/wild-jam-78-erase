@@ -121,7 +121,7 @@ func generate_tooltip(target : UnitStats) -> String:
 		ret_val += ", single use"
 	if cooldown:
 		ret_val += ", cooldown"
-	if tiring > 0:
+	if tiring > 1:
 		ret_val += ", tiring"
 	if speed_multiple > 1:
 		ret_val += ", slow"

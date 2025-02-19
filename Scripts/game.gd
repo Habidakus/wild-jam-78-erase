@@ -51,7 +51,7 @@ func initialize_heroes() -> void:
 func initialize_foes() -> void:
 	foes.clear()
 	for i in range(0, 5):
-		foes.append(UnitStats.create_random(rnd, UnitStats.Side.COMPUTER))
+		foes.append(UnitStats.create_foes__goblin(rnd))
 
 func calculate_elo() -> void:
 	var human_calculus : String

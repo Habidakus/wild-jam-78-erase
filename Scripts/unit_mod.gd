@@ -92,6 +92,12 @@ static func create_halfling_name(rnd : RandomNumberGenerator) -> String:
 	const halfling_last_suffix : Array[String] = ["barrel", "belly", "button", "cheek", "finger", "foot", "farm", "leaf", "navel", "palm", "pants", "smoke", "stockings", "tater", "toe", "tooth", "tummy"]
 	ret_val += halfling_last_suffix[rnd.randi_range(0, halfling_last_suffix.size() - 1)]
 	return ret_val
+
+static var s_rusty_sword_attack : AttackStats = AttackStats.create("Rusty Sword", AttackStats.AttackTarget.TWO_FARTHEST_FROM_DEATH).adjust_damage(0.8).tires(1.1)
+
+static var s_species_goblin : UnitMod = create("Goblin").add_health(-40)
+static var s_occupation_guard : UnitMod = create("Guard").add_armor(5)
+static var s_equipment_guard_gear : UnitMod = create("Rusty Sword").set_attack(s_rusty_sword_attack)
 	
 static var s_sling_attack : AttackStats = AttackStats.create("Sling", AttackStats.AttackTarget.ANY).adjust_damage(0.8).adjust_speed(0.9)
 static var s_short_sword_attack : AttackStats = AttackStats.create("Short Sword", AttackStats.AttackTarget.FIRST_TWO).adjust_speed(0.95)
