@@ -126,7 +126,7 @@ static var s_attack_magic_missile : AttackStats = AttackStats.create("Zzzap", At
 static var s_attack_smash : AttackStats = AttackStats.create("Smash", AttackStats.AttackTarget.FARTHEST_FROM_DEATH).adjust_damage(1.55).adjust_speed(1.25)
 static var s_attack_heal : AttackStats = AttackStats.create("Heal", AttackStats.AttackTarget.CLOSEST_TO_DEATH).adjust_damage(1.25).set_on_allies().has_cooldown()
 static var s_attack_net : AttackStats = AttackStats.create("Net", AttackStats.AttackTarget.TWO_REAR_MOST).set_stun(0.95).adjust_damage(1)
-static var s_attack_blood_curse : AttackStats = AttackStats.create("Blood Curse", AttackStats.AttackTarget.TWO_FARTHEST_FROM_DEATH).set_bleed(5)
+static var s_attack_blood_curse : AttackStats = AttackStats.create("Blood Curse", AttackStats.AttackTarget.TWO_LEAST_ARMORED).set_bleed(5)
 static var s_attack_mace : AttackStats = AttackStats.create("Mace", AttackStats.AttackTarget.FRONT_MOST).adjust_damage(1.25).adjust_speed(1.15)
 
 static var s_occupation_knight : UnitMod = create("Knight").set_attack(s_attack_longsword).add_armor(7.5).add_slowness(1)
