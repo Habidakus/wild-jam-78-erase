@@ -162,7 +162,7 @@ static var s_attack_zweihander : AttackStats = AttackStats.create("Zweihander", 
 static var s_attack_shield : AttackStats = AttackStats.create("Shield Bash", AttackStats.AttackTarget.FRONT_MOST).adjust_damage(0.35).set_stun(0.5)
 
 static var s_equipment_shield : UnitMod = create("Shield").add_armor(5).set_attack(s_attack_shield)
-static var s_equipment_armor : UnitMod = create("Armor").add_armor(22.5).add_slowness(1)
+static var s_equipment_armor : UnitMod = create("Plate Mail").add_armor(22.5).add_slowness(1)
 static var s_equipment_halberd : UnitMod = create("Halberd").set_attack(s_attack_halberd)
 static var s_equipment_potion : UnitMod = create("Potion").set_attack(s_attack_potion)
 static var s_equipment_zweihander : UnitMod = create("Zweihander").set_attack(s_attack_zweihander)
