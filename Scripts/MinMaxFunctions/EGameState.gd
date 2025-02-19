@@ -97,13 +97,13 @@ func get_score() -> MMCScore:
 			if unit.side == who_just_went:
 				if unit.is_alive():
 					score.numerical_advantage += 1
-					score.health_advantage -= unit.current_health
+					score.health_advantage += unit.current_health
 					if our_lowest_health > unit.current_health:
 						our_lowest_health = unit.current_health
 			else:
 				if unit.is_alive():
 					score.numerical_advantage -= 1
-					score.health_advantage += unit.current_health
+					score.health_advantage -= unit.current_health
 					if their_lowest_health > unit.current_health:
 						their_lowest_health = unit.current_health
 		score.min_health_advantage = our_lowest_health - their_lowest_health
