@@ -7,7 +7,8 @@ var max_health : float
 var armor : float = 0
 var current_health : float
 var tired : float = 1
-var cooldown : int = 0
+var cooldown_id : int = -1
+var single_use : bool
 var attacks : Array[AttackStats]
 var slowness : float
 var next_attack : float
@@ -50,6 +51,37 @@ static func select_lowest(objs : Array[UnitStats], functor) -> UnitStats:
 			best_obj = obj
 	return best_obj
 
+static func select_two_lowest_amount(objs : Array[UnitStats], functor) -> Array[UnitStats]:
+	if objs.size() < 3:
+		return objs
+	var min_value : float
+	var best_obj : Object = null
+	var second_value : float
+	var second_obj : Object = null
+	for obj in objs:
+		var value : float = functor.call(obj)
+		if best_obj == null:
+			min_value = value
+			best_obj = obj
+		elif second_obj == null:
+			if value < min_value:
+				second_value = min_value
+				second_obj = best_obj
+				min_value = value
+				best_obj = obj
+			else:
+				second_value = value
+				second_obj = obj
+		elif value < min_value:
+			second_value = min_value
+			second_obj = best_obj
+			min_value = value
+			best_obj = obj
+		elif value < second_value:
+			second_value = value
+			second_obj = obj
+	return [best_obj, second_obj]
+
 func clone() -> UnitStats:
 	var ret_val : UnitStats = UnitStats.new()
 	ret_val.id = id
@@ -63,7 +95,8 @@ func clone() -> UnitStats:
 	ret_val.unit_name = unit_name
 	ret_val.side = side
 	ret_val.tired = tired
-	ret_val.cooldown = cooldown
+	ret_val.cooldown_id = cooldown_id
+	ret_val.single_use = single_use
 	return ret_val
 
 func create_tooltip() -> String:
@@ -94,10 +127,10 @@ func get_health_desc() -> String:
 func is_alive() -> bool:
 	return current_health > 0
 
-func get_moves(units : Array[UnitStats]) -> Array[MMCAction]:
+func get_moves(units : Array[UnitStats], allow_stupid_humans : bool) -> Array[MMCAction]:
 	var ret_val : Array[MMCAction]
 	for attack : AttackStats in attacks:
-		var actions : Array[MMCAction] = attack.get_moves(self, units)
+		var actions : Array[MMCAction] = attack.get_moves(self, units, allow_stupid_humans)
 		ret_val.append_array(actions)
 	return ret_val
 
@@ -121,21 +154,25 @@ func init(_species : UnitMod, _occupation : UnitMod, _equipment : UnitMod, _side
 	elo.append(_species.elo_name)
 	elo.append(_occupation.elo_name)
 	elo.append(_equipment.elo_name)
+	assert(attacks.filter(func(a : AttackStats) : return a.single_use).size() < 2)
+
+func clear_cooldowns() -> void:
+	cooldown_id = -1
+
+func has_cooldown(cid : int) -> bool:
+	return cid == cooldown_id
+
+func set_cooldown(cid : int) -> void:
+	cooldown_id = cid
+
+func set_single_use() -> void:
+	single_use = true
+
+func has_used() -> bool:
+	return single_use
 
 func add_attacks(_attacks : Array[AttackStats]) -> void:
 	attacks.append_array(_attacks)
-
-func init_old(_unit_name : String, health : float, _armor : float, _slowness : float, _side : UnitStats.Side) -> void:
-	id = next_id
-	next_id += 1
-
-	unit_name = _unit_name
-	max_health = health
-	current_health = health
-	armor = _armor
-	slowness = _slowness
-	side = _side
-	next_attack = _slowness + noise.randf_range(0, 0.01)
 
 func get_time_until_action() -> float:
 	return next_attack

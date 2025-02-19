@@ -343,7 +343,7 @@ func run_one_turn() -> void:
 		return
 	
 	if !combat_state_machine_state.has_human_moves():
-		var human_moves : Array[MMCAction] = game_state.get_moves()
+		var human_moves : Array[MMCAction] = game_state.get_human_moves()
 		assert(human_moves != null)
 		if human_moves.size() == 1:
 			var emove : EAction = human_moves[0] as EAction

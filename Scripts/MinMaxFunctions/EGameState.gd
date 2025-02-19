@@ -69,7 +69,20 @@ func get_moves() -> Array[MMCAction]:
 			action.resulting_state = apply_action(action)
 			moves.append(action)
 		else:
-			moves = unit_to_go_next.get_moves(units)
+			moves = unit_to_go_next.get_moves(units, false)
+			for action : MMCAction in moves:
+				(action as EAction).resulting_state = apply_action(action)
+	return moves
+
+func get_human_moves() -> Array[MMCAction]:
+	if moves.is_empty():
+		var unit_to_go_next : UnitStats = UnitStats.select_lowest(units.filter(func(a : UnitStats) : return a.is_alive()), func(a : UnitStats) : return a.get_time_until_action())
+		if unit_to_go_next == null || unit_to_go_next.side == who_just_went: # Otherside will just have to pass
+			var action : EAction = EAction.create_pass()
+			action.resulting_state = apply_action(action)
+			moves.append(action)
+		else:
+			moves = unit_to_go_next.get_moves(units, true)
 			for action : MMCAction in moves:
 				(action as EAction).resulting_state = apply_action(action)
 	return moves

@@ -93,8 +93,8 @@ static func create_halfling_name(rnd : RandomNumberGenerator) -> String:
 	ret_val += halfling_last_suffix[rnd.randi_range(0, halfling_last_suffix.size() - 1)]
 	return ret_val
 	
-static var s_sling_attack : AttackStats = AttackStats.create("Sling", AttackStats.AttackTarget.ANY).adjust_damage(0.8)
-static var s_short_sword_attack : AttackStats = AttackStats.create("Short Sword", AttackStats.AttackTarget.FRONT_MOST).adjust_speed(0.95)
+static var s_sling_attack : AttackStats = AttackStats.create("Sling", AttackStats.AttackTarget.ANY).adjust_damage(0.8).adjust_speed(0.9)
+static var s_short_sword_attack : AttackStats = AttackStats.create("Short Sword", AttackStats.AttackTarget.FIRST_TWO).adjust_speed(0.95)
 
 static var s_species_human : UnitMod = create("Human").set_attack(s_short_sword_attack).set_namer("create_human_name")
 static var s_species_dwarf : UnitMod = create("Dwarf").add_health(35).add_armor(10).add_slowness(2).set_namer("create_dwarf_name")
@@ -121,12 +121,12 @@ static func pick_random_species(rnd : RandomNumberGenerator) -> UnitMod:
 	return null
 
 static var s_attack_longsword : AttackStats = AttackStats.create("Longsword", AttackStats.AttackTarget.CLOSEST_TO_DEATH).adjust_speed(1.1)
-static var s_attack_backstab : AttackStats = AttackStats.create("Dagger", AttackStats.AttackTarget.MOST_VULNERABLE).adjust_speed(0.9).adjust_damage(0.9)
-static var s_attack_magic_missile : AttackStats = AttackStats.create("Zzzap", AttackStats.AttackTarget.ANY).adjust_damage(0.935).adjust_speed(0.95)
+static var s_attack_backstab : AttackStats = AttackStats.create("Backstab", AttackStats.AttackTarget.MOST_VULNERABLE).adjust_speed(0.9).adjust_damage(0.9)
+static var s_attack_magic_missile : AttackStats = AttackStats.create("Zzzap", AttackStats.AttackTarget.ANY).adjust_damage(0.95)
 static var s_attack_smash : AttackStats = AttackStats.create("Smash", AttackStats.AttackTarget.FARTHEST_FROM_DEATH).adjust_damage(1.55).adjust_speed(1.25)
-static var s_attack_heal : AttackStats = AttackStats.create("Heal", AttackStats.AttackTarget.CLOSEST_TO_DEATH).adjust_damage(1.25).set_on_allies().has_cooldown(1)
-static var s_attack_net : AttackStats = AttackStats.create("Net", AttackStats.AttackTarget.REAR_MOST).set_stun(0.95).adjust_damage(1)
-static var s_attack_blood_curse : AttackStats = AttackStats.create("Blood Curse", AttackStats.AttackTarget.FARTHEST_FROM_DEATH).set_bleed(5)
+static var s_attack_heal : AttackStats = AttackStats.create("Heal", AttackStats.AttackTarget.CLOSEST_TO_DEATH).adjust_damage(1.25).set_on_allies().has_cooldown()
+static var s_attack_net : AttackStats = AttackStats.create("Net", AttackStats.AttackTarget.TWO_REAR_MOST).set_stun(0.95).adjust_damage(1)
+static var s_attack_blood_curse : AttackStats = AttackStats.create("Blood Curse", AttackStats.AttackTarget.TWO_FARTHEST_FROM_DEATH).set_bleed(5)
 static var s_attack_mace : AttackStats = AttackStats.create("Mace", AttackStats.AttackTarget.FRONT_MOST).adjust_damage(1.25).adjust_speed(1.15)
 
 static var s_occupation_knight : UnitMod = create("Knight").set_attack(s_attack_longsword).add_armor(7.5).add_slowness(1)
@@ -151,12 +151,12 @@ static func pick_random_occupation(rnd : RandomNumberGenerator) -> UnitMod:
 			return s_occupation_retiarius
 		5:
 			return s_occupation_warlock
-		6: # CAN'T ADD CLERIC UNTIL THEY GET A DEFAULT ATTACK
+		6:
 			return s_occupation_cleric
 	assert(false)
 	return null
 
-static var s_attack_potion : AttackStats = AttackStats.create("Potion", AttackStats.AttackTarget.SELF).adjust_damage(2.5).set_on_allies().tires(1.2).has_cooldown(1)
+static var s_attack_potion : AttackStats = AttackStats.create("Potion", AttackStats.AttackTarget.SELF).adjust_damage(2.5).set_on_allies().has_single_use()
 static var s_attack_halberd : AttackStats = AttackStats.create("Halberd", AttackStats.AttackTarget.FRONT_MOST).set_armor_piercing().adjust_damage(1.15).adjust_speed(1.25)
 static var s_attack_zweihander : AttackStats = AttackStats.create("Zweihander", AttackStats.AttackTarget.FRONT_MOST).adjust_damage(2).adjust_speed(2.2).tires(1.085)
 static var s_attack_shield : AttackStats = AttackStats.create("Shield Bash", AttackStats.AttackTarget.FRONT_MOST).adjust_damage(0.35).set_stun(0.5)
