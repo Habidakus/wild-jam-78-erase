@@ -1,0 +1,11 @@
+- Credits page
+- Shops
+- Chests
+- Hero Advancement
+- Other foes besides goblins
+- Make waves 2 & 3 harder than wave 1
+- UI sounds
+- attack sounds
+- Replace targetting lines with particles
+- Add monster & hero attack "animations"
+- Add win condition
