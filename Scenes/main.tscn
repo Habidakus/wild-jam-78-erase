@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://b5t3tpb66grx0"]
+[gd_scene load_steps=21 format=3 uid="uid://b5t3tpb66grx0"]
 
 [ext_resource type="Script" path="res://addons/statemachine/StateMachine.gd" id="1_p7e6l"]
 [ext_resource type="Script" path="res://addons/statemachine/StateMachineState_AnyKeyToContinue.gd" id="2_mqr82"]
@@ -9,6 +9,7 @@
 [ext_resource type="Script" path="res://Scripts/loop_exposition.gd" id="5_m5uv5"]
 [ext_resource type="Script" path="res://Scripts/gamestate_combat.gd" id="7_pp03m"]
 [ext_resource type="Script" path="res://Scripts/gamestate_postcombat.gd" id="8_ew0y7"]
+[ext_resource type="Shader" path="res://Art/flowShader.gdshader" id="8_ownyo"]
 [ext_resource type="Script" path="res://Scripts/gamestate_pathselection.gd" id="9_8hvbj"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_68cc5"]
@@ -20,6 +21,36 @@ outline_color = Color(0.00184107, 0.00184107, 0.00184107, 1)
 font_size = 32
 outline_size = 4
 outline_color = Color(0, 0, 0, 1)
+
+[sub_resource type="Gradient" id="Gradient_s2ytp"]
+offsets = PackedFloat32Array(0, 0.0429448, 0.434049, 1)
+colors = PackedColorArray(0.299968, 0.511606, 1, 1, 0.317647, 0.317647, 1, 1, 0.597176, 0.597176, 0.597176, 1, 0.654232, 0.654232, 0.654232, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_6k8i5"]
+gradient = SubResource("Gradient_s2ytp")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_1cu4s"]
+noise_type = 4
+seed = 1
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_xs4ou"]
+width = 32
+height = 32
+noise = SubResource("FastNoiseLite_1cu4s")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_1p02u"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_yjbvs"]
+width = 32
+height = 32
+noise = SubResource("FastNoiseLite_1p02u")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_bmtss"]
+shader = ExtResource("8_ownyo")
+shader_parameter/speed = 0.1
+shader_parameter/color_gradient = SubResource("GradientTexture1D_6k8i5")
+shader_parameter/noiseX = SubResource("NoiseTexture2D_xs4ou")
+shader_parameter/noiseY = SubResource("NoiseTexture2D_yjbvs")
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -153,7 +184,6 @@ grow_vertical = 0
 text = "(hit any key to continue)"
 
 [node name="Combat" type="Control" parent="OverStateMachine/Game/GameStateMachine"]
-visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -181,11 +211,20 @@ text = "Turn Order:"
 label_settings = SubResource("LabelSettings_oxvky")
 horizontal_alignment = 1
 
-[node name="TripSheet" type="VBoxContainer" parent="OverStateMachine/Game/GameStateMachine/Combat/HBoxContainer/VBoxContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="OverStateMachine/Game/GameStateMachine/Combat/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="TripSheet" type="VBoxContainer" parent="OverStateMachine/Game/GameStateMachine/Combat/HBoxContainer/VBoxContainer/MarginContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 
 [node name="Arena" type="ColorRect" parent="OverStateMachine/Game/GameStateMachine/Combat/HBoxContainer"]
+material = SubResource("ShaderMaterial_bmtss")
 layout_mode = 2
 size_flags_horizontal = 3
 
