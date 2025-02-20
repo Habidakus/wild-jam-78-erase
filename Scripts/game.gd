@@ -10,13 +10,14 @@ var game_state : EGameState = null
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	rnd.seed = 4115
+	rnd.seed = 41151
 	combat_state_machine_state = find_child("Combat") as SMSCombat
 	combat_state_machine_state.init(self)
 	path_state_machine_state = find_child("PathSelection") as SMSPath
 	path_state_machine_state.init(self, rnd)
 	find_child("PreGame").init(self)
 	find_child("PostCombat").init(self)
+	find_child("LoopExposition").init(self, rnd)
 
 var hero_cgs : EGameState.CalculusGetScore
 var foe_cgs : EGameState.CalculusGetScore
@@ -388,7 +389,7 @@ func all_path_encounter_stats_at_depth(depth : int) -> Array[PathEncounterStat]:
 
 func initialize_path(_rnd: RandomNumberGenerator) -> void:
 	assert(game_path.is_empty())
-	const path_depth : int = 6
+	const path_depth : int = 3 # 6
 	const path_width : int = 4
 	var wiggle_range : Vector2 = Vector2(0.15 / float(path_depth + 2.0), 0.15 / float(path_width + 2.0))
 	for d : int in range(0, path_depth):

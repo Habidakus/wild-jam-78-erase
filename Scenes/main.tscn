@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://b5t3tpb66grx0"]
+[gd_scene load_steps=22 format=3 uid="uid://b5t3tpb66grx0"]
 
 [ext_resource type="Script" path="res://addons/statemachine/StateMachine.gd" id="1_p7e6l"]
 [ext_resource type="Script" path="res://addons/statemachine/StateMachineState_AnyKeyToContinue.gd" id="2_mqr82"]
@@ -11,6 +11,7 @@
 [ext_resource type="Script" path="res://Scripts/gamestate_postcombat.gd" id="8_ew0y7"]
 [ext_resource type="Shader" path="res://Art/flowShader.gdshader" id="8_ownyo"]
 [ext_resource type="Script" path="res://Scripts/gamestate_pathselection.gd" id="9_8hvbj"]
+[ext_resource type="Texture2D" uid="uid://bw12xauevdwyr" path="res://Art/Chronotyrant.png" id="12_dih5f"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_68cc5"]
 font_size = 128
@@ -24,7 +25,7 @@ outline_color = Color(0, 0, 0, 1)
 
 [sub_resource type="Gradient" id="Gradient_s2ytp"]
 offsets = PackedFloat32Array(0, 0.0429448, 0.434049, 1)
-colors = PackedColorArray(0.299968, 0.511606, 1, 1, 0.317647, 0.317647, 1, 1, 0.597176, 0.597176, 0.597176, 1, 0.654232, 0.654232, 0.654232, 1)
+colors = PackedColorArray(0.299968, 0.511606, 1, 1, 0.317647, 0.317647, 1, 1, 0.991639, 0.000291287, 0.874453, 1, 0.931212, 0.549048, 0, 1)
 
 [sub_resource type="GradientTexture1D" id="GradientTexture1D_6k8i5"]
 gradient = SubResource("Gradient_s2ytp")
@@ -156,16 +157,22 @@ grow_vertical = 2
 script = ExtResource("5_m5uv5")
 next_state = NodePath("../Combat")
 
-[node name="RichTextLabel" type="RichTextLabel" parent="OverStateMachine/Game/GameStateMachine/LoopExposition"]
+[node name="MarginContainer" type="MarginContainer" parent="OverStateMachine/Game/GameStateMachine/LoopExposition"]
 layout_mode = 1
-anchors_preset = 14
-anchor_top = 0.5
+anchors_preset = 15
 anchor_right = 1.0
-anchor_bottom = 0.5
-offset_top = -11.5
-offset_bottom = 11.5
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 40
+
+[node name="RichTextLabel" type="RichTextLabel" parent="OverStateMachine/Game/GameStateMachine/LoopExposition/MarginContainer"]
+layout_mode = 2
+theme_override_font_sizes/normal_font_size = 22
+bbcode_enabled = true
 text = "Your team has been through much... prevailing against all odds to overthrow the rule of the brutal Chronotyrant."
 fit_content = true
 
@@ -184,6 +191,7 @@ grow_vertical = 0
 text = "(hit any key to continue)"
 
 [node name="Combat" type="Control" parent="OverStateMachine/Game/GameStateMachine"]
+visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -248,7 +256,6 @@ grow_vertical = 2
 script = ExtResource("9_8hvbj")
 
 [node name="BossBattle" type="Control" parent="OverStateMachine/Game/GameStateMachine"]
-visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -256,6 +263,75 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("4_jdfnt")
+
+[node name="Arena" type="ColorRect" parent="OverStateMachine/Game/GameStateMachine/BossBattle"]
+material = SubResource("ShaderMaterial_bmtss")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+
+[node name="Sprite2D" type="Sprite2D" parent="OverStateMachine/Game/GameStateMachine/BossBattle"]
+position = Vector2(890, 239)
+texture = ExtResource("12_dih5f")
+
+[node name="Panel" type="ReferenceRect" parent="OverStateMachine/Game/GameStateMachine/BossBattle"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -482.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="OverStateMachine/Game/GameStateMachine/BossBattle/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 30
+theme_override_constants/margin_top = 30
+theme_override_constants/margin_right = 30
+theme_override_constants/margin_bottom = 30
+
+[node name="ColorRect" type="ColorRect" parent="OverStateMachine/Game/GameStateMachine/BossBattle/Panel/MarginContainer"]
+visible = false
+layout_mode = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="OverStateMachine/Game/GameStateMachine/BossBattle/Panel/MarginContainer"]
+layout_mode = 2
+theme_override_colors/default_color = Color(0, 0, 0, 1)
+theme_override_colors/font_selected_color = Color(0, 0, 0, 1)
+theme_override_colors/selection_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/normal_font_size = 24
+bbcode_enabled = true
+text = "\"You fools! You think you can defeat me? Me?! With your oh so mortal lives? Muhahaha!
+
+How you posture and lecture about what is good, and moral? To me? Me?!
+
+I have the power of time itself! I shall simply jump through this time portal here and start my life of conquest again. And you think you can follow me? Me?! Why, one of you would have to sacrifice their [b]VERY EXISTANCE[/b] to do so. A fate worse than death, because you wouldn't have ever existed [b]AT ALL[/b].
+
+Muhahaha!\"
+
+[center]... and with that the Chronomancer
+lept through his time portal.[/center]"
+
+[node name="Label" type="Label" parent="OverStateMachine/Game/GameStateMachine/BossBattle"]
+layout_mode = 0
+offset_left = 670.0
+offset_top = 414.0
+offset_right = 1132.0
+offset_bottom = 528.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 48
+text = "The Chronotyrant"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Misc" type="Control" parent="OverStateMachine/Game/GameStateMachine"]
 visible = false
