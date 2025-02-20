@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://b5t3tpb66grx0"]
+[gd_scene load_steps=23 format=3 uid="uid://b5t3tpb66grx0"]
 
 [ext_resource type="Script" path="res://addons/statemachine/StateMachine.gd" id="1_p7e6l"]
 [ext_resource type="Script" path="res://addons/statemachine/StateMachineState_AnyKeyToContinue.gd" id="2_mqr82"]
@@ -11,6 +11,7 @@
 [ext_resource type="Script" path="res://Scripts/gamestate_postcombat.gd" id="8_ew0y7"]
 [ext_resource type="Shader" path="res://Art/flowShader.gdshader" id="8_ownyo"]
 [ext_resource type="Script" path="res://Scripts/gamestate_pathselection.gd" id="9_8hvbj"]
+[ext_resource type="Script" path="res://Scenes/gamestate_bossbattle.gd" id="11_ytujf"]
 [ext_resource type="Texture2D" uid="uid://bw12xauevdwyr" path="res://Art/Chronotyrant.png" id="12_dih5f"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_68cc5"]
@@ -262,7 +263,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("4_jdfnt")
+script = ExtResource("11_ytujf")
 
 [node name="Arena" type="ColorRect" parent="OverStateMachine/Game/GameStateMachine/BossBattle"]
 material = SubResource("ShaderMaterial_bmtss")
@@ -299,12 +300,13 @@ theme_override_constants/margin_top = 30
 theme_override_constants/margin_right = 30
 theme_override_constants/margin_bottom = 30
 
-[node name="ColorRect" type="ColorRect" parent="OverStateMachine/Game/GameStateMachine/BossBattle/Panel/MarginContainer"]
-visible = false
+[node name="Rant" type="Control" parent="OverStateMachine/Game/GameStateMachine/BossBattle/Panel/MarginContainer"]
 layout_mode = 2
 
-[node name="RichTextLabel" type="RichTextLabel" parent="OverStateMachine/Game/GameStateMachine/BossBattle/Panel/MarginContainer"]
+[node name="RichTextLabel" type="RichTextLabel" parent="OverStateMachine/Game/GameStateMachine/BossBattle/Panel/MarginContainer/Rant"]
 layout_mode = 2
+offset_right = 610.0
+offset_bottom = 588.0
 theme_override_colors/default_color = Color(0, 0, 0, 1)
 theme_override_colors/font_selected_color = Color(0, 0, 0, 1)
 theme_override_colors/selection_color = Color(0, 0, 0, 1)
@@ -320,6 +322,33 @@ Muhahaha!\"
 
 [center]... and with that the Chronomancer
 lept through his time portal.[/center]"
+
+[node name="Choice" type="Control" parent="OverStateMachine/Game/GameStateMachine/BossBattle/Panel/MarginContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="OverStateMachine/Game/GameStateMachine/BossBattle/Panel/MarginContainer/Choice"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="OverStateMachine/Game/GameStateMachine/BossBattle/Panel/MarginContainer/Choice/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 24
+text = "Which of the brave heroes will sacrifice
+ their very existance to hold the portal open?"
+horizontal_alignment = 1
+
+[node name="HeroBox" type="VBoxContainer" parent="OverStateMachine/Game/GameStateMachine/BossBattle/Panel/MarginContainer/Choice/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 3
+alignment = 1
 
 [node name="Label" type="Label" parent="OverStateMachine/Game/GameStateMachine/BossBattle"]
 layout_mode = 0

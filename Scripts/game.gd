@@ -18,6 +18,7 @@ func _ready() -> void:
 	find_child("PreGame").init(self)
 	find_child("PostCombat").init(self)
 	find_child("LoopExposition").init(self, rnd)
+	find_child("BossBattle").init(self)
 
 var hero_cgs : EGameState.CalculusGetScore
 var foe_cgs : EGameState.CalculusGetScore
@@ -60,6 +61,11 @@ func initialize_foes() -> void:
 	for i in range(0, 5):
 		foes.append(UnitStats.create_foes__goblin(rnd, i == 1))
 	print("Foes count = " + str(foes.size()))
+
+func destroy_hero(hero : UnitStats) -> void:
+	heroes = heroes.filter(func(a : UnitStats) : return a.id != hero.id)
+	current_path_encounter_stat = game_path.filter(func(a : PathEncounterStat) : return a.graph_pos == Vector2i.ZERO)[0]
+	path_state_machine_state.our_state_machine.switch_state("LoopExposition")
 
 func calculate_elo() -> void:
 	var human_calculus : String

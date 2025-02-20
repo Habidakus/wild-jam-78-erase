@@ -15,7 +15,7 @@ var pre_castle_events : Array[Array] = [
 	],
 	[
 		"NAME decyphered the puzzle of the Staedtler Labyrinth, leading you to freedom.",
-		"The craven Staedtler Oracles, decieved by a false prophecy, locked you away in their labyrinth - your liberty gained only earned when they died from internecine fighting."
+		"The craven Staedtler Oracles, decieved by a false prophecy, locked you away in their labyrinth - your liberty gained only when they died from internecine fighting."
 	],
 	[
 		"NAME defeated the greedy Governor Tombow in a personal challenge match.",
