@@ -10,7 +10,7 @@ var game_state : EGameState = null
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	rnd.seed = 411
+	rnd.seed = 4115
 	combat_state_machine_state = find_child("Combat") as SMSCombat
 	combat_state_machine_state.init(self)
 	path_state_machine_state = find_child("PathSelection") as SMSPath
@@ -48,10 +48,17 @@ func initialize_heroes() -> void:
 	for i in range(0, 5):
 		heroes.append(UnitStats.create_random(rnd, UnitStats.Side.HUMAN))
 
+func preserve_heroes() -> void:
+	for i in range(0, heroes.size()):
+		var current_hero : UnitStats = game_state.get_unit_by_id(heroes[i].id)
+		heroes[i].prepare_for_next_battle(current_hero)
+
 func initialize_foes() -> void:
+	print("Clearing foes")
 	foes.clear()
 	for i in range(0, 5):
 		foes.append(UnitStats.create_foes__goblin(rnd, i == 1))
+	print("Foes count = " + str(foes.size()))
 
 func calculate_elo() -> void:
 	var human_calculus : String
@@ -134,7 +141,8 @@ func calculate_elo() -> void:
 			update_elo(elo_name, computer_mod * K)
 	
 	dump_elo()
-	
+
+func clean_up_game_state() -> void:	
 	game_state.release()
 	game_state = null
 
@@ -412,5 +420,8 @@ func initialize_path(_rnd: RandomNumberGenerator) -> void:
 		needs_paths[0].add_paths(game_path, _rnd)
 		needs_paths.remove_at(0)
 		needs_paths = game_path.filter(func(a : PathEncounterStat) : return a.needs_paths())
+	for entry : PathEncounterStat in game_path:
+		if entry.encounter_type == PathEncounterStat.EncounterType.UNDEFINED:
+			entry.encounter_type = PathEncounterStat.EncounterType.REGULAR_FIGHT
 	path_state_machine_state.place_paths()
 	current_path_encounter_stat = start_pes

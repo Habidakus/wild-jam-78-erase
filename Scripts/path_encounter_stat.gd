@@ -1,6 +1,6 @@
 class_name PathEncounterStat extends RefCounted
 
-enum EncounterType { UNDEFINED, GATE_FIGHT, CRONOTYRANT, REGULAR_FIGHT, MISC}
+enum EncounterType { UNDEFINED, GATE_FIGHT, CRONOTYRANT, REGULAR_FIGHT, MISC, CHEST}
 
 var encounter_type : EncounterType = EncounterType.UNDEFINED
 var graph_pos : Vector2i
@@ -9,6 +9,20 @@ var sort_value : float
 var title : String = "???"
 var west : Array[PathEncounterStat]
 var east : Array[PathEncounterStat]
+
+const combat_texture : Texture = preload("res://Art/TwoSwords.png")
+const chest_texture : Texture = preload("res://Art/Chest.png")
+const cronotyrant_texture : Texture = preload("res://Art/Hourglass.png")
+
+func get_icon() -> Texture:
+	if encounter_type == EncounterType.GATE_FIGHT || encounter_type == EncounterType.REGULAR_FIGHT:
+		return combat_texture
+	elif encounter_type == EncounterType.CRONOTYRANT:
+		return cronotyrant_texture
+	elif encounter_type == EncounterType.CHEST:
+		return chest_texture
+	else:
+		return null
 
 func init(x : int, y : int, pos : Vector2, _sort_value : float) -> void:
 	graph_pos = Vector2i(x, y)

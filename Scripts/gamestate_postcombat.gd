@@ -8,6 +8,8 @@ func init(_game : Game) -> void:
 func enter_state() -> void:
 	super.enter_state()
 	game.calculate_elo()
-	game.initialize_heroes()
+	game.preserve_heroes()
+	game.clean_up_game_state()
+	#game.initialize_heroes()
 	our_state_machine.switch_state("PathSelection")
 	

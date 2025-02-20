@@ -95,6 +95,9 @@ static func select_two_lowest_amount(objs : Array[UnitStats], functor) -> Array[
 			second_obj = obj
 	return [best_obj, second_obj]
 
+func prepare_for_next_battle(post_battle_version : UnitStats) -> void:
+	current_health = post_battle_version.current_health
+
 func clone() -> UnitStats:
 	var ret_val : UnitStats = UnitStats.new()
 	ret_val.id = id

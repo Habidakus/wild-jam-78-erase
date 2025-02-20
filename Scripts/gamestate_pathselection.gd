@@ -60,13 +60,19 @@ func gui_input(event: InputEvent, path_encounter_stat : PathEncounterStat) -> vo
 		return
 		
 	if game.current_path_encounter_stat.east.has(path_encounter_stat):
-		print("CLICKED on " + str(path_encounter_stat.graph_pos))
+		game.current_path_encounter_stat = path_encounter_stat
+		our_state_machine.switch_state("Combat")
 
 var graphic_nodes : Dictionary # <PathEncounterStat, Control>
 func place_paths() -> void:
 	for path_encounter_stat : PathEncounterStat in game.game_path:
 		var graphic : Control = path_graphic_scene.instantiate()
 		(graphic.find_child("Label") as Label).text = path_encounter_stat.title
+		var texture : Texture = path_encounter_stat.get_icon()
+		if texture != null:
+			var sprite : Sprite2D = (graphic.find_child("Sprite2D") as Sprite2D)
+			sprite.texture = texture
+			sprite.show()
 		add_child(graphic)
 		graphic.global_position = path_encounter_stat.map_pos * self.size
 		graphic_nodes[path_encounter_stat] = graphic
