@@ -10,7 +10,7 @@ var game_state : EGameState = null
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	rnd.seed = 6
+	rnd.seed = 61
 	combat_state_machine_state = find_child("Combat") as SMSCombat
 	combat_state_machine_state.init(self)
 	path_state_machine_state = find_child("PathSelection") as SMSPath
@@ -195,27 +195,57 @@ func ready_trip_sheet() -> void:
 		(trip_sheet_labels[unitID] as Label).queue_free()
 	trip_sheet_labels.clear()
 
+var ghost_trip_sheet_pos : Dictionary # <unit ID, future move time>
+
 func update_trip_sheet() -> void:
 	var trip_sheet : VBoxContainer = find_child("TripSheet") as VBoxContainer
 	var sort_order : Array
 	for unit : UnitStats in game_state.units:
-		if !trip_sheet_labels.has(unit.id):
-			var label : Label = Label.new()
-			label.label_settings = LabelSettings.new()
-			label.label_settings.font_color = Color.SKY_BLUE if unit.side == UnitStats.Side.HUMAN else Color.PALE_VIOLET_RED
-			label.label_settings.font_size = 20
-			label.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
-			label.size_flags_vertical = Control.SIZE_EXPAND_FILL
-			label.size_flags_stretch_ratio = 2
-			label.text = unit.unit_name
-			trip_sheet_labels[unit.id] = label
-		var unit_label : Label = trip_sheet_labels[unit.id]
-		if trip_sheet.get_children().has(unit_label):
-			trip_sheet.remove_child(unit_label)
-		if !unit.is_alive():
-			unit_label.hide()
-		else:
-			sort_order.append([unit.next_attack, unit.id])
+		for is_ghost : bool in [false, true]:
+			if is_ghost:
+				if ghost_trip_sheet_pos.has(unit.id):
+					var ghost_id : int = 0 - unit.id
+					if !trip_sheet_labels.has(ghost_id):
+						assert(unit.is_alive())
+						var label : Label = Label.new()
+						label.label_settings = LabelSettings.new()
+						label.label_settings.font_color = Color.SKY_BLUE if unit.side == UnitStats.Side.HUMAN else Color.PALE_VIOLET_RED
+						label.label_settings.font_color.a = 0.75
+						label.label_settings.font_size = 20
+						label.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
+						label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+						label.size_flags_vertical = Control.SIZE_EXPAND_FILL
+						label.size_flags_stretch_ratio = 2
+						label.text = unit.unit_name
+						trip_sheet_labels[ghost_id] = label
+					var unit_label : Label = trip_sheet_labels[ghost_id]
+					if trip_sheet.get_children().has(unit_label):
+						trip_sheet.remove_child(unit_label)
+					sort_order.append([ghost_trip_sheet_pos[unit.id], ghost_id])
+				else:
+					var ghost_id : int = 0 - unit.id
+					if trip_sheet_labels.has(ghost_id):
+						var ghost_label : Label = trip_sheet_labels[ghost_id]
+						if trip_sheet.get_children().has(ghost_label):
+							trip_sheet.remove_child(ghost_label)
+			else:
+				if !trip_sheet_labels.has(unit.id):
+					var label : Label = Label.new()
+					label.label_settings = LabelSettings.new()
+					label.label_settings.font_color = Color.SKY_BLUE if unit.side == UnitStats.Side.HUMAN else Color.PALE_VIOLET_RED
+					label.label_settings.font_size = 20
+					label.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
+					label.size_flags_vertical = Control.SIZE_EXPAND_FILL
+					label.size_flags_stretch_ratio = 2
+					label.text = unit.unit_name
+					trip_sheet_labels[unit.id] = label
+				var unit_label : Label = trip_sheet_labels[unit.id]
+				if trip_sheet.get_children().has(unit_label):
+					trip_sheet.remove_child(unit_label)
+				if !unit.is_alive():
+					unit_label.hide()
+				else:
+					sort_order.append([unit.next_attack, unit.id])
 	if sort_order.is_empty():
 		return
 	sort_order.sort_custom(func(a, b) : return a[0] < b[0])
@@ -403,8 +433,26 @@ func run_one_turn() -> void:
 		combat_state_machine_state.set_human_moves(human_moves, hover_callback, click_callback)
 
 func human_hover_over_action(b : bool, move : EAction) -> void:
+	
 	if b:
 		var dmg : float = game_state.get_unit_by_id(move.targetID).calculate_damage_from_attack(move.attack)
+		var actor : UnitStats = game_state.get_unit_by_id(move.actorID)
+		ghost_trip_sheet_pos[move.actorID] = actor.next_attack + move.attack.get_cost_in_time(actor)
+		
+		var target : UnitStats = game_state.get_unit_by_id(move.targetID)
+		var target_slow : float = move.attack.get_cost_in_time_for_target(target)
+		if target_slow > 0:
+			ghost_trip_sheet_pos[move.targetID] = target.next_attack + target_slow
+			
+		update_trip_sheet()
+	else:
+		ghost_trip_sheet_pos.erase(move.actorID)
+		assert(!ghost_trip_sheet_pos.has(move.actorID))
+		if ghost_trip_sheet_pos.has(move.targetID):
+			ghost_trip_sheet_pos.erase(move.targetID)
+		update_trip_sheet()
+		
+		#var ghost_trip_sheet_pos : Dictionary # <unit ID, future move time>
 		#print(move.attack.attack_name + " for " + str(round(dmg * 10) / 10) + " damage.")
 
 func human_click_on_action(move : EAction) -> void:

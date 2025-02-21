@@ -113,9 +113,9 @@ func clone() -> UnitStats:
 	ret_val.tired = tired
 	ret_val.cooldown_id = cooldown_id
 	ret_val.single_use = single_use
+	ret_val.unit_name = unit_name # We need this for the trip sheet
 	
 	# The following members should need to be cloned while evaluating future turns
-	# ret_val.unit_name = unit_name
 	# ret_val.skill_class
 	# ret_val.skills
 	

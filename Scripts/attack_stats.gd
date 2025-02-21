@@ -150,16 +150,25 @@ func get_moves(actor : UnitStats, units : Array[UnitStats], allow_stupid_humans 
 	for target : UnitStats in valid_targets:
 		ret_val.append(EAction.create(actor, target, self))
 	return ret_val
+	
+func get_cost_in_time(actor : UnitStats) -> float:
+	if tiring > 1:
+		return speed_multiple * actor.slowness * actor.tired
+	else:
+		return speed_multiple * actor.slowness
+
+func get_cost_in_time_for_target(target : UnitStats) -> float:
+	if stun > 0:
+		return damage * stun
+	else:
+		return 0
 
 func apply(actor : UnitStats, target : UnitStats) -> void:
+	actor.next_attack += get_cost_in_time(actor)
 	if tiring > 1:
-		actor.next_attack += speed_multiple * actor.slowness * actor.tired
 		actor.tired *= tiring
-	else:
-		actor.next_attack += speed_multiple * actor.slowness
 
-	if stun > 0:
-		target.next_attack += damage * stun
+	target.next_attack += get_cost_in_time_for_target(target)
 
 	var new_bleed_ticks : bool = true if bleed_ticks > 0 && bleed_ticks > target.bleeding_ticks else false
 	var dmg : float = target.calculate_damage_from_attack(self)
