@@ -7,11 +7,16 @@ var extra_slowness : float = 0
 var attacks : Array[AttackStats]
 var naming_function : String
 var icon : UnitStats.Icon = UnitStats.Icon.UNSET
+var skill_class : SkillStats.SkillClass = SkillStats.SkillClass.NONE
 
 static func create(mod_name : String) -> UnitMod:
 	var ret_val : UnitMod = UnitMod.new()
 	ret_val.elo_name = mod_name
 	return ret_val
+
+func set_skill_class(_class : SkillStats.SkillClass) -> UnitMod:
+	skill_class = _class
+	return self
 
 func has_icon() -> bool:
 	return icon != UnitStats.Icon.UNSET
@@ -148,13 +153,13 @@ static var s_attack_net : AttackStats = AttackStats.create("Net", AttackStats.At
 static var s_attack_blood_curse : AttackStats = AttackStats.create("Blood Curse", AttackStats.AttackTarget.TWO_LEAST_ARMORED).set_bleed(5)
 static var s_attack_mace : AttackStats = AttackStats.create("Mace", AttackStats.AttackTarget.FRONT_MOST).adjust_damage(1.25).adjust_speed(1.15)
 
-static var s_occupation_knight : UnitMod = create("Knight").set_attack(s_attack_longsword).add_armor(7.5).add_slowness(1)
-static var s_occupation_assassin : UnitMod = create("Assassin").set_attack(s_attack_backstab).add_slowness(-1)
-static var s_occupation_mage : UnitMod = create("Mage").set_attack(s_attack_magic_missile)
-static var s_occupation_barbarian : UnitMod = create("Barbarian").set_attack(s_attack_smash).add_health(70)
-static var s_occupation_cleric : UnitMod = create("Cleric").set_attack(s_attack_heal).add_armor(5).set_attack(s_attack_mace)
-static var s_occupation_retiarius : UnitMod = create("Retiarius").set_attack(s_attack_net)
-static var s_occupation_warlock : UnitMod = create("Warlock").set_attack(s_attack_blood_curse)
+static var s_occupation_knight : UnitMod = create("Knight").set_skill_class(SkillStats.SkillClass.FIGHTER).set_attack(s_attack_longsword).add_armor(7.5).add_slowness(1)
+static var s_occupation_assassin : UnitMod = create("Assassin").set_skill_class(SkillStats.SkillClass.ROGUE).set_attack(s_attack_backstab).add_slowness(-1)
+static var s_occupation_mage : UnitMod = create("Mage").set_skill_class(SkillStats.SkillClass.MAGIC).set_attack(s_attack_magic_missile)
+static var s_occupation_barbarian : UnitMod = create("Barbarian").set_skill_class(SkillStats.SkillClass.FIGHTER).set_attack(s_attack_smash).add_health(70)
+static var s_occupation_cleric : UnitMod = create("Cleric").set_skill_class(SkillStats.SkillClass.HOLY).set_attack(s_attack_heal).add_armor(5).set_attack(s_attack_mace)
+static var s_occupation_retiarius : UnitMod = create("Retiarius").set_skill_class(SkillStats.SkillClass.FIGHTER).set_attack(s_attack_net)
+static var s_occupation_warlock : UnitMod = create("Warlock").set_skill_class(SkillStats.SkillClass.MAGIC).set_attack(s_attack_blood_curse)
 
 static func pick_random_occupation(rnd : RandomNumberGenerator) -> UnitMod:
 	match rnd.randi_range(0, 6):

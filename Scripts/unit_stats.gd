@@ -18,7 +18,8 @@ var unit_name : String
 var side : UnitStats.Side
 var icon : Icon = Icon.UNSET
 var elo : Array[String]
-
+var skill_class : SkillStats.SkillClass = SkillStats.SkillClass.NONE
+var skills : Array[SkillStats]
 
 static var next_id : int = 1
 static var noise : RandomNumberGenerator = RandomNumberGenerator.new()
@@ -108,11 +109,16 @@ func clone() -> UnitStats:
 	ret_val.attacks = attacks
 	ret_val.slowness = slowness
 	ret_val.next_attack = next_attack
-	ret_val.unit_name = unit_name
 	ret_val.side = side
 	ret_val.tired = tired
 	ret_val.cooldown_id = cooldown_id
 	ret_val.single_use = single_use
+	
+	# The following members should need to be cloned while evaluating future turns
+	# ret_val.unit_name = unit_name
+	# ret_val.skill_class
+	# ret_val.skills
+	
 	return ret_val
 
 func create_tooltip() -> String:
@@ -182,6 +188,7 @@ func init(_species : UnitMod, _occupation : UnitMod, _equipment : UnitMod, _side
 	side = _side
 	max_health = 100 + _species.extra_health + _occupation.extra_health + _equipment.extra_health
 	current_health = max_health
+	skill_class = _occupation.skill_class
 	if _species.will_name():
 		unit_name = _species.generate_name(rnd)
 	else:
