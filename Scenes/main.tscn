@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://b5t3tpb66grx0"]
+[gd_scene load_steps=27 format=3 uid="uid://b5t3tpb66grx0"]
 
 [ext_resource type="Script" path="res://addons/statemachine/StateMachine.gd" id="1_p7e6l"]
 [ext_resource type="Script" path="res://addons/statemachine/StateMachineState_AnyKeyToContinue.gd" id="2_mqr82"]
@@ -167,6 +167,20 @@ outline_color = Color(0.00184107, 0.00184107, 0.00184107, 1)
 font_size = 32
 outline_size = 4
 outline_color = Color(0, 0, 0, 1)
+
+[sub_resource type="Gradient" id="Gradient_ejpts"]
+offsets = PackedFloat32Array(0, 0.0368098, 0.157975, 0.970859, 0.996933)
+colors = PackedColorArray(0.299968, 0.511606, 1, 1, 0.615702, 0.680381, 1, 1, 1, 0.53576, 0.906882, 1, 1, 0.568339, 0.465956, 1, 0.487803, 0.120492, 5.14999e-06, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_snvm8"]
+gradient = SubResource("Gradient_ejpts")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_mesrf"]
+shader = SubResource("Shader_gc61x")
+shader_parameter/speed = 0.1
+shader_parameter/color_gradient = SubResource("GradientTexture1D_snvm8")
+shader_parameter/noiseX = SubResource("NoiseTexture2D_xs4ou")
+shader_parameter/noiseY = SubResource("NoiseTexture2D_yjbvs")
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -465,6 +479,16 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("11_ytujf")
+
+[node name="Background" type="ColorRect" parent="OverStateMachine/Game/GameStateMachine/BossBattle"]
+material = SubResource("ShaderMaterial_mesrf")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
 
 [node name="Sprite2D" type="Sprite2D" parent="OverStateMachine/Game/GameStateMachine/BossBattle"]
 position = Vector2(890, 239)
