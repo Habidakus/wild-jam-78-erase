@@ -1,6 +1,7 @@
 - Initial hero crafting
 - Hero Advancement
 - Make waves 2 & 3 harder than wave 1
+- Add indicator to show where the new trip sheet positions while hovering
 - Shops
 - Chests
 - Other foes besides goblins
