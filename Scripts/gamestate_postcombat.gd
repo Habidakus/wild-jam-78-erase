@@ -82,15 +82,15 @@ func skill_hover(entered : bool, card : SkillGraphic) -> void:
 		card.modulate = Color.WHITE
 
 func exit_state(next_state: StateMachineState) -> void:
-	if skill_a.is_visible():
+	if skill_a.mouse_entered.is_connected(callable_a_on):
 		skill_a.mouse_entered.disconnect(callable_a_on)
 		skill_a.mouse_exited.disconnect(callable_a_off)
 		skill_a.gui_input.disconnect(callable_a_click)
-	if skill_b.is_visible():
+	if skill_b.mouse_entered.is_connected(callable_b_on):
 		skill_b.mouse_entered.disconnect(callable_b_on)
 		skill_b.mouse_exited.disconnect(callable_b_off)
 		skill_b.gui_input.disconnect(callable_b_click)
-	if skill_c.is_visible():
+	if skill_c.mouse_entered.is_connected(callable_c_on):
 		skill_c.mouse_entered.disconnect(callable_c_on)
 		skill_c.mouse_exited.disconnect(callable_c_off)
 		skill_c.gui_input.disconnect(callable_c_click)
