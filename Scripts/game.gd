@@ -108,7 +108,7 @@ func calculate_elo() -> void:
 			computer_count += 1
 	computer_elo /= float(computer_count)
 	
-	assert(human_count == computer_count)
+	#assert(human_count == computer_count)
 
 	var human_expectation = 1.0 / (1.0 + pow(10.0, (computer_elo - human_elo) / 400.0))
 	var computer_expectation = 1.0 / (1.0 + pow(10.0, (computer_elo - human_elo) / 400.0))

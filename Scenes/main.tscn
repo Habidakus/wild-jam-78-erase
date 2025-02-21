@@ -9,27 +9,130 @@
 [ext_resource type="Script" path="res://Scripts/loop_exposition.gd" id="5_m5uv5"]
 [ext_resource type="Script" path="res://Scripts/gamestate_combat.gd" id="7_pp03m"]
 [ext_resource type="Script" path="res://Scripts/gamestate_postcombat.gd" id="8_ew0y7"]
-[ext_resource type="Shader" path="res://Art/flowShader.gdshader" id="8_ownyo"]
 [ext_resource type="Script" path="res://Scripts/gamestate_pathselection.gd" id="9_8hvbj"]
 [ext_resource type="Script" path="res://Scenes/gamestate_bossbattle.gd" id="11_ytujf"]
 [ext_resource type="Texture2D" uid="uid://bw12xauevdwyr" path="res://Art/Chronotyrant.png" id="12_dih5f"]
 
-[sub_resource type="LabelSettings" id="LabelSettings_68cc5"]
-font_size = 128
-outline_size = 16
-outline_color = Color(0.00184107, 0.00184107, 0.00184107, 1)
+[sub_resource type="Shader" id="Shader_gc61x"]
+code = "shader_type canvas_item;
 
-[sub_resource type="LabelSettings" id="LabelSettings_oxvky"]
-font_size = 32
-outline_size = 4
-outline_color = Color(0, 0, 0, 1)
+//uniform sampler2D noise1;
+//uniform sampler2D noise2;
+uniform float speed;
+uniform sampler2D color_gradient;
+uniform sampler2D noiseX;
+uniform sampler2D noiseY;
 
-[sub_resource type="Gradient" id="Gradient_s2ytp"]
+vec2 random(vec2 uv) {
+	return vec2(fract(sin(dot(uv.xy,
+		vec2(12.9898,78.233))) * 43758.5453123));
+}
+
+float worley(vec2 uv, float columns, float rows) {
+	
+	vec2 index_uv = floor(vec2(uv.x * columns, uv.y * rows));
+	vec2 fract_uv = fract(vec2(uv.x * columns, uv.y * rows));
+	
+	float minimum_dist = 1.0;  
+	
+	for (int y= -1; y <= 1; y++) {
+		for (int x= -1; x <= 1; x++) {
+			vec2 neighbor = vec2(float(x),float(y));
+			vec2 point = random(index_uv + neighbor);
+			
+			vec2 diff = neighbor + point - fract_uv;
+			float dist = length(diff);
+			minimum_dist = min(minimum_dist, dist);
+		}
+	}
+	
+	return minimum_dist;
+}
+
+void fragment() {
+	float x = texture(noiseX, UV).g;
+	float y = texture(noiseY, UV).g;
+	float angle = speed * TIME / 6.0 - float(int(TIME / 6.0)) * TAU;
+	float dx = cos(angle);
+	float dy = sin(angle);
+	vec2 samplePos = vec2(x, y) / 2.0 + vec2(dx, dy) / 4.0 + vec2(0.25, 0.25);
+	
+	
+	float worleyOuter = worley(samplePos, 4.0, 4.0);
+	float worleyInner = worley(samplePos, 40.0, 40.0);
+	COLOR = texture(color_gradient, vec2(worleyOuter * worleyOuter * worleyInner)).rgba;
+	//COLOR = vec4(vec3(), 1.0);
+}
+
+void fragmenty() {
+//	float x = texture(noiseX, UV).g;
+//	float y = texture(noiseY, UV).g;
+//	float angle = TIME / 6.0 - float(int(TIME / 6.0)) * TAU;
+//	float dx = cos(angle);
+//	float dy = sin(angle);
+//	vec2 samplePos = vec2(x, y) / 2.0 + vec2(dx, dy) / 4.0 + vec2(0.25, 0.25);
+//	//COLOR = texture(noise, samplePos).rgba;
+//	float off1 = (texture(noise1, samplePos).g - 0.5) / 20.0;
+//	float off2 = (texture(noise2, samplePos).g - 0.5) / 20.0;
+//	vec3 rgbOrg = texture(TEXTURE, UV + vec2(off1, off2)).rgb;
+//	vec3 rgbOff = texture(TEXTURE, UV).rgb;
+//	COLOR = vec4(rgbOrg.rg, rgbOff.b, 1);
+}
+
+void fragmentx() {
+	vec2 UV;
+	//vec2 f = SCREEN_PIXEL_SIZE;
+	vec4 color;
+	int count = 0;
+	float offset = float(int(TIME * 10.0) % 200) / 400.0;
+	bool cnt = true;
+	for (int dx = -3; cnt && dx < 4; dx += 1)
+	{
+		for (int dy = -3; cnt && dy < 4; dy += 1)
+		{
+			vec2 intersect = vec2(float(dx), float(dy));
+			
+			for (int i = 0; cnt && i < 101; ++i)
+			{
+				vec3 off1 = vec3(intersect.x / 100.0, intersect.y / 100.0, offset);
+				vec3 off2 = vec3(off1.y - 0.1, off1.x - 0.1, offset); // TODO: Add a second noise
+				
+				//float moveX = texture(noise3D, vec3(UV.x, UV.y, 0.5)).g / 10.0;
+				//float moveX = texture(noise3D, vec3(UV + off1.xy, off1.z)).g / 10.0;
+				//intersect.x += moveX;
+				//float moveY = texture(noise3D, vec3(UV + off2.xy, off2.z)).g / 10.0;
+				//intersect.y += moveY;
+				//if ((moveX > 0.001 || moveX < -0.001) && (moveY > 0.001 || moveY < -0.001))
+				//{
+				//	//COLOR = vec4(float(i) / 100.0, 1,0,1);
+				//	cnt = false;
+				//}
+				
+				float distSquared = intersect.x * intersect.x + intersect.y * intersect.y;
+				if (distSquared > 50.0)
+					break;
+				if (distSquared < 2.0)
+				    count += 1;
+			}
+			//color += texture(noise, UV + off2).rgba;
+		}
+	}
+	
+	if (cnt == true)
+	{
+		float c = float(count) / 600.0;
+		//COLOR = vec4(c, c , c, 1);
+	}
+	//COLOR = texture(noise, UV).rgba;
+}
+"
+
+[sub_resource type="Gradient" id="Gradient_qv864"]
 offsets = PackedFloat32Array(0, 0.0429448, 0.434049, 1)
-colors = PackedColorArray(0.299968, 0.511606, 1, 1, 0.317647, 0.317647, 1, 1, 0.991639, 0.000291287, 0.874453, 1, 0.931212, 0.549048, 0, 1)
+colors = PackedColorArray(0.299968, 0.511606, 1, 1, 0.568237, 0.636417, 1, 1, 1, 0.83195, 0.957264, 1, 1, 1, 1, 1)
 
-[sub_resource type="GradientTexture1D" id="GradientTexture1D_6k8i5"]
-gradient = SubResource("Gradient_s2ytp")
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_y2o7v"]
+gradient = SubResource("Gradient_qv864")
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_1cu4s"]
 noise_type = 4
@@ -47,12 +150,22 @@ width = 32
 height = 32
 noise = SubResource("FastNoiseLite_1p02u")
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_bmtss"]
-shader = ExtResource("8_ownyo")
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_tll2r"]
+shader = SubResource("Shader_gc61x")
 shader_parameter/speed = 0.1
-shader_parameter/color_gradient = SubResource("GradientTexture1D_6k8i5")
+shader_parameter/color_gradient = SubResource("GradientTexture1D_y2o7v")
 shader_parameter/noiseX = SubResource("NoiseTexture2D_xs4ou")
 shader_parameter/noiseY = SubResource("NoiseTexture2D_yjbvs")
+
+[sub_resource type="LabelSettings" id="LabelSettings_68cc5"]
+font_size = 128
+outline_size = 16
+outline_color = Color(0.00184107, 0.00184107, 0.00184107, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_oxvky"]
+font_size = 32
+outline_size = 4
+outline_color = Color(0, 0, 0, 1)
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -77,6 +190,16 @@ grow_vertical = 2
 script = ExtResource("2_mqr82")
 next_state = NodePath("../Menu")
 
+[node name="Background" type="ColorRect" parent="OverStateMachine/Splash"]
+material = SubResource("ShaderMaterial_tll2r")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+
 [node name="Label" type="Label" parent="OverStateMachine/Splash"]
 layout_mode = 1
 anchors_preset = 8
@@ -97,7 +220,6 @@ label_settings = SubResource("LabelSettings_68cc5")
 horizontal_alignment = 1
 
 [node name="Menu" type="Control" parent="OverStateMachine"]
-visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -106,6 +228,16 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 1
 script = ExtResource("3_hyt6b")
+
+[node name="Background" type="ColorRect" parent="OverStateMachine/Menu"]
+material = SubResource("ShaderMaterial_tll2r")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
 
 [node name="Button" type="Button" parent="OverStateMachine/Menu"]
 layout_mode = 1
@@ -121,6 +253,7 @@ offset_bottom = 15.5
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 32
 text = "Play"
 
 [node name="Game" type="Control" parent="OverStateMachine"]
@@ -158,6 +291,16 @@ grow_vertical = 2
 script = ExtResource("5_m5uv5")
 next_state = NodePath("../Combat")
 
+[node name="Background" type="ColorRect" parent="OverStateMachine/Game/GameStateMachine/LoopExposition"]
+material = SubResource("ShaderMaterial_tll2r")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+
 [node name="MarginContainer" type="MarginContainer" parent="OverStateMachine/Game/GameStateMachine/LoopExposition"]
 layout_mode = 1
 anchors_preset = 15
@@ -172,6 +315,7 @@ theme_override_constants/margin_bottom = 40
 
 [node name="RichTextLabel" type="RichTextLabel" parent="OverStateMachine/Game/GameStateMachine/LoopExposition/MarginContainer"]
 layout_mode = 2
+theme_override_colors/default_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/normal_font_size = 22
 bbcode_enabled = true
 text = "Your team has been through much... prevailing against all odds to overthrow the rule of the brutal Chronotyrant."
@@ -189,6 +333,8 @@ offset_top = -23.0
 offset_right = 20.0
 grow_horizontal = 2
 grow_vertical = 0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 22
 text = "(hit any key to continue)"
 
 [node name="Combat" type="Control" parent="OverStateMachine/Game/GameStateMachine"]
@@ -233,7 +379,7 @@ layout_mode = 2
 size_flags_vertical = 3
 
 [node name="Arena" type="ColorRect" parent="OverStateMachine/Game/GameStateMachine/Combat/HBoxContainer"]
-material = SubResource("ShaderMaterial_bmtss")
+material = SubResource("ShaderMaterial_tll2r")
 layout_mode = 2
 size_flags_horizontal = 3
 
@@ -257,6 +403,7 @@ grow_vertical = 2
 script = ExtResource("9_8hvbj")
 
 [node name="BossBattle" type="Control" parent="OverStateMachine/Game/GameStateMachine"]
+visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -264,16 +411,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("11_ytujf")
-
-[node name="Arena" type="ColorRect" parent="OverStateMachine/Game/GameStateMachine/BossBattle"]
-material = SubResource("ShaderMaterial_bmtss")
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_horizontal = 3
 
 [node name="Sprite2D" type="Sprite2D" parent="OverStateMachine/Game/GameStateMachine/BossBattle"]
 position = Vector2(890, 239)
