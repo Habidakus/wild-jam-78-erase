@@ -100,18 +100,18 @@ horizontal_alignment = 1
 [node name="AttackBox" type="VBoxContainer" parent="HealthBar"]
 layout_mode = 0
 offset_left = 61.0
-offset_top = -34.0
+offset_top = -68.0
 offset_right = 172.0
-offset_bottom = 77.0
-alignment = 1
+offset_bottom = 43.0
+alignment = 2
 
 [node name="ActionBox" type="VBoxContainer" parent="HealthBar"]
 layout_mode = 0
 offset_left = -132.0
-offset_top = -34.0
+offset_top = -68.0
 offset_right = -21.0
-offset_bottom = 77.0
-alignment = 1
+offset_bottom = 43.0
+alignment = 2
 
 [node name="Name" type="Label" parent="."]
 layout_mode = 1

@@ -10,6 +10,7 @@ func enter_state() -> void:
 	game.calculate_elo()
 	game.preserve_heroes()
 	game.clean_up_game_state()
+	game.ready_battle_space()
 	#game.initialize_heroes()
 	our_state_machine.switch_state("PathSelection")
 	

@@ -14,9 +14,6 @@
 
 Bugs:
 
-- Each wave UnitGraphs appear lower in the arena
 - clean up the paths each time you pass the chronotyrant
-- erase the defeated foes in post combat, so they don't show up at the begining of the next pre-combat
 - heal heroes back to 1 hp who were dead after the previous combat
 - change hero "dead" to "defeated"
-- attack buttons and foe names overlap

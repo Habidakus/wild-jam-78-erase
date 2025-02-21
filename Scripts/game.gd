@@ -287,10 +287,21 @@ func update_battle_space() -> void:
 			var tween : Tween = create_tween()
 			tween.tween_property(unit_graphics, "position", new_unit_position, 0.95)
 
+func calculate_max_units_on_one_side() -> int:
+	var hero_count : int = 0
+	var foe_count : int = 0
+	for unit : UnitStats in game_state.units:
+		if unit.side == UnitStats.Side.HUMAN:
+			hero_count += 1
+		else:
+			foe_count += 1
+	return max(hero_count, foe_count)
+
 func calculate_position(is_hero : bool, rank : int, is_alive : bool, arena_size : Vector2) -> Vector2:
 	var ret_val : Vector2 = Vector2.ZERO
 	var column_width : float = arena_size.x / 5.0
-	var row_count : float = (game_state.units.size() / 2.0) + 1.0
+	var max_units_on_one_side : int = calculate_max_units_on_one_side()
+	var row_count : float = max_units_on_one_side + 0.5
 	var row_height : float = arena_size.y / row_count
 	if is_alive:
 		# graphics are placed in a triangle, with the next to go near the top, angled towards each other
@@ -298,7 +309,7 @@ func calculate_position(is_hero : bool, rank : int, is_alive : bool, arena_size 
 			ret_val.x = 1.75 - (float(rank) / 4.0)
 		else:
 			ret_val.x = 3.25 + (float(rank) / 4.0)
-		ret_val.y = rank + 1
+		ret_val.y = rank + 0.5
 	else:
 		if is_hero:
 			ret_val.x = 0.5
