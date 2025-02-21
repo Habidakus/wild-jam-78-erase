@@ -1,11 +1,12 @@
-- Credits page
+- Initial hero crafting
+- Hero Advancement
+- Make waves 2 & 3 harder than wave 1
 - Shops
 - Chests
-- Hero Advancement
 - Other foes besides goblins
-- Make waves 2 & 3 harder than wave 1
+- Add win condition
 - UI sounds
 - attack sounds
 - Replace targetting lines with particles
 - Add monster & hero attack "animations"
-- Add win condition
+- Credits page
