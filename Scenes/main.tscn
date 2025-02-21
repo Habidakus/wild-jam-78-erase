@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3 uid="uid://b5t3tpb66grx0"]
+[gd_scene load_steps=24 format=3 uid="uid://b5t3tpb66grx0"]
 
 [ext_resource type="Script" path="res://addons/statemachine/StateMachine.gd" id="1_p7e6l"]
 [ext_resource type="Script" path="res://addons/statemachine/StateMachineState_AnyKeyToContinue.gd" id="2_mqr82"]
@@ -10,6 +10,7 @@
 [ext_resource type="Script" path="res://Scripts/gamestate_combat.gd" id="7_pp03m"]
 [ext_resource type="Script" path="res://Scripts/gamestate_postcombat.gd" id="8_ew0y7"]
 [ext_resource type="Script" path="res://Scripts/gamestate_pathselection.gd" id="9_8hvbj"]
+[ext_resource type="PackedScene" uid="uid://ue7rvsoy6ai5" path="res://Scenes/card_graphic.tscn" id="9_i0xyt"]
 [ext_resource type="Script" path="res://Scenes/gamestate_bossbattle.gd" id="11_ytujf"]
 [ext_resource type="Texture2D" uid="uid://bw12xauevdwyr" path="res://Art/Chronotyrant.png" id="12_dih5f"]
 
@@ -220,6 +221,7 @@ label_settings = SubResource("LabelSettings_68cc5")
 horizontal_alignment = 1
 
 [node name="Menu" type="Control" parent="OverStateMachine"]
+visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -393,7 +395,60 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("8_ew0y7")
 
+[node name="Background" type="ColorRect" parent="OverStateMachine/Game/GameStateMachine/PostCombat"]
+material = SubResource("ShaderMaterial_tll2r")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="OverStateMachine/Game/GameStateMachine/PostCombat"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 30
+theme_override_constants/margin_top = 30
+theme_override_constants/margin_right = 30
+theme_override_constants/margin_bottom = 30
+
+[node name="VBoxContainer" type="VBoxContainer" parent="OverStateMachine/Game/GameStateMachine/PostCombat/MarginContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="Label" type="Label" parent="OverStateMachine/Game/GameStateMachine/PostCombat/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 24
+text = "Please chose a skill advancement:"
+horizontal_alignment = 1
+
+[node name="Control" type="Control" parent="OverStateMachine/Game/GameStateMachine/PostCombat/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+
+[node name="SkillBox" type="HBoxContainer" parent="OverStateMachine/Game/GameStateMachine/PostCombat/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 140
+alignment = 1
+
+[node name="SkillA" parent="OverStateMachine/Game/GameStateMachine/PostCombat/MarginContainer/VBoxContainer/SkillBox" instance=ExtResource("9_i0xyt")]
+layout_mode = 2
+
+[node name="SkillB" parent="OverStateMachine/Game/GameStateMachine/PostCombat/MarginContainer/VBoxContainer/SkillBox" instance=ExtResource("9_i0xyt")]
+layout_mode = 2
+
+[node name="SkillC" parent="OverStateMachine/Game/GameStateMachine/PostCombat/MarginContainer/VBoxContainer/SkillBox" instance=ExtResource("9_i0xyt")]
+layout_mode = 2
+
 [node name="PathSelection" type="Control" parent="OverStateMachine/Game/GameStateMachine"]
+visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -403,7 +458,6 @@ grow_vertical = 2
 script = ExtResource("9_8hvbj")
 
 [node name="BossBattle" type="Control" parent="OverStateMachine/Game/GameStateMachine"]
-visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0

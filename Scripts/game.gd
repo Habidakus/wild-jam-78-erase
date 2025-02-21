@@ -10,7 +10,7 @@ var game_state : EGameState = null
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	rnd.seed = 41151
+	rnd.seed = 6
 	combat_state_machine_state = find_child("Combat") as SMSCombat
 	combat_state_machine_state.init(self)
 	path_state_machine_state = find_child("PathSelection") as SMSPath
@@ -58,7 +58,7 @@ func preserve_heroes() -> void:
 func initialize_foes() -> void:
 	print("Clearing foes")
 	foes.clear()
-	for i in range(0, 5):
+	for i in range(0, 1):
 		foes.append(UnitStats.create_foes__goblin(rnd, i == 1))
 	print("Foes count = " + str(foes.size()))
 
@@ -228,6 +228,16 @@ func update_trip_sheet() -> void:
 		prev_time = entry[0]
 		trip_sheet.add_child(label)
 
+func get_viable_skills() -> Array[Array]: # [[unit, skill]]
+	var sort_list : Array[Array]
+	for userSkillTupple : Array in SkillStats.get_viable_skills(heroes):
+		sort_list.append([rnd.randf(), userSkillTupple[0], userSkillTupple[1]])
+	sort_list.sort_custom(func(a, b) : return a[0] < b[0])
+	var ret_val : Array[Array]
+	for i in range(0, min(3, sort_list.size())):
+		ret_val.append([sort_list[i][1], sort_list[i][2]])
+	return ret_val
+
 var battle_space_figures : Dictionary # <unit id, UnitGraphics>
 func ready_battle_space() -> void:
 	if battle_space_figures.is_empty():
@@ -320,6 +330,13 @@ func calculate_position(is_hero : bool, rank : int, is_alive : bool, arena_size 
 	ret_val.y *= row_height
 	return ret_val
 
+func skill_click(event : InputEvent, skill : SkillStats, unit : UnitStats) -> void:
+	if !event.is_released():
+		return
+
+	if event is InputEventMouseButton:
+		skill.add_to_unit(unit)
+		path_state_machine_state.our_state_machine.switch_state("PathSelection")
 
 func setup_game_state() -> void:
 	assert(game_state == null)
@@ -334,7 +351,7 @@ func setup_game_state() -> void:
 
 var round_count : int = 0
 func run_one_turn() -> void:
-	const depth : int = 9
+	const depth : int = 6
 	if game_state == null:
 		ready_trip_sheet()
 		ready_battle_space()
@@ -406,7 +423,7 @@ func all_path_encounter_stats_at_depth(depth : int) -> Array[PathEncounterStat]:
 
 func initialize_path(_rnd: RandomNumberGenerator) -> void:
 	assert(game_path.is_empty())
-	const path_depth : int = 3 # 6
+	const path_depth : int = 4 # 6
 	const path_width : int = 4
 	var wiggle_range : Vector2 = Vector2(0.15 / float(path_depth + 2.0), 0.15 / float(path_width + 2.0))
 	for d : int in range(0, path_depth):
