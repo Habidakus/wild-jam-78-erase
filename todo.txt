@@ -1,21 +1,19 @@
 - Add more hero skills
 - Add win condition
 - Add failure condition
-- Show hero skills on Chronomancer page
-- add remaining foes
+- Show hero skills on Chronotyrant page (so they know who they're sacrificing)
+- add remaining foes (currently only three factions in the game)
 - Better tooltip window
-- Shops
-- Chests
-- Initial hero crafting
-- UI sounds
-- attack sounds
-- Replace targetting lines with particles
+- add Shops & Chests to the overland map
+- Rather than always random heroes, have Initial hero crafting by the player (select race, occupation, extra gear)
+- add UI & attack sounds
+- Replace targeting lines with nice looking particles
 - Add monster & hero attack "animations"
 - Credits page
 
-Bugs:
+Known Bugs:
 
-- clean up the paths each time you pass the chronotyrant
-- healing prayer should bring back to live those currently dead when you get it
+- clean up the paths each time you pass the Chronotyrant (currently your previous path is still lit the second time through)
+- healing prayer should bring back to live those currently dead when you get it, rather then after the next fight
 - shouldn't give magic shield to the dead
 - player can have both net and potion, both are single use (which doesn't work with our optimization)
