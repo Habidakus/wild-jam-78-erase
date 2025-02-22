@@ -149,16 +149,17 @@ static var s_attack_backstab : AttackStats = AttackStats.create("Backstab", Atta
 static var s_attack_magic_missile : AttackStats = AttackStats.create("Zzzap", AttackStats.AttackTarget.ANY).adjust_damage(0.95)
 static var s_attack_smash : AttackStats = AttackStats.create("Smash", AttackStats.AttackTarget.FARTHEST_FROM_DEATH).adjust_damage(1.55).adjust_speed(1.25)
 static var s_attack_heal : AttackStats = AttackStats.create("Heal", AttackStats.AttackTarget.CLOSEST_TO_DEATH).adjust_damage(1.25).set_on_allies().has_cooldown()
-static var s_attack_net : AttackStats = AttackStats.create("Net", AttackStats.AttackTarget.TWO_REAR_MOST).set_stun(0.95).adjust_damage(1)
+static var s_attack_net : AttackStats = AttackStats.create("Net", AttackStats.AttackTarget.TWO_REAR_MOST).set_stun(0.95).adjust_damage(2).has_single_use().adjust_speed(1.25)
 static var s_attack_blood_curse : AttackStats = AttackStats.create("Blood Curse", AttackStats.AttackTarget.TWO_LEAST_ARMORED).set_bleed(5)
 static var s_attack_mace : AttackStats = AttackStats.create("Mace", AttackStats.AttackTarget.FRONT_MOST).adjust_damage(1.25).adjust_speed(1.15)
+static var s_attack_trident : AttackStats = AttackStats.create("Trident", AttackStats.AttackTarget.REAR_MOST).set_armor_piercing()
 
 static var s_occupation_knight : UnitMod = create("Knight").set_skill_class(SkillStats.SkillClass.FIGHTER).set_attack(s_attack_longsword).add_armor(7.5).add_slowness(1)
 static var s_occupation_assassin : UnitMod = create("Assassin").set_skill_class(SkillStats.SkillClass.ROGUE).set_attack(s_attack_backstab).add_slowness(-1)
 static var s_occupation_mage : UnitMod = create("Mage").set_skill_class(SkillStats.SkillClass.MAGIC).set_attack(s_attack_magic_missile)
 static var s_occupation_barbarian : UnitMod = create("Barbarian").set_skill_class(SkillStats.SkillClass.FIGHTER).set_attack(s_attack_smash).add_health(70)
 static var s_occupation_cleric : UnitMod = create("Cleric").set_skill_class(SkillStats.SkillClass.HOLY).set_attack(s_attack_heal).add_armor(5).set_attack(s_attack_mace)
-static var s_occupation_retiarius : UnitMod = create("Retiarius").set_skill_class(SkillStats.SkillClass.FIGHTER).set_attack(s_attack_net)
+static var s_occupation_retiarius : UnitMod = create("Retiarius").set_skill_class(SkillStats.SkillClass.FIGHTER).set_attack(s_attack_net).set_attack(s_attack_trident)
 static var s_occupation_warlock : UnitMod = create("Warlock").set_skill_class(SkillStats.SkillClass.MAGIC).set_attack(s_attack_blood_curse)
 
 static func pick_random_occupation(rnd : RandomNumberGenerator) -> UnitMod:

@@ -10,7 +10,7 @@ var game_state : EGameState = null
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	rnd.seed = 61
+	rnd.seed = 621
 	combat_state_machine_state = find_child("Combat") as SMSCombat
 	combat_state_machine_state.init(self)
 	path_state_machine_state = find_child("PathSelection") as SMSPath
@@ -56,11 +56,9 @@ func preserve_heroes() -> void:
 		heroes[i].prepare_for_next_battle(current_hero)
 
 func initialize_foes() -> void:
-	print("Clearing foes")
 	foes.clear()
-	for i in range(0, 1):
+	for i in range(0, 3):
 		foes.append(UnitStats.create_foes__goblin(rnd, i == 1))
-	print("Foes count = " + str(foes.size()))
 
 func destroy_hero(hero : UnitStats) -> void:
 	heroes = heroes.filter(func(a : UnitStats) : return a.id != hero.id)
@@ -149,9 +147,14 @@ func calculate_elo() -> void:
 	
 	dump_elo()
 
-func clean_up_game_state() -> void:	
+func clean_up_game_state() -> void:
 	game_state.release()
 	game_state = null
+
+func perform_skills(phase : SkillStats.SkillPhase, goodguys : Array[UnitStats], badguys : Array[UnitStats]) -> void:
+	for hero : UnitStats in goodguys:
+		for skill : SkillStats in hero.skills:
+			skill.apply(phase, hero, goodguys, badguys)
 
 var elo_values : Dictionary # <string, float>
 func dump_elo() -> void:
@@ -253,7 +256,6 @@ func update_trip_sheet() -> void:
 	var prev_time : float = start_time - 1.0
 	for entry in sort_order:
 		var label : Label = trip_sheet_labels[entry[1]]
-		#var unit : UnitStats = game_state.get_unit_by_id(entry[1])
 		label.size_flags_stretch_ratio = entry[0] - prev_time
 		prev_time = entry[0]
 		trip_sheet.add_child(label)
@@ -387,6 +389,9 @@ func run_one_turn() -> void:
 		ready_battle_space()
 		round_count = 0
 		setup_game_state()
+		var current_heroes : Array[UnitStats] = game_state.units.filter(func(a : UnitStats) : return a.side == UnitStats.Side.HUMAN)
+		var current_foes : Array[UnitStats] = game_state.units.filter(func(a : UnitStats) : return a.side == UnitStats.Side.COMPUTER)
+		perform_skills(SkillStats.SkillPhase.PRE_COMBAT, current_heroes, current_foes)
 		update_trip_sheet()
 		update_battle_space()
 		return

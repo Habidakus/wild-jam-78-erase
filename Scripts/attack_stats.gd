@@ -157,7 +157,7 @@ func get_cost_in_time(actor : UnitStats) -> float:
 	else:
 		return speed_multiple * actor.slowness
 
-func get_cost_in_time_for_target(target : UnitStats) -> float:
+func get_cost_in_time_for_target(_target : UnitStats) -> float:
 	if stun > 0:
 		return damage * stun
 	else:

@@ -17,6 +17,7 @@ var bleeding_ticks : int = 0
 var unit_name : String
 var side : UnitStats.Side
 var icon : Icon = Icon.UNSET
+var undead : bool = false
 var elo : Array[String]
 var skill_class : SkillStats.SkillClass = SkillStats.SkillClass.NONE
 var skills : Array[SkillStats]
@@ -118,6 +119,7 @@ func clone() -> UnitStats:
 	# The following members should need to be cloned while evaluating future turns
 	# ret_val.skill_class
 	# ret_val.skills
+	# ret_val.undead
 	
 	return ret_val
 

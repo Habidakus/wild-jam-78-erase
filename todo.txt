@@ -1,11 +1,13 @@
-- Initial hero crafting
-- Hero Advancement
+- Add shield spells
+- Better hero randomization
 - Make waves 2 & 3 harder than wave 1
-- Shops
-- Chests
+- Add more hero skills
 - Other foes besides goblins
 - Add win condition
 - Better tooltip window
+- Shops
+- Chests
+- Initial hero crafting
 - UI sounds
 - attack sounds
 - Replace targetting lines with particles
