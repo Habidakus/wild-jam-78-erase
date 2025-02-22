@@ -152,9 +152,14 @@ func clean_up_game_state() -> void:
 	game_state = null
 
 func perform_skills(phase : SkillStats.SkillPhase, goodguys : Array[UnitStats], badguys : Array[UnitStats]) -> void:
+	var skills_to_perform : Array[Array]
 	for hero : UnitStats in goodguys:
 		for skill : SkillStats in hero.skills:
-			skill.apply(phase, hero, goodguys, badguys)
+			skills_to_perform.append([skill, hero])
+	# We want the most powerful skills performed first, so that, say, a lesser resurrection doesn't spoil a more powerful one
+	skills_to_perform.sort_custom(func(a, b) : return a[0].current_level > b[0].current_level)
+	for stp in skills_to_perform:
+		stp[0].apply(phase, stp[1], goodguys, badguys)
 
 var elo_values : Dictionary # <string, float>
 func dump_elo() -> void:
@@ -204,6 +209,8 @@ func update_trip_sheet() -> void:
 	var trip_sheet : VBoxContainer = find_child("TripSheet") as VBoxContainer
 	var sort_order : Array
 	for unit : UnitStats in game_state.units:
+		if unit.magic_shield > 0:
+			print(unit.unit_name + " magic shield = " + str(unit.magic_shield))
 		for is_ghost : bool in [false, true]:
 			if is_ghost:
 				if ghost_trip_sheet_pos.has(unit.id):

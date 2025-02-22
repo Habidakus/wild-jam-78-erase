@@ -178,6 +178,13 @@ func apply(actor : UnitStats, target : UnitStats) -> void:
 		if target.bleeding_ticks > 0:
 			target.bleeding_ticks = 0
 	else:
+		if target.magic_shield > dmg:
+			target.magic_shield -= dmg
+			dmg = 0
+		elif target.magic_shield > 0:
+			dmg -= target.magic_shield
+			target.magic_shield = 0
+			
 		target.current_health -= dmg
 		if dmg <= 1:
 			new_bleed_ticks = false

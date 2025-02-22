@@ -43,7 +43,7 @@ func apply_to_unit(unit : UnitStats) -> void:
 		unit.next_attack += adjust_initiative * current_level
 		print("lowering " + unit.unit_name + " initiative by " + str(adjust_initiative * current_level)  + " seconds")
 	if shield != 0:
-		print("TODO: Implement SHIELD skill")
+		unit.magic_shield += shield * current_level
 
 func generate_next_level() -> SkillStats:
 	var ret_val : SkillStats = SkillStats.new()
@@ -69,19 +69,19 @@ static func create_skill_ambush() -> SkillStats:
 	return create("Ambush", 10, SkillPhase.PRE_COMBAT, SkillClass.ROGUE, SkillScope.ALL_HEROES).mod_initiative(-1).set_description("This hero helps the rest of the party set up an ambush, allowing them possible extra attacks at the start of combat.")
 
 static func create_skill_healing_herbs() -> SkillStats:
-	return create("Healing Herbs", 4, SkillPhase.POST_COMBAT, SkillClass.FIGHTER, SkillScope.ALL_HEROES).mod_health(0.15).set_description("This hero knows how to prepare a tea of healing herbs between combats, helping restore the health of all wounded allies.")
+	return create("Healing Herbs", 4, SkillPhase.PRE_COMBAT, SkillClass.FIGHTER, SkillScope.ALL_HEROES).mod_health(0.15).set_description("This hero knows how to prepare a tea of healing herbs between combats, helping restore the health of all wounded allies.")
 static func create_skill_walk_it_off() -> SkillStats:
-	return create("Walk It Off", 3, SkillPhase.POST_COMBAT, SkillClass.FIGHTER, SkillScope.SELF).mod_health(0.25).set_description("This hero is a veteran of patching themselves up, and heals quickly between combats.")
+	return create("Walk It Off", 3, SkillPhase.PRE_COMBAT, SkillClass.FIGHTER, SkillScope.SELF).mod_health(0.25).set_description("This hero is a veteran of patching themselves up, and heals quickly between combats.")
 
 static func create_skill_healing_prayer() -> SkillStats:
-	return create("Healing Prayer", 2, SkillPhase.POST_COMBAT, SkillClass.HOLY, SkillScope.ALL_DEAD_HEROES).mod_health(0.25).set_description("This holy hero helps restore the health of anyone who was defeated in a previous combat.")
+	return create("Healing Prayer", 6, SkillPhase.POST_COMBAT, SkillClass.HOLY, SkillScope.ALL_DEAD_HEROES).mod_health(0.125).set_description("This holy hero helps restore the health of anyone who was defeated in a previous combat.")
 static func create_skill_turn_undead() -> SkillStats:
-	return create("Turn Undead", 2, SkillPhase.PRE_COMBAT, SkillClass.HOLY, SkillScope.FOE_UNDEAD).mod_health(-0.25).set_description("This holy hero inflicts special damage on all undead before combat is joined.")
+	return create("Turn Undead", 6, SkillPhase.PRE_COMBAT, SkillClass.HOLY, SkillScope.FOE_UNDEAD).mod_health(-0.125).set_description("This holy hero inflicts special damage on all undead before combat is joined.")
 
 static func create_skill_magic_shield() -> SkillStats:
-	return create("Magic Shield", 2, SkillPhase.PRE_COMBAT, SkillClass.MAGIC, SkillScope.SELF).mod_shield(50).set_description("This magic hero is skilled in protecting themselves with a magic shield that is prepared before combat.")
+	return create("Magic Shield", 5, SkillPhase.PRE_COMBAT, SkillClass.MAGIC, SkillScope.SELF).mod_shield(10).set_description("This magic hero is skilled in protecting themselves with a magic shield that is prepared before combat.")
 static func create_skill_group_shield() -> SkillStats:
-	return create("Group Shield", 2, SkillPhase.PRE_COMBAT, SkillClass.MAGIC, SkillScope.ALL_HEROES).mod_shield(15).set_description("This magic hero casts a minor shield spell on all their allies")
+	return create("Group Shield", 6, SkillPhase.PRE_COMBAT, SkillClass.MAGIC, SkillScope.ALL_HEROES).mod_shield(5).set_description("This magic hero casts a minor shield spell on all their allies")
 
 static var all_base_skills : Array[SkillStats] = [
 	create_skill_ambush(),

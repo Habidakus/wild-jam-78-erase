@@ -7,6 +7,7 @@ var id : int = -1
 var max_health : float
 var armor : float = 0
 var current_health : float
+var magic_shield : float = 0
 var tired : float = 1
 var cooldown_id : int = -1
 var single_use : bool
@@ -99,6 +100,7 @@ static func select_two_lowest_amount(objs : Array[UnitStats], functor) -> Array[
 
 func prepare_for_next_battle(post_battle_version : UnitStats) -> void:
 	current_health = post_battle_version.current_health
+	magic_shield = 0
 
 func clone() -> UnitStats:
 	var ret_val : UnitStats = UnitStats.new()
@@ -112,6 +114,7 @@ func clone() -> UnitStats:
 	ret_val.next_attack = next_attack
 	ret_val.side = side
 	ret_val.tired = tired
+	ret_val.magic_shield = magic_shield
 	ret_val.cooldown_id = cooldown_id
 	ret_val.single_use = single_use
 	ret_val.unit_name = unit_name # We need this for the trip sheet
@@ -176,6 +179,9 @@ func get_health_desc() -> String:
 func is_alive() -> bool:
 	return current_health > 0
 
+func get_magic_shield() -> float:
+	return magic_shield
+
 func get_moves(units : Array[UnitStats], allow_stupid_humans : bool) -> Array[MMCAction]:
 	var ret_val : Array[MMCAction]
 	for attack : AttackStats in attacks:
@@ -234,17 +240,25 @@ func get_time_until_action() -> float:
 	return next_attack
 
 func calculate_damage_from_attack(attack : AttackStats) -> float:
-	var ret_val : float = attack.damage
+	var dmg : float = attack.damage
 	if attack.stun > 0:
-		ret_val *= (1.0 - attack.stun)
+		dmg *= (1.0 - attack.stun)
 	if attack.acts_on_allies:
-		ret_val = min(max_health - current_health, ret_val)
-	else:
-		if !attack.armor_piercing:
-			ret_val -= armor
-			if ret_val < 1:
-				ret_val = 1
-	if ret_val < 0:
-		ret_val = 0
+		return max(0, min(max_health - current_health, dmg))
+		
+	var magic_shield_dmg : float = 0
+	if magic_shield > 0:
+		if dmg <= magic_shield:
+			return dmg
+		magic_shield_dmg = magic_shield
+		dmg -= magic_shield
+		
+	if !attack.armor_piercing:
+		dmg -= armor
+		if dmg < 1:
+			dmg = 1
+
+	if dmg < 0:
+		dmg = 0
 	
-	return ret_val
+	return dmg + magic_shield_dmg

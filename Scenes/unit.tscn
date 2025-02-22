@@ -88,10 +88,26 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 1, 0, 1)
 
+[node name="Shield" type="ColorRect" parent="HealthBar"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -38.0
+offset_top = -38.0
+offset_right = 38.0
+offset_bottom = -26.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.599625, 0.874542, 0.979156, 1)
+
 [node name="HealthText" type="Label" parent="HealthBar"]
 layout_mode = 0
+offset_left = -19.0
 offset_top = -21.0
-offset_right = 46.0
+offset_right = 59.0
 offset_bottom = -2.0
 text = "299/200"
 label_settings = SubResource("LabelSettings_jvyq2")

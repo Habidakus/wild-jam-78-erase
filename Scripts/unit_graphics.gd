@@ -1,6 +1,7 @@
 class_name UnitGraphics extends Control
 
 var max_health_width : float
+var shield_bar : ColorRect
 const our_scene : Resource = preload("res://Scenes/unit.tscn")
 
 var attack_list : Array[UnitGraphics]
@@ -19,6 +20,7 @@ static func create(unit_stats : UnitStats) -> UnitGraphics:
 
 func _ready() -> void:
 	max_health_width = (find_child("Blood Background") as ColorRect).size.x
+	shield_bar = (find_child("Shield") as ColorRect)
 
 func calculate_offset(index : int, c : int, r : float) -> float:
 	if c == 1:
@@ -38,12 +40,19 @@ func set_health(unit : UnitStats) -> void:
 	var health_rect : ColorRect = find_child("Health") as ColorRect
 	var health_text : Label = find_child("HealthText") as Label
 	if unit.is_alive():
+		var magic_shield : float = unit.get_magic_shield()
 		health_rect.show()
 		health_rect.size.x = max_health_width * unit.current_health / unit.max_health
 		health_text.text = str(max(1,round(unit.current_health))) + "/" + str(round(unit.max_health))
+		if magic_shield > 0:
+			shield_bar.show()
+			health_text.text += " +" + str(max(1, round(magic_shield)))
+		else:
+			shield_bar.hide()
 	else:
+		shield_bar.hide()
 		health_rect.hide()
-		health_text.text = "DEAD"
+		health_text.text = "DEAD" if unit.side == UnitStats.Side.COMPUTER else "defeated"
 
 func add_draw_action(attack : AttackStats, target_stats : UnitStats, hover_callback : Callable, click_callback : Callable) -> void:
 	action_buttons.append(create_button(false, attack, target_stats, hover_callback, click_callback))
