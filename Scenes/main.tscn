@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3 uid="uid://b5t3tpb66grx0"]
+[gd_scene load_steps=29 format=3 uid="uid://b5t3tpb66grx0"]
 
 [ext_resource type="Script" path="res://addons/statemachine/StateMachine.gd" id="1_p7e6l"]
 [ext_resource type="Script" path="res://addons/statemachine/StateMachineState_AnyKeyToContinue.gd" id="2_mqr82"]
@@ -13,6 +13,8 @@
 [ext_resource type="PackedScene" uid="uid://ue7rvsoy6ai5" path="res://Scenes/card_graphic.tscn" id="9_i0xyt"]
 [ext_resource type="Script" path="res://Scenes/gamestate_bossbattle.gd" id="11_ytujf"]
 [ext_resource type="Texture2D" uid="uid://bw12xauevdwyr" path="res://Art/Chronotyrant.png" id="12_dih5f"]
+[ext_resource type="Script" path="res://Scripts/testing_prep_elo.gd" id="14_fk8kq"]
+[ext_resource type="Script" path="res://Scenes/testing_process_fight.gd" id="15_b6n3m"]
 
 [sub_resource type="Shader" id="Shader_gc61x"]
 code = "shader_type canvas_item;
@@ -586,5 +588,19 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("4_jdfnt")
+
+[node name="Testing_PrepElo" type="Control" parent="OverStateMachine/Game/GameStateMachine"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("14_fk8kq")
+
+[node name="Testing_ProcessFight" type="Control" parent="OverStateMachine/Game/GameStateMachine"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("15_b6n3m")
 
 [connection signal="button_up" from="OverStateMachine/Menu/Button" to="OverStateMachine/Menu" method="_on_button_button_up"]

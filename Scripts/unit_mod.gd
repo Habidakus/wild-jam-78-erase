@@ -109,18 +109,52 @@ static func create_halfling_name(rnd : RandomNumberGenerator) -> String:
 	ret_val += halfling_last_suffix[rnd.randi_range(0, halfling_last_suffix.size() - 1)]
 	return ret_val
 
+static var s_bone_claw_attack : AttackStats = AttackStats.create("Bone Claw", AttackStats.AttackTarget.FIRST_TWO).adjust_damage(0.75)
+static var s_demon_claw_attack : AttackStats = AttackStats.create("Demon Claw", AttackStats.AttackTarget.FIRST_TWO).adjust_damage(1.25).adjust_speed(0.9)
+static var s_smite_attack : AttackStats = AttackStats.create("Smite", AttackStats.AttackTarget.TWO_FARTHEST_FROM_DEATH).adjust_damage(1.3).adjust_speed(1.1)
+static var s_hellgaze_attack : AttackStats = AttackStats.create("Hell Gaze", AttackStats.AttackTarget.TWO_LEAST_ARMORED).has_cooldown().set_stun(0.25)
+static var s_hellfire_attack : AttackStats = AttackStats.create("Hellfire", AttackStats.AttackTarget.MOST_VULNERABLE).has_cooldown().adjust_damage(1.35)
+
+static var s_species_skeleton : UnitMod = create("Skeleton").add_health(-45).set_icon(UnitStats.Icon.Skeleton).set_attack(s_bone_claw_attack)
+static var s_species_skeleton_king : UnitMod = create("Skeleton King").add_armor(10).set_icon(UnitStats.Icon.SkeletonKing).set_attack(s_smite_attack).add_slowness(-1)
+static var s_species_demon : UnitMod = create("Demon").add_health(280).set_icon(UnitStats.Icon.Demon).set_attack(s_demon_claw_attack)
+
+static var s_occupation_undead_physical : UnitMod = create("Undead Brute").add_health(20).add_slowness(-1.5)
+static var s_occupation_undead_mage : UnitMod = create("Undead Mage").set_attack(s_hellgaze_attack).add_health(-20).add_slowness(-0.5)
+static var s_occupation_demon : UnitMod = create("Hellguy").add_health(220).set_attack(s_hellfire_attack)
+
+static var s_equipment_undead : UnitMod = create("Bones")
+
+static var s_great_spider_attack : AttackStats = AttackStats.create("Great Bite", AttackStats.AttackTarget.FIRST_TWO).adjust_damage(1.1).adjust_speed(1.1)
+static var s_large_spider_attack : AttackStats = AttackStats.create("Large Bite", AttackStats.AttackTarget.FIRST_TWO).adjust_damage(0.8).adjust_speed(0.8)
+static var s_species_spider : UnitMod = create("Spider").add_health(-30).add_armor(5).add_slowness(-0.5).set_icon(UnitStats.Icon.Spider)
+static var s_occupation_spider : UnitMod = create("Spider")
+static var s_equipment_great_spider : UnitMod = create("Great Spider").set_attack(s_great_spider_attack)
+static var s_equipment_large_spider : UnitMod = create("Large Spider").set_attack(s_large_spider_attack)
+
+static var s_mantis_drone_attack : AttackStats = AttackStats.create("Rending Bite", AttackStats.AttackTarget.FIRST_TWO).adjust_damage(1.1).set_bleed(3)
+static var s_mantis_queen_bite_attack : AttackStats = AttackStats.create("Queen's Bite", AttackStats.AttackTarget.FIRST_TWO).adjust_damage(1.4).set_bleed(3)
+static var s_mantis_queen_sting_attack : AttackStats = AttackStats.create("Queen's Sting", AttackStats.AttackTarget.FARTHEST_FROM_DEATH).adjust_damage(1.4).set_stun(0.5).has_cooldown()
+static var s_species_mantis_drone : UnitMod = create("Mantis Drone").add_health(100).set_icon(UnitStats.Icon.MantisDrone)
+static var s_species_mantis_queen : UnitMod = create("Mantis Queen").add_health(300).set_icon(UnitStats.Icon.MantisQueen)
+static var s_occupation_mantis : UnitMod = create("Mantis").add_armor(25)
+static var s_equipment_mantis_drone : UnitMod = create("Wicked Sword").set_attack(s_mantis_drone_attack)
+static var s_equipment_mantis_queen : UnitMod = create("Wicked Sword").set_attack(s_mantis_queen_bite_attack).add_slowness(2).set_attack(s_mantis_queen_sting_attack)
+
 static var s_rusty_sword_attack : AttackStats = AttackStats.create("Rusty Sword", AttackStats.AttackTarget.TWO_FARTHEST_FROM_DEATH).adjust_damage(0.8).tires(1.1)
 static var s_goblin_sword_attack : AttackStats = AttackStats.create("Goblin Sword", AttackStats.AttackTarget.TWO_FARTHEST_FROM_DEATH).adjust_damage(1.1)
-static var s_wicked_sword_attack : AttackStats = AttackStats.create("Wicked Sword", AttackStats.AttackTarget.TWO_LEAST_ARMORED).adjust_damage(1.2)
+static var s_wicked_sword_attack : AttackStats = AttackStats.create("Wicked Sword", AttackStats.AttackTarget.TWO_LEAST_ARMORED).adjust_damage(1.25)
 static var s_angry_punch_attack : AttackStats = AttackStats.create("Angry Punch", AttackStats.AttackTarget.FIRST_TWO).tires(1.1)
 static var s_captain_punch_attack : AttackStats = AttackStats.create("Captain Punch", AttackStats.AttackTarget.FIRST_TWO).adjust_damage(1.25).has_cooldown()
 static var s_lord_bellow_attack : AttackStats = AttackStats.create("Goblin Lord Bellow", AttackStats.AttackTarget.FIRST_TWO).adjust_damage(1.35).has_cooldown()
+static var s_lord_backhand_attack : AttackStats = AttackStats.create("Goblin Lord Backhand", AttackStats.AttackTarget.MOST_VULNERABLE).adjust_damage(0.8).adjust_speed(0.8)
 
 static var s_species_goblin : UnitMod = create("Goblin").add_health(-40).set_icon(UnitStats.Icon.Goblin)
-static var s_occupation_guard : UnitMod = create("Guard").add_armor(5)
+static var s_species_ogre : UnitMod = create("Ogre").add_health(90).set_icon(UnitStats.Icon.Ogre)
+static var s_occupation_guard : UnitMod = create("Guard").add_armor(10)
 static var s_occupation_guard_sgt : UnitMod = create("Sargent").add_armor(15).add_health(30).set_attack(s_angry_punch_attack).add_slowness(1)
 static var s_occupation_guard_cpt : UnitMod = create("Captain").add_armor(25).add_health(90).set_attack(s_captain_punch_attack).add_slowness(1)
-static var s_occupation_guard_lord : UnitMod = create("Lord").add_armor(30).add_health(120).set_attack(s_lord_bellow_attack).add_slowness(3)
+static var s_occupation_guard_lord : UnitMod = create("Lord").add_armor(30).add_health(90).set_attack(s_lord_bellow_attack).add_slowness(3).set_attack(s_lord_backhand_attack)
 static var s_equipment_guard_gear : UnitMod = create("Rusty Sword").set_attack(s_rusty_sword_attack)
 static var s_equipment_cpt_gear : UnitMod = create("Goblin Sword").set_attack(s_goblin_sword_attack)
 static var s_equipment_lord_gear : UnitMod = create("Wicked Sword").set_attack(s_wicked_sword_attack)

@@ -8,5 +8,6 @@ func init(_game : Game) -> void:
 func _process(_delta: float) -> void:
 	game.initialize_heroes()
 	#our_state_machine.switch_state("PathSelection")
+	#our_state_machine.switch_state("Testing_PrepElo")
 	
 	our_state_machine.switch_state("LoopExposition")

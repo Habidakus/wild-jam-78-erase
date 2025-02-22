@@ -10,7 +10,7 @@ var game_state : EGameState = null
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	rnd.seed = 621
+	rnd.seed = Time.get_unix_time_from_system()
 	combat_state_machine_state = find_child("Combat") as SMSCombat
 	combat_state_machine_state.init(self)
 	path_state_machine_state = find_child("PathSelection") as SMSPath
@@ -59,6 +59,11 @@ func preserve_heroes() -> void:
 		var current_hero : UnitStats = game_state.get_unit_by_id(heroes[i].id)
 		heroes[i].prepare_for_next_battle(current_hero)
 
+func restore_defeated_heroes() -> void:
+	for i in range(0, heroes.size()):
+		if heroes[i].current_health < 1:
+			print("Resurrecting " + heroes[i].unit_name)
+			heroes[i].current_health = 1
 
 func initialize_foes() -> void:
 	foes.clear()
@@ -72,47 +77,24 @@ func destroy_hero(hero : UnitStats) -> void:
 	path_state_machine_state.our_state_machine.switch_state("LoopExposition")
 
 func calculate_elo() -> void:
-	var human_calculus : String
-	var foe_calculus : String
-	if hero_cgs == EGameState.CalculusGetScore.Default:
-		if hero_cds == EGameState.CalculusDiffScore.Default:
-			human_calculus = "DefaultCalculus"
-		else:
-			human_calculus = "ReverseDiff"
-	else:
-		if hero_cds == EGameState.CalculusDiffScore.Default:
-			human_calculus = "ReverseScore"
-		else:
-			human_calculus = "ReverseCalculus"
-	if foe_cgs == EGameState.CalculusGetScore.Default:
-		if foe_cds == EGameState.CalculusDiffScore.Default:
-			foe_calculus = "DefaultCalculus"
-		else:
-			foe_calculus = "ReverseDiff"
-	else:
-		if foe_cds == EGameState.CalculusDiffScore.Default:
-			foe_calculus = "ReverseScore"
-		else:
-			foe_calculus = "ReverseCalculus"
-
-	var human_elo : float = get_elo("Player")
-	human_elo += get_elo(human_calculus)
-	var human_count : int = 2
+	var human_elo : float = 0 # get_elo("Player")
+	#var human_count : int = 0
 	for unit : UnitStats in heroes:
-		for elo_name : String in unit.elo:
-			human_elo += get_elo(elo_name)
-			human_count += 1
-	human_elo /= float(human_count)
-	var computer_elo : float = get_elo("Computer")
-	computer_elo += get_elo(foe_calculus)
-	var computer_count : int = 2
+		human_elo += get_elo(unit.unit_name)
+		#human_count += 1
+		#for elo_name : String in unit.elo:
+			#human_elo += get_elo(elo_name)
+			#human_count += 1
+	#human_elo /= float(human_count)
+	var computer_elo : float = 0 # get_elo("Computer")
+	#var computer_count : int = 0
 	for unit : UnitStats in foes:
-		for elo_name : String in unit.elo:
-			computer_elo += get_elo(elo_name)
-			computer_count += 1
-	computer_elo /= float(computer_count)
-	
-	#assert(human_count == computer_count)
+		computer_elo += get_elo(unit.unit_name)
+		#computer_count += 1
+		#for elo_name : String in unit.elo:
+			#computer_elo += get_elo(elo_name)
+			#computer_count += 1
+	#computer_elo /= float(computer_count)
 
 	var human_expectation = 1.0 / (1.0 + pow(10.0, (computer_elo - human_elo) / 400.0))
 	var computer_expectation = 1.0 / (1.0 + pow(10.0, (computer_elo - human_elo) / 400.0))
@@ -138,18 +120,17 @@ func calculate_elo() -> void:
 	var human_mod = human_score - human_expectation
 	var computer_mod = computer_score - computer_expectation
 	const K : float = 4.0
-	
-	update_elo(human_calculus, human_mod * K)
-	update_elo(foe_calculus, computer_mod * K)
 		
-	update_elo("Player", human_mod * K)
+	#update_elo("Player", human_mod * K)
 	for unit : UnitStats in heroes:
-		for elo_name : String in unit.elo:
-			update_elo(elo_name, human_mod * K)
-	update_elo("Computer", computer_mod * K)
+		update_elo(unit.unit_name, human_mod * K)
+		#for elo_name : String in unit.elo:
+			#update_elo(elo_name, human_mod * K)
+	#update_elo("Computer", computer_mod * K)
 	for unit : UnitStats in foes:
-		for elo_name : String in unit.elo:
-			update_elo(elo_name, computer_mod * K)
+		update_elo(unit.unit_name, computer_mod * K)
+		#for elo_name : String in unit.elo:
+			#update_elo(elo_name, computer_mod * K)
 	
 	dump_elo()
 
@@ -215,8 +196,6 @@ func update_trip_sheet() -> void:
 	var trip_sheet : VBoxContainer = find_child("TripSheet") as VBoxContainer
 	var sort_order : Array
 	for unit : UnitStats in game_state.units:
-		if unit.magic_shield > 0:
-			print(unit.unit_name + " magic shield = " + str(unit.magic_shield))
 		for is_ghost : bool in [false, true]:
 			if is_ghost:
 				if ghost_trip_sheet_pos.has(unit.id):
@@ -396,7 +375,7 @@ func setup_game_state() -> void:
 
 var round_count : int = 0
 func run_one_turn() -> void:
-	const depth : int = 6
+	const depth : int = 7
 	if game_state == null:
 		ready_trip_sheet()
 		ready_battle_space()
@@ -453,7 +432,7 @@ func run_one_turn() -> void:
 func human_hover_over_action(b : bool, move : EAction) -> void:
 	
 	if b:
-		var dmg : float = game_state.get_unit_by_id(move.targetID).calculate_damage_from_attack(move.attack)
+		#var dmg : float = game_state.get_unit_by_id(move.targetID).calculate_damage_from_attack(move.attack)
 		var actor : UnitStats = game_state.get_unit_by_id(move.actorID)
 		ghost_trip_sheet_pos[move.actorID] = actor.next_attack + move.attack.get_cost_in_time(actor)
 		
@@ -483,7 +462,7 @@ func human_click_on_action(move : EAction) -> void:
 
 var game_path : Array[PathEncounterStat]
 var current_path_encounter_stat : PathEncounterStat
-const path_depth : int = 4 # 6
+const path_depth : int = 5 # 6
 
 func get_current_difficulty() -> float:
 	return (5.0 - heroes.size()) + (float(current_path_encounter_stat.graph_pos.x) / path_depth)

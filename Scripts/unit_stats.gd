@@ -1,7 +1,7 @@
 class_name UnitStats extends RefCounted
 
 enum Side { NEITHER, HUMAN, COMPUTER }
-enum Icon { UNSET, Dwarf, Halfling, Human, Orc, Goblin, Ratman, Elf }
+enum Icon { UNSET, Dwarf, Halfling, Human, Orc, Goblin, Ogre, Ratman, Elf, Skeleton, SkeletonKing, Demon, Spider, MantisDrone, MantisQueen }
 
 var id : int = -1
 var max_health : float
@@ -31,15 +31,51 @@ static func create_difficulty_foes(difficulty : float, rnd : RandomNumberGenerat
 		PathEncounterStat.EncounterType.GATE_FIGHT:
 			return create_difficulty_foes_gate_fight(difficulty, rnd)
 		PathEncounterStat.EncounterType.REGULAR_FIGHT:
-			return create_difficulty_foes_gate_fight(difficulty, rnd)
-			#return create_difficulty_foes_regular_fight(difficulty, rnd)
+			if rnd.randf() > 0.55:
+				return create_difficulty_foes_gate_fight(difficulty, rnd)
+			else:
+				return create_difficulty_foes_spider_fight(difficulty, rnd)
 		PathEncounterStat.EncounterType.UNDEAD:
-			return create_difficulty_foes_gate_fight(difficulty, rnd)
-			#return create_difficulty_foes_undead_fight(difficulty, rnd)
+			return create_difficulty_foes_undead_fight(difficulty, rnd)
 		_:
 			assert(false)
 	return []
 	#	foes.append(UnitStats.create_foes__goblin(rnd, i == 1))
+
+
+static func create_difficulty_foes_undead_fight(difficulty : float, rnd : RandomNumberGenerator) -> Array[UnitStats]:
+	difficulty += 4.0
+	difficulty *= 10.0
+	var ret_val : Array[UnitStats]
+	while difficulty > 10 && ret_val.size() < 5:
+		var selector : Array[int]
+		if difficulty < 35:
+			selector.append(10)
+		if difficulty > 25 && difficulty < 75:
+			selector.append(20)
+		if difficulty > 45:
+			selector.append(40)
+		if difficulty > 85:
+			selector.append(80)
+		var v = selector[rnd.randi_range(0, selector.size() - 1)]
+		var foe : UnitStats = UnitStats.new()
+		match v:
+			10:
+				foe.init(UnitMod.s_species_skeleton, UnitMod.s_occupation_undead_physical, UnitMod.s_equipment_undead, UnitStats.Side.COMPUTER, rnd)
+				foe.unit_name = "Skeleton"
+			20:
+				foe.init(UnitMod.s_species_skeleton, UnitMod.s_occupation_undead_mage, UnitMod.s_equipment_undead, UnitStats.Side.COMPUTER, rnd)
+				foe.unit_name = "Skeleton Mage"
+			40:
+				foe.init(UnitMod.s_species_skeleton_king, UnitMod.s_occupation_undead_physical, UnitMod.s_equipment_undead, UnitStats.Side.COMPUTER, rnd)
+				foe.unit_name = "Skeleton King"
+			80:
+				foe.init(UnitMod.s_species_demon, UnitMod.s_occupation_demon, UnitMod.s_equipment_undead, UnitStats.Side.COMPUTER, rnd)
+				foe.unit_name = "Demon"
+		foe.undead = true
+		ret_val.append(foe)
+		difficulty -= v
+	return ret_val
 
 static func create_difficulty_foes_gate_fight(difficulty : float, rnd : RandomNumberGenerator) -> Array[UnitStats]:
 	difficulty += 4.0
@@ -68,19 +104,41 @@ static func create_difficulty_foes_gate_fight(difficulty : float, rnd : RandomNu
 				foe.init(UnitMod.s_species_goblin, UnitMod.s_occupation_guard_cpt, UnitMod.s_equipment_cpt_gear, UnitStats.Side.COMPUTER, rnd)
 				foe.unit_name = "Goblin Captain"
 			80:
-				foe.init(UnitMod.s_species_goblin, UnitMod.s_occupation_guard_lord, UnitMod.s_equipment_lord_gear, UnitStats.Side.COMPUTER, rnd)
-				foe.unit_name = "Goblin Lord"
+				foe.init(UnitMod.s_species_ogre, UnitMod.s_occupation_guard_lord, UnitMod.s_equipment_lord_gear, UnitStats.Side.COMPUTER, rnd)
+				foe.unit_name = "Ogre Lord"
 		ret_val.append(foe)
 		difficulty -= v
 	return ret_val
 
-static func create_foes__goblin(rnd : RandomNumberGenerator, sgt : bool) -> UnitStats:
-	var ret_val : UnitStats = UnitStats.new()
-	if sgt:
-		ret_val.unit_name = "Goblin Sargent"
-	else:
-		
-		ret_val.unit_name = "Goblin Guard"
+static func create_difficulty_foes_spider_fight(difficulty : float, rnd : RandomNumberGenerator) -> Array[UnitStats]:
+	difficulty += 3.0
+	difficulty *= 10.0
+	var ret_val : Array[UnitStats]
+	while difficulty > 10 && ret_val.size() < 5:
+		var selector : Array[int]
+		selector.append(10)
+		if difficulty > 45:
+			selector.append(40)
+		if difficulty > 85:
+			selector.append(80)
+		var v = selector[rnd.randi_range(0, selector.size() - 1)]
+		var foe : UnitStats = UnitStats.new()
+		match v:
+			10:
+				if rnd.randf() < 0.5:
+					foe.init(UnitMod.s_species_spider, UnitMod.s_occupation_spider, UnitMod.s_equipment_great_spider, UnitStats.Side.COMPUTER, rnd)
+					foe.unit_name = "Great Spider"
+				else:
+					foe.init(UnitMod.s_species_spider, UnitMod.s_occupation_spider, UnitMod.s_equipment_large_spider, UnitStats.Side.COMPUTER, rnd)
+					foe.unit_name = "Large Spider"
+			40:
+				foe.init(UnitMod.s_species_mantis_drone, UnitMod.s_occupation_mantis, UnitMod.s_equipment_mantis_drone, UnitStats.Side.COMPUTER, rnd)
+				foe.unit_name = "Mantis Drone"
+			80:
+				foe.init(UnitMod.s_species_mantis_queen, UnitMod.s_occupation_mantis, UnitMod.s_equipment_mantis_queen, UnitStats.Side.COMPUTER, rnd)
+				foe.unit_name = "Mantis Queen"
+		ret_val.append(foe)
+		difficulty -= v
 	return ret_val
 
 static func create_shuffle_hero(index : int, species : Array[UnitMod], occupation : Array[UnitMod], equipment : Array[UnitMod], rnd : RandomNumberGenerator) -> UnitStats:
@@ -199,8 +257,15 @@ const icon_dwarf : Texture = preload("res://Art/Species_Dwarf.png")
 const icon_halfling : Texture = preload("res://Art/Species_Halfling.png")
 const icon_orc : Texture = preload("res://Art/Species_Orc.png")
 const icon_goblin : Texture = preload("res://Art/Species_Goblin.png")
+const icon_ogre : Texture = preload("res://Art/Species_Ogre.png")
 const icon_ratman : Texture = preload("res://Art/Species_Ratman.png")
 const icon_elf : Texture = preload("res://Art/Species_Elf.png")
+const icon_skeleton : Texture = preload("res://Art/Species_Skeleton.png")
+const icon_skeleton_king : Texture = preload("res://Art/Species_Skeleton_King.png")
+const icon_demon : Texture = preload("res://Art/Species_Demon.png")
+const icon_spider : Texture = preload("res://Art/Species_Spider.png")
+const icon_mantis_queen : Texture = preload("res://Art/Species_Bugman.png")
+const icon_mantis_drone : Texture = preload("res://Art/Species_Mantis.png")
 func get_texture() -> Texture:
 	match icon:
 		UnitStats.Icon.Human:
@@ -213,10 +278,25 @@ func get_texture() -> Texture:
 			return icon_orc
 		UnitStats.Icon.Goblin:
 			return icon_goblin
+		UnitStats.Icon.Ogre:
+			return icon_ogre
 		UnitStats.Icon.Ratman:
 			return icon_ratman
 		UnitStats.Icon.Elf:
 			return icon_elf
+		UnitStats.Icon.Skeleton:
+			return icon_skeleton
+		UnitStats.Icon.SkeletonKing:
+			return icon_skeleton_king
+		UnitStats.Icon.Demon:
+			return icon_demon
+		UnitStats.Icon.Spider:
+			return icon_spider
+		UnitStats.Icon.MantisDrone:
+			return icon_mantis_drone
+		UnitStats.Icon.MantisQueen:
+			return icon_mantis_queen
+			
 	return null
 
 func get_health_desc() -> String:
