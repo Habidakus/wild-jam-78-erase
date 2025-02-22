@@ -163,40 +163,71 @@ func get_cost_in_time_for_target(_target : UnitStats) -> float:
 	else:
 		return 0
 
-func apply(actor : UnitStats, target : UnitStats) -> void:
-	actor.next_attack += get_cost_in_time(actor)
-	if tiring > 1:
-		actor.tired *= tiring
+func generate_fx(actor : UnitStats, target : UnitStats) -> ActionFXContainer:
+	var ret_val : ActionFXContainer = ActionFXContainer.new()
+	apply(actor, target, ret_val)
+	return ret_val
 
-	target.next_attack += get_cost_in_time_for_target(target)
+func apply(actor : UnitStats, target : UnitStats, fx : ActionFXContainer) -> void:
+	if fx == null:
+		actor.next_attack += get_cost_in_time(actor)
+		
+	if tiring > 1:
+		if fx != null:
+			fx.add_tiring(actor)
+		else:
+			actor.tired *= tiring
+
+	var target_stun_cost : float = get_cost_in_time_for_target(target)
+	if target_stun_cost:
+		if fx != null:
+			fx.add_stun(actor, target, target_stun_cost)
+		else:
+			target.next_attack += target_stun_cost
 
 	var new_bleed_ticks : bool = true if bleed_ticks > 0 && bleed_ticks > target.bleeding_ticks else false
 	var dmg : float = target.calculate_damage_from_attack(self)
 
 	if acts_on_allies:
-		target.current_health = min(target.current_health + dmg, target.max_health)
-		if target.bleeding_ticks > 0:
-			target.bleeding_ticks = 0
+		if fx != null:
+			fx.apply_heal(target, dmg)
+		else:
+			target.current_health = min(target.current_health + dmg, target.max_health)
+			if target.bleeding_ticks > 0:
+				target.bleeding_ticks = 0
 	else:
-		if target.magic_shield > dmg:
-			target.magic_shield -= dmg
-			dmg = 0
-		elif target.magic_shield > 0:
-			dmg -= target.magic_shield
-			target.magic_shield = 0
-			
-		target.current_health -= dmg
-		if dmg <= 1:
-			new_bleed_ticks = false
-		if new_bleed_ticks:
-			target.bleeding_ticks = bleed_ticks
+		if fx != null:
+			fx.apply_damage(target, dmg)
+		else:
+			if target.magic_shield > dmg:
+				target.magic_shield -= dmg
+				dmg = 0
+			elif target.magic_shield > 0:
+				dmg -= target.magic_shield
+				target.magic_shield = 0
+				
+			target.current_health -= dmg
+			if dmg <= 1:
+				new_bleed_ticks = false
+			if new_bleed_ticks:
+				target.bleeding_ticks = bleed_ticks
 	
-	actor.clear_cooldowns()
-	if cooldown:
-		actor.set_cooldown(id)
-	if single_use:
-		actor.set_single_use()
+	if fx != null:
+		if cooldown:
+			fx.add_cooldown(actor)
+		if single_use:
+			fx.expend_single_use(actor)
+	else:
+		actor.clear_cooldowns()
+		if cooldown:
+			actor.set_cooldown(id)
+		if single_use:
+			actor.set_single_use()
 		
 	if actor.bleeding_ticks > 0:
-		actor.current_health -= (actor.max_health / 10.0)
-		actor.bleeding_ticks -= 1
+		var bleed_amount = actor.max_health / 10.0
+		if fx != null:
+			fx.bleed_once(actor, bleed_amount)
+		else:
+			actor.current_health -= bleed_amount
+			actor.bleeding_ticks -= 1

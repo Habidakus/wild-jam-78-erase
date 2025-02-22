@@ -55,7 +55,7 @@ func apply_action(action : MMCAction) -> MMCGameState:
 	if eaction.attack != null:
 		assert(eaction.targetID != 0)
 		assert(eaction.actorID != 0)
-		eaction.attack.apply(ret_val.get_unit_by_id(eaction.actorID), ret_val.get_unit_by_id(eaction.targetID))
+		eaction.attack.apply(ret_val.get_unit_by_id(eaction.actorID), ret_val.get_unit_by_id(eaction.targetID), null)
 	else:
 		assert(eaction.targetID == 0)
 		assert(eaction.actorID == 0)

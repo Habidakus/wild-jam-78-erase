@@ -11,6 +11,10 @@ func init(_game : Game) -> void:
 func enter_state() -> void:
 	super.enter_state()
 	game.initialize_foes()
+
+func apply_fx(fx : ActionFXContainer) -> void:
+	fx.render_fx(game.battle_space_figures)
+	cooldown = 1
 	
 func _process(_delta: float) -> void:
 	if cooldown > 0:

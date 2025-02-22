@@ -14,7 +14,7 @@ const path_width : int = 4
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	rnd.seed = Time.get_unix_time_from_system()
+	rnd.seed = int(Time.get_unix_time_from_system())
 	combat_state_machine_state = find_child("Combat") as SMSCombat
 	combat_state_machine_state.init(self)
 	path_state_machine_state = find_child("PathSelection") as SMSPath
@@ -415,6 +415,7 @@ func run_one_turn() -> void:
 					#pass
 		if best_action == null:
 			best_action = calc.get_best_action(game_state, calculation_depth) as EAction
+		harvest_fx(best_action)
 		game_state = best_action.resulting_state
 		#print(str(best_action))
 		update_trip_sheet()
@@ -436,6 +437,12 @@ func run_one_turn() -> void:
 		var hover_callback : Callable = Callable(self, "human_hover_over_action")
 		var click_callback : Callable = Callable(self, "human_click_on_action")
 		combat_state_machine_state.set_human_moves(human_moves, hover_callback, click_callback)
+
+func harvest_fx(action : EAction) -> void:
+	if action.attack == null:
+		return
+	var fx : ActionFXContainer = action.attack.generate_fx(game_state.get_unit_by_id(action.actorID), game_state.get_unit_by_id(action.targetID))
+	combat_state_machine_state.apply_fx(fx)
 
 func human_hover_over_action(b : bool, move : EAction) -> void:
 	
@@ -461,6 +468,7 @@ func human_hover_over_action(b : bool, move : EAction) -> void:
 		#print(move.attack.attack_name + " for " + str(round(dmg * 10) / 10) + " damage.")
 
 func human_click_on_action(move : EAction) -> void:
+	harvest_fx(move)
 	game_state = move.resulting_state
 	combat_state_machine_state.clear_human_moves()
 	for unitID : int in battle_space_figures.keys():
