@@ -8,6 +8,10 @@ var combat_state_machine_state : SMSCombat
 var path_state_machine_state : SMSPath
 var game_state : EGameState = null
 
+const calculation_depth : int = 7 # This is how many look aheads the min-max engine computes
+const path_depth : int = 3 # 6 This is how many encounters before the chronotyrant
+const path_width : int = 4
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	rnd.seed = Time.get_unix_time_from_system()
@@ -64,6 +68,10 @@ func restore_defeated_heroes() -> void:
 		if heroes[i].current_health < 1:
 			print("Resurrecting " + heroes[i].unit_name)
 			heroes[i].current_health = 1
+
+func perform_post_loop_heals() -> void:
+	for i in range(0, heroes.size()):
+		heroes[i].current_health = heroes[i].max_health
 
 func initialize_foes() -> void:
 	foes.clear()
@@ -375,7 +383,6 @@ func setup_game_state() -> void:
 
 var round_count : int = 0
 func run_one_turn() -> void:
-	const depth : int = 7
 	if game_state == null:
 		ready_trip_sheet()
 		ready_battle_space()
@@ -391,7 +398,7 @@ func run_one_turn() -> void:
 	round_count += 1
 
 	if game_state.who_just_went == UnitStats.Side.HUMAN:
-		var best_action = calc.get_best_action(game_state, depth) as EAction
+		var best_action = calc.get_best_action(game_state, calculation_depth) as EAction
 		#if best_action.attack != null:
 			#print(str(best_action))
 		#if best_action.attack != null && game_state.get_unit_by_id(best_action.actorID).attacks.has(UnitMod.s_angry_punch_attack):
@@ -406,7 +413,7 @@ func run_one_turn() -> void:
 					#print("Wrote to " + fileAccess.get_path_absolute())
 					#pass
 		if best_action == null:
-			best_action = calc.get_best_action(game_state, depth) as EAction
+			best_action = calc.get_best_action(game_state, calculation_depth) as EAction
 		game_state = best_action.resulting_state
 		#print(str(best_action))
 		update_trip_sheet()
@@ -462,7 +469,6 @@ func human_click_on_action(move : EAction) -> void:
 
 var game_path : Array[PathEncounterStat]
 var current_path_encounter_stat : PathEncounterStat
-const path_depth : int = 5 # 6
 
 func get_current_difficulty() -> float:
 	return (5.0 - heroes.size()) + (float(current_path_encounter_stat.graph_pos.x) / path_depth)
@@ -472,7 +478,6 @@ func all_path_encounter_stats_at_depth(depth : int) -> Array[PathEncounterStat]:
 
 func initialize_path(_rnd: RandomNumberGenerator) -> void:
 	assert(game_path.is_empty())
-	const path_width : int = 4
 	var wiggle_range : Vector2 = Vector2(0.15 / float(path_depth + 2.0), 0.15 / float(path_width + 2.0))
 	for d : int in range(0, path_depth):
 		var current_width : int = path_width

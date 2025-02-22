@@ -308,6 +308,16 @@ func get_health_desc() -> String:
 	else:
 		return "dead"
 
+func describe_learned_skills() -> String:
+	var ret_val : String = ""
+	if skills.is_empty():
+		return ret_val
+	for skill : SkillStats in skills:
+		if ret_val.is_empty():
+			ret_val += "\n"
+		ret_val += skill.describe_skill()
+	return ret_val
+
 func is_alive() -> bool:
 	return current_health > 0
 

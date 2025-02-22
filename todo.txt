@@ -2,7 +2,6 @@
 - Full heal on Chronotyrant restart loop
 - Add failure condition
 - Add win condition
-- Show hero skills on Chronotyrant page (so they know who they're sacrificing)
 - Fix it so that boss level foes show up
 - Add more hero skills
 - add remaining foes (currently only three factions in the game)
