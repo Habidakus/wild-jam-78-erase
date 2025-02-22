@@ -1,9 +1,13 @@
-- Add more hero skills
-- Add win condition
+- Damage number floats on attacks
+- Full heal on Chronotyrant restart loop
 - Add failure condition
+- Add win condition
 - Show hero skills on Chronotyrant page (so they know who they're sacrificing)
+- Fix it so that boss level foes show up
+- Add more hero skills
 - add remaining foes (currently only three factions in the game)
 - Better tooltip window
+- Re-evaluate how armor works
 - add Shops & Chests to the overland map
 - Add a mimic
 - Rather than always random heroes, have Initial hero crafting by the player (select race, occupation, extra gear)
@@ -18,3 +22,5 @@ Known Bugs:
 - healing prayer should bring back to live those currently dead when you get it, rather then after the next fight
 - shouldn't give magic shield to the dead
 - player can have both net and potion, both are single use (which doesn't work with our optimization)
+- "20 Bleed" -> "20 Damage + Bleed"
+- Why are we offered a chance to drink a potion when not hurt?

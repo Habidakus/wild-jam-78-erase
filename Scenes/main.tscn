@@ -11,7 +11,7 @@
 [ext_resource type="Script" path="res://Scripts/gamestate_postcombat.gd" id="8_ew0y7"]
 [ext_resource type="Script" path="res://Scripts/gamestate_pathselection.gd" id="9_8hvbj"]
 [ext_resource type="PackedScene" uid="uid://ue7rvsoy6ai5" path="res://Scenes/card_graphic.tscn" id="9_i0xyt"]
-[ext_resource type="Script" path="res://Scenes/gamestate_bossbattle.gd" id="11_ytujf"]
+[ext_resource type="Script" path="res://Scripts/gamestate_bossbattle.gd" id="11_ytujf"]
 [ext_resource type="Texture2D" uid="uid://bw12xauevdwyr" path="res://Art/Chronotyrant.png" id="12_dih5f"]
 [ext_resource type="Script" path="res://Scripts/testing_prep_elo.gd" id="14_fk8kq"]
 [ext_resource type="Script" path="res://Scenes/testing_process_fight.gd" id="15_b6n3m"]

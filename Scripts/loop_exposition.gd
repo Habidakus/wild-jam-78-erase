@@ -27,7 +27,7 @@ var pre_castle_events : Array[Array] = [
 	],
 	[
 		"NAME rounded up the twelve notorious bandit leaders of the Faber trade road.",
-		"You were force to detoured through the Mono Sand Swamps - an extreme choice, but not as frought as endouring the once-famous Faber trade road which was now a bandit plagued gauntlet." 
+		"You were force to detour through the Mono Sand Swamps - an extreme choice, but not as fraught as enduring the once-famous Faber trade road which was now a bandit-plagued gauntlet." 
 	]
 ]
 
