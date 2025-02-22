@@ -3,6 +3,7 @@
 - Other foes besides goblins
 - Add win condition
 - Add failure condition
+- Show hero skills on Chronomancer page
 - Better tooltip window
 - Shops
 - Chests

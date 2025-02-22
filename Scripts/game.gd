@@ -527,14 +527,14 @@ func initialize_path(_rnd: RandomNumberGenerator) -> void:
 	var regular_count : int = 0
 	for entry : PathEncounterStat in game_path:
 		if entry.encounter_type == PathEncounterStat.EncounterType.UNDEFINED:
-			entry.encounter_type = PathEncounterStat.EncounterType.REGULAR_FIGHT
+			entry.set_encounter_type("Combat", PathEncounterStat.EncounterType.REGULAR_FIGHT)
 		if entry.encounter_type == PathEncounterStat.EncounterType.REGULAR_FIGHT:
 			regular_count += 1
 	var undead_count : int = 0
 	var place_index : int = 0
 	while undead_count * 3 < regular_count:
 		if game_path[place_index].encounter_type == PathEncounterStat.EncounterType.REGULAR_FIGHT:
-			game_path[place_index].encounter_type = PathEncounterStat.EncounterType.UNDEAD
+			game_path[place_index].set_encounter_type("Undead", PathEncounterStat.EncounterType.UNDEAD)
 			undead_count += 1
 		place_index += 1
 	path_state_machine_state.place_paths()

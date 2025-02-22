@@ -47,13 +47,13 @@ static func create_difficulty_foes_gate_fight(difficulty : float, rnd : RandomNu
 	var ret_val : Array[UnitStats]
 	while difficulty > 10 && ret_val.size() < 5:
 		var selector : Array[int]
-		if difficulty < 40:
+		if difficulty < 35:
 			selector.append(10)
-		if difficulty > 20 && difficulty < 80:
+		if difficulty > 25 && difficulty < 75:
 			selector.append(20)
-		if difficulty > 40:
+		if difficulty > 45:
 			selector.append(40)
-		if difficulty > 80:
+		if difficulty > 85:
 			selector.append(80)
 		var v = selector[rnd.randi_range(0, selector.size() - 1)]
 		var foe : UnitStats = UnitStats.new()
