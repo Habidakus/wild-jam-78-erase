@@ -19,10 +19,22 @@ func _ready() -> void:
 	combat_state_machine_state.init(self)
 	path_state_machine_state = find_child("PathSelection") as SMSPath
 	path_state_machine_state.init(self, rnd)
+	(find_child("Defeated") as StateMachineState).state_exit.connect(Callable(self, "accepted_defeat"))
 	find_child("PreGame").init(self)
 	find_child("PostCombat").init(self)
 	find_child("LoopExposition").init(self, rnd)
 	find_child("BossBattle").init(self)
+
+func accepted_defeat() -> void:
+	heroes.clear()
+	foes.clear()
+	game_state.release()
+	game_state = null
+	game_path.clear()
+	initialize_path(rnd)
+	find_child("LoopExposition").restart(rnd)
+	path_state_machine_state.reset_node_colors()
+	our_state_machine.switch_state("Menu")
 
 var hero_cgs : EGameState.CalculusGetScore
 var foe_cgs : EGameState.CalculusGetScore
@@ -189,6 +201,16 @@ func is_fight_finished() -> bool:
 			else:
 				computer_count += 1
 	return human_count == 0 || computer_count == 0
+
+func are_all_hereos_dead() -> bool:
+	if game_state == null:
+		return false
+	var human_count : int = 0
+	for unit : UnitStats in game_state.units:
+		if unit.is_alive():
+			if unit.side == UnitStats.Side.HUMAN:
+				human_count += 1
+	return human_count == 0
 
 var trip_sheet_labels : Dictionary # <unit id, label>
 func ready_trip_sheet() -> void:

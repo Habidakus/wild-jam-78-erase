@@ -1,4 +1,4 @@
-[gd_scene load_steps=29 format=3 uid="uid://b5t3tpb66grx0"]
+[gd_scene load_steps=32 format=3 uid="uid://b5t3tpb66grx0"]
 
 [ext_resource type="Script" path="res://addons/statemachine/StateMachine.gd" id="1_p7e6l"]
 [ext_resource type="Script" path="res://addons/statemachine/StateMachineState_AnyKeyToContinue.gd" id="2_mqr82"]
@@ -184,6 +184,20 @@ shader_parameter/color_gradient = SubResource("GradientTexture1D_snvm8")
 shader_parameter/noiseX = SubResource("NoiseTexture2D_xs4ou")
 shader_parameter/noiseY = SubResource("NoiseTexture2D_yjbvs")
 
+[sub_resource type="Gradient" id="Gradient_ctt8h"]
+offsets = PackedFloat32Array(0, 0.0219124, 0.0517928, 0.0936255, 0.996933)
+colors = PackedColorArray(0.299968, 0.511606, 1, 1, 0.615702, 0.680381, 1, 1, 1, 0.53576, 0.906882, 1, 1, 0.568339, 0.465956, 1, 0.487803, 0.120492, 5.14999e-06, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_n8t20"]
+gradient = SubResource("Gradient_ctt8h")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_avcfv"]
+shader = SubResource("Shader_gc61x")
+shader_parameter/speed = 0.1
+shader_parameter/color_gradient = SubResource("GradientTexture1D_n8t20")
+shader_parameter/noiseX = SubResource("NoiseTexture2D_xs4ou")
+shader_parameter/noiseY = SubResource("NoiseTexture2D_yjbvs")
+
 [node name="Main" type="Control"]
 layout_mode = 3
 anchors_preset = 15
@@ -197,6 +211,7 @@ script = ExtResource("1_p7e6l")
 initial_state = NodePath("Splash")
 
 [node name="Splash" type="Control" parent="OverStateMachine" node_paths=PackedStringArray("next_state")]
+visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -479,6 +494,7 @@ grow_vertical = 2
 script = ExtResource("9_8hvbj")
 
 [node name="BossBattle" type="Control" parent="OverStateMachine/Game/GameStateMachine"]
+visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -624,5 +640,66 @@ anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
 script = ExtResource("15_b6n3m")
+
+[node name="Defeated" type="Control" parent="OverStateMachine/Game/GameStateMachine" node_paths=PackedStringArray("next_state")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2_mqr82")
+next_state = NodePath("../PreGame")
+
+[node name="Background" type="ColorRect" parent="OverStateMachine/Game/GameStateMachine/Defeated"]
+material = SubResource("ShaderMaterial_avcfv")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="OverStateMachine/Game/GameStateMachine/Defeated"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -104.0
+offset_top = -48.0
+offset_right = 104.0
+offset_bottom = -25.0
+grow_horizontal = 2
+grow_vertical = 0
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "(press any key to continue)"
+
+[node name="MarginContainer" type="MarginContainer" parent="OverStateMachine/Game/GameStateMachine/Defeated"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 40
+
+[node name="RichTextLabel" type="RichTextLabel" parent="OverStateMachine/Game/GameStateMachine/Defeated/MarginContainer"]
+layout_mode = 2
+theme_override_colors/default_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/normal_font_size = 32
+theme_override_font_sizes/bold_font_size = 64
+bbcode_enabled = true
+text = "[center][b]Inevitable Defeat[/b][/center]
+
+... It must have been fated that the Chronotyrant was never to be overthrown. An act of madness to even think that anyone, no matter how skilled, could stop his eventual rule over every epoch.
+
+Knowing this... who would be foolish enough to try - again?"
 
 [connection signal="button_up" from="OverStateMachine/Menu/Button" to="OverStateMachine/Menu" method="_on_button_button_up"]

@@ -1,5 +1,3 @@
-- Damage number floats on attacks
-- Add failure condition
 - Add win condition
 - Fix it so that boss level foes show up
 - Add more hero skills

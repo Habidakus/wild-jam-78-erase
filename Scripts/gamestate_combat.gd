@@ -23,7 +23,10 @@ func _process(_delta: float) -> void:
 	
 	cooldown = rest
 	if game.is_fight_finished():
-		our_state_machine.switch_state("PostCombat")
+		if game.are_all_hereos_dead():
+			our_state_machine.switch_state("Defeated")
+		else:
+			our_state_machine.switch_state("PostCombat")
 		return
 		
 	game.run_one_turn()

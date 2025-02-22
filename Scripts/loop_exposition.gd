@@ -6,7 +6,7 @@ var pre_castle_events : Array[Array] = [
 		"You had to waste a year slowly sneaking through the Hollow Plains an inch at a time, just to avoid the dreaded Brain Slime."
 	],
 	[
-		"The voratious Tinariwen Lion was slain in bloody combat by NAME.",
+		"The voracious Tinariwen Lion was slain in bloody combat by NAME.",
 		"You came across an entire town that had been devoured by the Tinariwen Lion."
 	],
 	[
@@ -14,16 +14,16 @@ var pre_castle_events : Array[Array] = [
 		"You were struck wordless for a month when you heard of the tragedy of the Boreas orphans."
 	],
 	[
-		"NAME decyphered the puzzle of the Staedtler Labyrinth, leading you to freedom.",
-		"The craven Staedtler Oracles, decieved by a false prophecy, locked you away in their labyrinth - your liberty gained only when they died from internecine fighting."
+		"NAME deciphered the puzzle of the Staedtler Labyrinth, leading you to freedom.",
+		"The craven Staedtler Oracles, deceived by a false prophecy, locked you away in their labyrinth - your liberty gained only when they died from internecine fighting."
 	],
 	[
 		"NAME defeated the greedy Governor Tombow in a personal challenge match.",
-		"The vile Governor Tombow keep you locked in his gladitorial arena for a year, before begrudgingly granting your earned freedom."
+		"The vile Governor Tombow keep you locked in his gladiatorial arena for a year, before begrudgingly granting your earned freedom."
 	],
 	[
 		"Using unparalleled diplomatic skills, NAME convinced the warring nations of Pentel and Castell to stop their ruinous conflict.",
-		"You were brought to tears while marching through the war ravaged nations of Pentel and Cestell, their populations devistated, their cities in ruins."
+		"You were brought to tears while marching through the war ravaged nations of Pentel and Cestell, their populations devastated, their cities in ruins."
 	],
 	[
 		"NAME rounded up the twelve notorious bandit leaders of the Faber trade road.",
@@ -38,10 +38,19 @@ var event_shuffle : Array[Array]
 
 func init(_game : Game, rnd : RandomNumberGenerator) -> void:
 	game = _game
+	shuffle_events(rnd)
+
+func shuffle_events(rnd : RandomNumberGenerator) -> void:
 	for i : int in range(0, pre_castle_events.size()):
 		var order : float = rnd.randf()
 		event_shuffle.append([i, order])
 	event_shuffle.sort_custom(func(a, b) : return a[1] < b[1])
+
+func restart(rnd : RandomNumberGenerator) -> void:
+	hero_event_binding.clear()
+	event_order.clear()
+	event_shuffle.clear()
+	shuffle_events(rnd)
 
 func enter_state() -> void:
 	super.enter_state()
