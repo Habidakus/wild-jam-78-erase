@@ -127,6 +127,20 @@ static var s_species_halfling : UnitMod = create("Halfling").set_attack(s_sling_
 static var s_species_orc : UnitMod = create("Orc").add_health(70).add_slowness(2.25).set_namer("create_orc_name").set_icon(UnitStats.Icon.Orc)
 static var s_species_ratman : UnitMod = create("Ratman").add_health(-40).add_slowness(-3.25).set_namer("create_ratman_name").set_icon(UnitStats.Icon.Ratman)
 
+static func create_species_shuffle(rnd : RandomNumberGenerator) -> Array[UnitMod]:
+	var sort_order : Array = [
+		[rnd.randf(), s_species_human],
+		[rnd.randf(), s_species_dwarf],
+		[rnd.randf(), s_species_elf],
+		[rnd.randf(), s_species_halfling],
+		[rnd.randf(), s_species_ratman],
+	]
+	sort_order.sort_custom(func(a,b) : return a[0] < b[0])
+	var ret_var : Array[UnitMod]
+	for entry in sort_order:
+		ret_var.append(entry[1])
+	return ret_var
+	
 static func pick_random_species(rnd : RandomNumberGenerator) -> UnitMod:
 	match rnd.randi_range(0, 5):
 		0: # Human
@@ -162,6 +176,22 @@ static var s_occupation_cleric : UnitMod = create("Cleric").set_skill_class(Skil
 static var s_occupation_retiarius : UnitMod = create("Retiarius").set_skill_class(SkillStats.SkillClass.FIGHTER).set_attack(s_attack_net).set_attack(s_attack_trident)
 static var s_occupation_warlock : UnitMod = create("Warlock").set_skill_class(SkillStats.SkillClass.MAGIC).set_attack(s_attack_blood_curse)
 
+static func create_occupation_shuffle(rnd : RandomNumberGenerator) -> Array[UnitMod]:
+	var sort_order : Array = [
+		[rnd.randf(), s_occupation_knight],
+		[rnd.randf(), s_occupation_assassin],
+		[rnd.randf(), s_occupation_mage],
+		[rnd.randf(), s_occupation_barbarian],
+		[rnd.randf(), s_occupation_retiarius],
+		[rnd.randf(), s_occupation_warlock],
+		[rnd.randf(), s_occupation_cleric],
+	]
+	sort_order.sort_custom(func(a,b) : return a[0] < b[0])
+	var ret_var : Array[UnitMod]
+	for entry in sort_order:
+		ret_var.append(entry[1])
+	return ret_var
+	
 static func pick_random_occupation(rnd : RandomNumberGenerator) -> UnitMod:
 	match rnd.randi_range(0, 6):
 		0: # Knight
@@ -192,6 +222,20 @@ static var s_equipment_halberd : UnitMod = create("Halberd").set_attack(s_attack
 static var s_equipment_potion : UnitMod = create("Potion").set_attack(s_attack_potion)
 static var s_equipment_zweihander : UnitMod = create("Zweihander").set_attack(s_attack_zweihander)
 
+static func create_equipment_shuffle(rnd : RandomNumberGenerator) -> Array[UnitMod]:
+	var sort_order : Array = [
+		[rnd.randf(), s_equipment_zweihander],
+		[rnd.randf(), s_equipment_halberd],
+		[rnd.randf(), s_equipment_armor],
+		[rnd.randf(), s_equipment_shield],
+		[rnd.randf(), s_equipment_potion],
+	]
+	sort_order.sort_custom(func(a,b) : return a[0] < b[0])
+	var ret_var : Array[UnitMod]
+	for entry in sort_order:
+		ret_var.append(entry[1])
+	return ret_var
+	
 static func pick_random_equipment(rnd : RandomNumberGenerator) -> UnitMod:
 	match rnd.randi_range(0, 4):
 		0:

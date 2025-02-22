@@ -36,6 +36,11 @@ static func create_foes__goblin(rnd : RandomNumberGenerator, sgt : bool) -> Unit
 		ret_val.unit_name = "Goblin Guard"
 	return ret_val
 
+static func create_shuffle_hero(index : int, species : Array[UnitMod], occupation : Array[UnitMod], equipment : Array[UnitMod], rnd : RandomNumberGenerator) -> UnitStats:
+	var ret_val : UnitStats = UnitStats.new()
+	ret_val.init(species[index], occupation[index], equipment[index], Side.HUMAN, rnd)
+	return ret_val
+
 static func create_random(rnd : RandomNumberGenerator, _side : UnitStats.Side) -> UnitStats:
 	var ret_val : UnitStats = UnitStats.new()
 	var species : UnitMod = UnitMod.pick_random_species(rnd)

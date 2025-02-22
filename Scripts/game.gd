@@ -47,8 +47,12 @@ func initialize_heroes() -> void:
 		#foe_cds = EGameState.CalculusDiffScore.Reversed
 	#else:
 		#foe_cds = EGameState.CalculusDiffScore.Default
+	var species = UnitMod.create_species_shuffle(rnd)
+	var occupation = UnitMod.create_occupation_shuffle(rnd)
+	var equipment = UnitMod.create_equipment_shuffle(rnd)
 	for i in range(0, 5):
-		heroes.append(UnitStats.create_random(rnd, UnitStats.Side.HUMAN))
+		#heroes.append(UnitStats.create_random(rnd, UnitStats.Side.HUMAN))
+		heroes.append(UnitStats.create_shuffle_hero(i, species, occupation, equipment, rnd))
 
 func preserve_heroes() -> void:
 	for i in range(0, heroes.size()):
