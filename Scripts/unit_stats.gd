@@ -313,7 +313,7 @@ func describe_learned_skills() -> String:
 	if skills.is_empty():
 		return ret_val
 	for skill : SkillStats in skills:
-		if ret_val.is_empty():
+		if !ret_val.is_empty():
 			ret_val += "\n"
 		ret_val += skill.describe_skill()
 	return ret_val

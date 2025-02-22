@@ -6,17 +6,25 @@ const color_current_node : Color = Color(Color.GREEN, 0.33)
 const color_past_path : Color = Color(Color.DARK_GREEN, 0.33)
 const color_mouse_node : Color = Color(Color.GREEN_YELLOW, 0.33)
 
-var game : Game = null
 const path_graphic_scene : Resource = preload("res://Scenes/path_encounter.tscn")
+
+var graphic_nodes : Dictionary # <PathEncounterStat, Control>
+var draw_lines : Array
+var game : Game = null
 
 func init(_game : Game, rnd : RandomNumberGenerator) -> void:
 	game = _game
 	game.initialize_path(rnd)
 
-var draw_lines : Array
+func reset_node_colors() -> void:
+	for pes : PathEncounterStat in graphic_nodes:
+		var graphic : Control = graphic_nodes[pes]
+		var poly : Polygon2D = graphic.find_child("Polygon2D") as Polygon2D
+		poly.color = color_live_node
 	
 func enter_state() -> void:
 	super.enter_state()
+	draw_lines.clear()
 	for path_encounter_stat : PathEncounterStat in game.game_path:
 		if path_encounter_stat == game.current_path_encounter_stat:
 			var graphic : Control = graphic_nodes[path_encounter_stat]
@@ -73,7 +81,6 @@ func gui_input(event: InputEvent, path_encounter_stat : PathEncounterStat) -> vo
 			_:
 				assert(false)
 
-var graphic_nodes : Dictionary # <PathEncounterStat, Control>
 func place_paths() -> void:
 	for path_encounter_stat : PathEncounterStat in game.game_path:
 		var graphic : Control = path_graphic_scene.instantiate()

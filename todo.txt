@@ -1,5 +1,4 @@
 - Damage number floats on attacks
-- Full heal on Chronotyrant restart loop
 - Add failure condition
 - Add win condition
 - Fix it so that boss level foes show up
@@ -17,8 +16,6 @@
 
 Known Bugs:
 
-- clean up the paths each time you pass the Chronotyrant (currently your previous path is still lit the second time through)
-- healing prayer should bring back to live those currently dead when you get it, rather then after the next fight
 - shouldn't give magic shield to the dead
 - player can have both net and potion, both are single use (which doesn't work with our optimization)
 - "20 Bleed" -> "20 Damage + Bleed"

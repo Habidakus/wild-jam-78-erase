@@ -35,11 +35,12 @@ func switch_to_decision() -> void:
 		button.tooltip_text = hero.create_tooltip()
 		hero_box.add_child(button)
 		button.pressed.connect(Callable(game, "destroy_hero").bind(hero))
-		var label : Label = Label.new()
+		var label : RichTextLabel = RichTextLabel.new()
 		label.text = hero.describe_learned_skills()
-		label.add_theme_color_override("font_color", Color.BLACK)
-		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-		label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		label.add_theme_color_override("default_color", Color.BLACK)
+		label.custom_minimum_size = Vector2(200, 0)
+		label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		label.fit_content = true
 		hero_box.add_child(label)
 
 func _input(event : InputEvent) -> void:

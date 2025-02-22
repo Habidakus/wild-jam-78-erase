@@ -9,7 +9,7 @@ var path_state_machine_state : SMSPath
 var game_state : EGameState = null
 
 const calculation_depth : int = 7 # This is how many look aheads the min-max engine computes
-const path_depth : int = 3 # 6 This is how many encounters before the chronotyrant
+const path_depth : int = 4 # 6 This is how many encounters before the chronotyrant
 const path_width : int = 4
 
 # Called when the node enters the scene tree for the first time.
@@ -72,6 +72,7 @@ func restore_defeated_heroes() -> void:
 func perform_post_loop_heals() -> void:
 	for i in range(0, heroes.size()):
 		heroes[i].current_health = heroes[i].max_health
+	path_state_machine_state.reset_node_colors()
 
 func initialize_foes() -> void:
 	foes.clear()
