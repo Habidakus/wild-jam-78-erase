@@ -21,6 +21,20 @@ func render_fx(unit_graphics_map : Dictionary) -> void: # <unit id, UnitGraphics
 		tween.tween_property(net, "position", unit_graphics.size / 2, 0.75)
 		tween.tween_property(net, "modulate", Color(1, 1, 1, 0), 0.20)
 		tween.tween_callback(Callable(self, "clean_up_net").bind(unit_graphics, net))
+	for entry in damages:
+		var unit_id : int = entry[0]
+		if unit_graphics_map.has(unit_id):
+			var unit_graphics : UnitGraphics = unit_graphics_map[unit_id]
+			var dmg : float = entry[1]
+			var healing : bool = false
+			if dmg < 0:
+				healing = true
+				dmg = 0 - dmg
+			dmg = max(1, round(dmg))
+			var color : Color = Color.GREEN if healing else Color.ORANGE_RED
+			var floating_text : FloatingText = FloatingText.create(str(dmg), color, 1.25)
+			floating_text.position = unit_graphics.size / 2
+			unit_graphics.add_child(floating_text)
 
 func clean_up_net(unit_graphics : UnitGraphics, net : Sprite2D) -> void:
 	unit_graphics.remove_child(net)
