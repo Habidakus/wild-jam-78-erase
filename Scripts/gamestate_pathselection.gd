@@ -61,12 +61,17 @@ func gui_input(event: InputEvent, path_encounter_stat : PathEncounterStat) -> vo
 		
 	if game.current_path_encounter_stat.east.has(path_encounter_stat):
 		game.current_path_encounter_stat = path_encounter_stat
-		if path_encounter_stat.encounter_type == PathEncounterStat.EncounterType.GATE_FIGHT || path_encounter_stat.encounter_type == PathEncounterStat.EncounterType.REGULAR_FIGHT:
-			our_state_machine.switch_state("Combat")
-		elif path_encounter_stat.encounter_type == PathEncounterStat.EncounterType.CRONOTYRANT:
-			our_state_machine.switch_state("BossBattle")
-		else:
-			assert(false)
+		match path_encounter_stat.encounter_type:
+			PathEncounterStat.EncounterType.GATE_FIGHT:
+				our_state_machine.switch_state("Combat")
+			PathEncounterStat.EncounterType.REGULAR_FIGHT:
+				our_state_machine.switch_state("Combat")
+			PathEncounterStat.EncounterType.UNDEAD:
+				our_state_machine.switch_state("Combat")
+			PathEncounterStat.EncounterType.CRONOTYRANT:
+				our_state_machine.switch_state("BossBattle")
+			_:
+				assert(false)
 
 var graphic_nodes : Dictionary # <PathEncounterStat, Control>
 func place_paths() -> void:

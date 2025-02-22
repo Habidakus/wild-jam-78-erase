@@ -59,10 +59,12 @@ func preserve_heroes() -> void:
 		var current_hero : UnitStats = game_state.get_unit_by_id(heroes[i].id)
 		heroes[i].prepare_for_next_battle(current_hero)
 
+
 func initialize_foes() -> void:
 	foes.clear()
-	for i in range(0, 3):
-		foes.append(UnitStats.create_foes__goblin(rnd, i == 1))
+	foes = UnitStats.create_difficulty_foes(get_current_difficulty(), rnd, current_path_encounter_stat.encounter_type)
+	#for i in range(0, 3):
+	#	foes.append(UnitStats.create_foes__goblin(rnd, i == 1))
 
 func destroy_hero(hero : UnitStats) -> void:
 	heroes = heroes.filter(func(a : UnitStats) : return a.id != hero.id)
@@ -481,13 +483,16 @@ func human_click_on_action(move : EAction) -> void:
 
 var game_path : Array[PathEncounterStat]
 var current_path_encounter_stat : PathEncounterStat
+const path_depth : int = 4 # 6
+
+func get_current_difficulty() -> float:
+	return (5.0 - heroes.size()) + (float(current_path_encounter_stat.graph_pos.x) / path_depth)
 
 func all_path_encounter_stats_at_depth(depth : int) -> Array[PathEncounterStat]:
 	return game_path.filter(func(a : PathEncounterStat) : return a.graph_pos.x == depth)
 
 func initialize_path(_rnd: RandomNumberGenerator) -> void:
 	assert(game_path.is_empty())
-	const path_depth : int = 4 # 6
 	const path_width : int = 4
 	var wiggle_range : Vector2 = Vector2(0.15 / float(path_depth + 2.0), 0.15 / float(path_width + 2.0))
 	for d : int in range(0, path_depth):
@@ -519,8 +524,18 @@ func initialize_path(_rnd: RandomNumberGenerator) -> void:
 		needs_paths[0].add_paths(game_path, _rnd)
 		needs_paths.remove_at(0)
 		needs_paths = game_path.filter(func(a : PathEncounterStat) : return a.needs_paths())
+	var regular_count : int = 0
 	for entry : PathEncounterStat in game_path:
 		if entry.encounter_type == PathEncounterStat.EncounterType.UNDEFINED:
 			entry.encounter_type = PathEncounterStat.EncounterType.REGULAR_FIGHT
+		if entry.encounter_type == PathEncounterStat.EncounterType.REGULAR_FIGHT:
+			regular_count += 1
+	var undead_count : int = 0
+	var place_index : int = 0
+	while undead_count * 3 < regular_count:
+		if game_path[place_index].encounter_type == PathEncounterStat.EncounterType.REGULAR_FIGHT:
+			game_path[place_index].encounter_type = PathEncounterStat.EncounterType.UNDEAD
+			undead_count += 1
+		place_index += 1
 	path_state_machine_state.place_paths()
 	current_path_encounter_stat = start_pes

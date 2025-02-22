@@ -26,13 +26,60 @@ var skills : Array[SkillStats]
 static var next_id : int = 1
 static var noise : RandomNumberGenerator = RandomNumberGenerator.new()
 
+static func create_difficulty_foes(difficulty : float, rnd : RandomNumberGenerator, encounter_type : PathEncounterStat.EncounterType) -> Array[UnitStats]:
+	match encounter_type:
+		PathEncounterStat.EncounterType.GATE_FIGHT:
+			return create_difficulty_foes_gate_fight(difficulty, rnd)
+		PathEncounterStat.EncounterType.REGULAR_FIGHT:
+			return create_difficulty_foes_gate_fight(difficulty, rnd)
+			#return create_difficulty_foes_regular_fight(difficulty, rnd)
+		PathEncounterStat.EncounterType.UNDEAD:
+			return create_difficulty_foes_gate_fight(difficulty, rnd)
+			#return create_difficulty_foes_undead_fight(difficulty, rnd)
+		_:
+			assert(false)
+	return []
+	#	foes.append(UnitStats.create_foes__goblin(rnd, i == 1))
+
+static func create_difficulty_foes_gate_fight(difficulty : float, rnd : RandomNumberGenerator) -> Array[UnitStats]:
+	difficulty += 4.0
+	difficulty *= 10.0
+	var ret_val : Array[UnitStats]
+	while difficulty > 10 && ret_val.size() < 5:
+		var selector : Array[int]
+		if difficulty < 40:
+			selector.append(10)
+		if difficulty > 20 && difficulty < 80:
+			selector.append(20)
+		if difficulty > 40:
+			selector.append(40)
+		if difficulty > 80:
+			selector.append(80)
+		var v = selector[rnd.randi_range(0, selector.size() - 1)]
+		var foe : UnitStats = UnitStats.new()
+		match v:
+			10:
+				foe.init(UnitMod.s_species_goblin, UnitMod.s_occupation_guard, UnitMod.s_equipment_guard_gear, UnitStats.Side.COMPUTER, rnd)
+				foe.unit_name = "Goblin Guard"
+			20:
+				foe.init(UnitMod.s_species_goblin, UnitMod.s_occupation_guard_sgt, UnitMod.s_equipment_guard_gear, UnitStats.Side.COMPUTER, rnd)
+				foe.unit_name = "Goblin Sargent"
+			40:
+				foe.init(UnitMod.s_species_goblin, UnitMod.s_occupation_guard_cpt, UnitMod.s_equipment_cpt_gear, UnitStats.Side.COMPUTER, rnd)
+				foe.unit_name = "Goblin Captain"
+			80:
+				foe.init(UnitMod.s_species_goblin, UnitMod.s_occupation_guard_lord, UnitMod.s_equipment_lord_gear, UnitStats.Side.COMPUTER, rnd)
+				foe.unit_name = "Goblin Lord"
+		ret_val.append(foe)
+		difficulty -= v
+	return ret_val
+
 static func create_foes__goblin(rnd : RandomNumberGenerator, sgt : bool) -> UnitStats:
 	var ret_val : UnitStats = UnitStats.new()
 	if sgt:
-		ret_val.init(UnitMod.s_species_goblin, UnitMod.s_occupation_guard_sgt, UnitMod.s_equipment_guard_gear, UnitStats.Side.COMPUTER, rnd)
 		ret_val.unit_name = "Goblin Sargent"
 	else:
-		ret_val.init(UnitMod.s_species_goblin, UnitMod.s_occupation_guard, UnitMod.s_equipment_guard_gear, UnitStats.Side.COMPUTER, rnd)
+		
 		ret_val.unit_name = "Goblin Guard"
 	return ret_val
 
