@@ -159,7 +159,10 @@ func get_cost_in_time(actor : UnitStats) -> float:
 
 func get_cost_in_time_for_target(_target : UnitStats) -> float:
 	if stun > 0:
-		return damage * stun
+		# lower this is, the more resistance they have
+		var stun_resistance : float = 1.0 - (_target.max_health / (_target.max_health + 333.0))
+
+		return damage * stun * stun_resistance
 	else:
 		return 0
 
