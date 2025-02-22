@@ -1,9 +1,8 @@
-- Make waves 2 & 3 harder than wave 1
 - Add more hero skills
-- Other foes besides goblins
 - Add win condition
 - Add failure condition
 - Show hero skills on Chronomancer page
+- add remaining foes
 - Better tooltip window
 - Shops
 - Chests
@@ -20,4 +19,4 @@ Bugs:
 - heal heroes back to 1 hp who were dead after the previous combat
 - healing prayer should bring back to live those currently dead when you get it
 - shouldn't give magic shield to the dead
-
+- player can have both net and potion, both are single use

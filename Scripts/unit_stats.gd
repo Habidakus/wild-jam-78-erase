@@ -348,7 +348,7 @@ func init(_species : UnitMod, _occupation : UnitMod, _equipment : UnitMod, _side
 		icon = _occupation.get_icon()
 	elif _equipment.has_icon():
 		icon = _equipment.get_icon()
-	assert(attacks.filter(func(a : AttackStats) : return a.single_use).size() < 2)
+	#assert(attacks.filter(func(a : AttackStats) : return a.single_use).size() < 2)
 
 func clear_cooldowns() -> void:
 	cooldown_id = -1

@@ -197,7 +197,6 @@ script = ExtResource("1_p7e6l")
 initial_state = NodePath("Splash")
 
 [node name="Splash" type="Control" parent="OverStateMachine" node_paths=PackedStringArray("next_state")]
-visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -275,6 +274,7 @@ theme_override_font_sizes/font_size = 32
 text = "Play"
 
 [node name="Game" type="Control" parent="OverStateMachine"]
+visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -474,6 +474,7 @@ grow_vertical = 2
 script = ExtResource("9_8hvbj")
 
 [node name="BossBattle" type="Control" parent="OverStateMachine/Game/GameStateMachine"]
+visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
