@@ -76,7 +76,8 @@ func gui_input(event: InputEvent, path_encounter_stat : PathEncounterStat) -> vo
 				our_state_machine.switch_state("Combat")
 			PathEncounterStat.EncounterType.UNDEAD:
 				our_state_machine.switch_state("Combat")
-			PathEncounterStat.EncounterType.CRONOTYRANT:
+			PathEncounterStat.EncounterType.CHRONOTYRANT:
+				#our_state_machine.switch_state("Combat")
 				our_state_machine.switch_state("BossBattle")
 			_:
 				assert(false)

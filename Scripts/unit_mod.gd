@@ -169,6 +169,14 @@ static var s_species_halfling : UnitMod = create("Halfling").set_attack(s_sling_
 static var s_species_orc : UnitMod = create("Orc").add_health(70).add_slowness(2.25).set_namer("create_orc_name").set_icon(UnitStats.Icon.Orc)
 static var s_species_ratman : UnitMod = create("Ratman").add_health(-40).add_slowness(-3.25).set_namer("create_ratman_name").set_icon(UnitStats.Icon.Ratman)
 
+static var s_temporal_zap_attack : AttackStats = AttackStats.create("Temporal Zap", AttackStats.AttackTarget.FIRST_TWO).set_stun(0.95).adjust_damage(1.25).has_cooldown().adjust_speed(0.75)
+static var s_age_flesh_attack : AttackStats = AttackStats.create("Aging Touch", AttackStats.AttackTarget.FARTHEST_FROM_DEATH).set_armor_piercing().adjust_damage(1.5)
+static var s_weakest_link_attack : AttackStats = AttackStats.create("Forsee Vulnerability", AttackStats.AttackTarget.MOST_VULNERABLE).adjust_damage(1.25).adjust_speed(0.95).has_cooldown()
+
+static var s_species_chronotyrant : UnitMod = create("Chrono").set_attack(s_temporal_zap_attack).set_icon(UnitStats.Icon.Chronotyrant).add_health(670)
+static var s_occupation_chronotyrant : UnitMod = create("Tyrant").set_attack(s_age_flesh_attack).add_armor(15)
+static var s_equipment_chronotyrant : UnitMod = create("Sonic Screwdriver").set_attack(s_weakest_link_attack).add_slowness(-3)
+
 static func create_species_shuffle(rnd : RandomNumberGenerator) -> Array[UnitMod]:
 	var sort_order : Array = [
 		[rnd.randf(), s_species_human],

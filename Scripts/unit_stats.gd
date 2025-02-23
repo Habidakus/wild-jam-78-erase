@@ -1,7 +1,7 @@
 class_name UnitStats extends RefCounted
 
 enum Side { NEITHER, HUMAN, COMPUTER }
-enum Icon { UNSET, Dwarf, Halfling, Human, Orc, Goblin, Ogre, Ratman, Elf, Skeleton, SkeletonKing, Demon, Spider, MantisDrone, MantisQueen }
+enum Icon { UNSET, Dwarf, Halfling, Human, Orc, Goblin, Ogre, Ratman, Elf, Skeleton, SkeletonKing, Demon, Spider, MantisDrone, MantisQueen, Chronotyrant }
 
 var id : int = -1
 var max_health : float
@@ -37,25 +37,34 @@ static func create_difficulty_foes(difficulty : float, rnd : RandomNumberGenerat
 				return create_difficulty_foes_spider_fight(difficulty, rnd)
 		PathEncounterStat.EncounterType.UNDEAD:
 			return create_difficulty_foes_undead_fight(difficulty, rnd)
+		PathEncounterStat.EncounterType.CHRONOTYRANT:
+			return create_difficulty_foes_chronotyrant(rnd)
 		_:
 			assert(false)
 	return []
 	#	foes.append(UnitStats.create_foes__goblin(rnd, i == 1))
 
+static func create_difficulty_foes_chronotyrant(rnd : RandomNumberGenerator) -> Array[UnitStats]:
+	var ret_val : Array[UnitStats]
+	var foe : UnitStats = UnitStats.new()
+	foe.init(UnitMod.s_species_chronotyrant, UnitMod.s_occupation_chronotyrant, UnitMod.s_equipment_chronotyrant, UnitStats.Side.COMPUTER, rnd)
+	foe.unit_name = "The Chronotyrant"
+	ret_val.append(foe)
+	return ret_val
 
 static func create_difficulty_foes_undead_fight(difficulty : float, rnd : RandomNumberGenerator) -> Array[UnitStats]:
-	difficulty += 4.0
-	difficulty *= 10.0
+	difficulty += 3.0
+	difficulty *= 20.0
 	var ret_val : Array[UnitStats]
-	while difficulty > 10 && ret_val.size() < 5:
+	while difficulty >= 10 && ret_val.size() < 5:
 		var selector : Array[int]
 		if difficulty < 35:
 			selector.append(10)
 		if difficulty > 25 && difficulty < 75:
 			selector.append(20)
-		if difficulty > 45:
+		if difficulty > 60:
 			selector.append(40)
-		if difficulty > 85:
+		if difficulty > 90:
 			selector.append(80)
 		var v = selector[rnd.randi_range(0, selector.size() - 1)]
 		var foe : UnitStats = UnitStats.new()
@@ -78,18 +87,18 @@ static func create_difficulty_foes_undead_fight(difficulty : float, rnd : Random
 	return ret_val
 
 static func create_difficulty_foes_gate_fight(difficulty : float, rnd : RandomNumberGenerator) -> Array[UnitStats]:
-	difficulty += 4.0
-	difficulty *= 10.0
+	difficulty += 3.0
+	difficulty *= 20.0
 	var ret_val : Array[UnitStats]
-	while difficulty > 10 && ret_val.size() < 5:
+	while difficulty >= 10 && ret_val.size() < 5:
 		var selector : Array[int]
 		if difficulty < 35:
 			selector.append(10)
 		if difficulty > 25 && difficulty < 75:
 			selector.append(20)
-		if difficulty > 45:
+		if difficulty > 60:
 			selector.append(40)
-		if difficulty > 85:
+		if difficulty > 90:
 			selector.append(80)
 		var v = selector[rnd.randi_range(0, selector.size() - 1)]
 		var foe : UnitStats = UnitStats.new()
@@ -112,14 +121,14 @@ static func create_difficulty_foes_gate_fight(difficulty : float, rnd : RandomNu
 
 static func create_difficulty_foes_spider_fight(difficulty : float, rnd : RandomNumberGenerator) -> Array[UnitStats]:
 	difficulty += 3.0
-	difficulty *= 10.0
+	difficulty *= 20.0
 	var ret_val : Array[UnitStats]
-	while difficulty > 10 && ret_val.size() < 5:
+	while difficulty >= 10 && ret_val.size() < 5:
 		var selector : Array[int]
 		selector.append(10)
-		if difficulty > 45:
+		if difficulty > 60:
 			selector.append(40)
-		if difficulty > 85:
+		if difficulty > 90:
 			selector.append(80)
 		var v = selector[rnd.randi_range(0, selector.size() - 1)]
 		var foe : UnitStats = UnitStats.new()
@@ -266,6 +275,7 @@ const icon_demon : Texture = preload("res://Art/Species_Demon.png")
 const icon_spider : Texture = preload("res://Art/Species_Spider.png")
 const icon_mantis_queen : Texture = preload("res://Art/Species_Bugman.png")
 const icon_mantis_drone : Texture = preload("res://Art/Species_Mantis.png")
+const icon_cronotyrant : Texture = preload("res://Art/Chronotyrant.png")
 func get_texture() -> Texture:
 	match icon:
 		UnitStats.Icon.Human:
@@ -296,6 +306,8 @@ func get_texture() -> Texture:
 			return icon_mantis_drone
 		UnitStats.Icon.MantisQueen:
 			return icon_mantis_queen
+		UnitStats.Icon.Chronotyrant:
+			return icon_cronotyrant
 			
 	return null
 

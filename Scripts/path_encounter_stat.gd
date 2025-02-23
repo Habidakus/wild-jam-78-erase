@@ -1,6 +1,6 @@
 class_name PathEncounterStat extends RefCounted
 
-enum EncounterType { UNDEFINED, GATE_FIGHT, CRONOTYRANT, REGULAR_FIGHT, MISC, UNDEAD, CHEST}
+enum EncounterType { UNDEFINED, GATE_FIGHT, CHRONOTYRANT, REGULAR_FIGHT, MISC, UNDEAD, CHEST}
 
 var encounter_type : EncounterType = EncounterType.UNDEFINED
 var graph_pos : Vector2i
@@ -12,14 +12,14 @@ var east : Array[PathEncounterStat]
 
 const combat_texture : Texture = preload("res://Art/TwoSwords.png")
 const chest_texture : Texture = preload("res://Art/Chest.png")
-const cronotyrant_texture : Texture = preload("res://Art/Hourglass.png")
+const chronotyrant_texture : Texture = preload("res://Art/Hourglass.png")
 const undead_texture : Texture = preload("res://Art/TombStone.png")
 
 func get_icon() -> Texture:
 	if encounter_type == EncounterType.GATE_FIGHT || encounter_type == EncounterType.REGULAR_FIGHT:
 		return combat_texture
-	elif encounter_type == EncounterType.CRONOTYRANT:
-		return cronotyrant_texture
+	elif encounter_type == EncounterType.CHRONOTYRANT:
+		return chronotyrant_texture
 	elif encounter_type == EncounterType.UNDEAD:
 		return undead_texture
 	elif encounter_type == EncounterType.CHEST:
@@ -48,7 +48,7 @@ func connect_path_to(other : PathEncounterStat) -> void:
 func needs_paths() -> bool:
 	if encounter_type != EncounterType.GATE_FIGHT && west.is_empty():
 		return true
-	if encounter_type != EncounterType.CRONOTYRANT && east.is_empty():
+	if encounter_type != EncounterType.CHRONOTYRANT && east.is_empty():
 		return true
 	return false
 
@@ -78,7 +78,7 @@ func add_paths(all_paths : Array[PathEncounterStat], rnd : RandomNumberGenerator
 			connect_path_to(selected)
 		else:
 			print("path encounter " + EncounterType.keys()[encounter_type] + " at " + str(graph_pos) + " has no western neighbors?")
-	if encounter_type != EncounterType.CRONOTYRANT && east.is_empty():
+	if encounter_type != EncounterType.CHRONOTYRANT && east.is_empty():
 		var potential : Array[PathEncounterStat]
 		var e = get_path_encounter_stat_at_graph_coords(all_paths, graph_pos + Vector2i(1, 0))
 		if e != null:

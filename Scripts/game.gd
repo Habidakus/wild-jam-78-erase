@@ -9,7 +9,7 @@ var path_state_machine_state : SMSPath
 var game_state : EGameState = null
 
 const calculation_depth : int = 7 # This is how many look aheads the min-max engine computes
-const path_depth : int = 4 # 6 This is how many encounters before the chronotyrant
+const path_depth : int = 3 # 6 This is how many encounters before the chronotyrant
 const path_width : int = 4
 
 # Called when the node enters the scene tree for the first time.
@@ -530,7 +530,7 @@ func initialize_path(_rnd: RandomNumberGenerator) -> void:
 	for n : PathEncounterStat in all_path_encounter_stats_at_depth(1):
 		n.connect_path_to(start_pes)
 	var end_pes : PathEncounterStat = all_path_encounter_stats_at_depth(path_depth - 1)[0]
-	end_pes.set_encounter_type("Chronotyrant", PathEncounterStat.EncounterType.CRONOTYRANT)
+	end_pes.set_encounter_type("Chronotyrant", PathEncounterStat.EncounterType.CHRONOTYRANT)
 	for n : PathEncounterStat in all_path_encounter_stats_at_depth(path_depth - 2):
 		n.connect_path_to(end_pes)
 	game_path.sort_custom(func(a : PathEncounterStat, b: PathEncounterStat) : return a.sort_value < b.sort_value)

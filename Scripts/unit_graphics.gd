@@ -15,7 +15,10 @@ static func create(unit_stats : UnitStats) -> UnitGraphics:
 	if texture != null:
 		var sprite : Sprite2D = ret_val.find_child("Sprite2D") as Sprite2D
 		sprite.texture = texture
-		sprite.scale = Vector2(.678, .678)
+		if unit_stats.icon == UnitStats.Icon.Chronotyrant:
+			sprite.scale = Vector2(.0986, .0986)
+		else:
+			sprite.scale = Vector2(.678, .678)
 	return ret_val
 
 func _ready() -> void:
