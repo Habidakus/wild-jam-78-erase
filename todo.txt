@@ -1,4 +1,3 @@
-- Credits page
 - Re-evaluate how armor works
 - add Shops & Chests to the overland map
 - Add a mimic
@@ -11,3 +10,5 @@ Known Bugs:
 
 - player can have both net and potion, both are single use (which doesn't work with our optimization)
 - Why are we offered a chance to drink a potion when not hurt?
+- reset the "Final Battle" check on the combat when restarting
+- reduce text size on path map

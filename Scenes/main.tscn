@@ -271,7 +271,6 @@ scale = Vector2(1.132, 1.132)
 texture = ExtResource("12_dih5f")
 
 [node name="Menu" type="Control" parent="OverStateMachine"]
-visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -291,24 +290,172 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
 
-[node name="Button" type="Button" parent="OverStateMachine/Menu"]
+[node name="VBoxContainer" type="VBoxContainer" parent="OverStateMachine/Menu"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -20.5
-offset_top = -15.5
-offset_right = 20.5
-offset_bottom = 15.5
+offset_left = -36.0
+offset_top = -55.0
+offset_right = 36.0
+offset_bottom = 55.0
 grow_horizontal = 2
 grow_vertical = 2
-size_flags_horizontal = 4
+theme_override_constants/separation = 40
+
+[node name="PlayButton" type="Button" parent="OverStateMachine/Menu/VBoxContainer"]
+layout_mode = 2
 theme_override_font_sizes/font_size = 32
 text = "Play"
 
+[node name="CreditsButton" type="Button" parent="OverStateMachine/Menu/VBoxContainer"]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Credits"
+
+[node name="Credits" type="Control" parent="OverStateMachine" node_paths=PackedStringArray("next_state")]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2_mqr82")
+next_state = NodePath("../Menu")
+
+[node name="Background" type="ColorRect" parent="OverStateMachine/Credits"]
+material = SubResource("ShaderMaterial_tll2r")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="OverStateMachine/Credits"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 30
+theme_override_constants/margin_top = 30
+theme_override_constants/margin_right = 30
+theme_override_constants/margin_bottom = 30
+
+[node name="GridContainer" type="GridContainer" parent="OverStateMachine/Credits/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+columns = 2
+
+[node name="ProgLab" type="Label" parent="OverStateMachine/Credits/MarginContainer/GridContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 31
+text = "Programming:
+"
+horizontal_alignment = 2
+
+[node name="ProgValue" type="Label" parent="OverStateMachine/Credits/MarginContainer/GridContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 31
+text = "Jason Abbott"
+
+[node name="DesignLab" type="Label" parent="OverStateMachine/Credits/MarginContainer/GridContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 31
+text = "Design:
+"
+horizontal_alignment = 2
+
+[node name="DesignValue" type="Label" parent="OverStateMachine/Credits/MarginContainer/GridContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 31
+text = "Jason Abbott"
+
+[node name="ArtLab" type="Label" parent="OverStateMachine/Credits/MarginContainer/GridContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 31
+text = "Art:
+"
+horizontal_alignment = 2
+
+[node name="ArtValue" type="Label" parent="OverStateMachine/Credits/MarginContainer/GridContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 31
+text = "Jason Abbott"
+
+[node name="PlayTestLab" type="Label" parent="OverStateMachine/Credits/MarginContainer/GridContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 31
+text = "Design Feedback:
+
+"
+horizontal_alignment = 2
+
+[node name="PlayTestValue" type="Label" parent="OverStateMachine/Credits/MarginContainer/GridContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 31
+text = "Jeff Hamilton
+Andy Kirton"
+
+[node name="ToolsLab" type="Label" parent="OverStateMachine/Credits/MarginContainer/GridContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 31
+text = "Tools:
+
+
+
+"
+horizontal_alignment = 2
+
+[node name="ToolsValue" type="Label" parent="OverStateMachine/Credits/MarginContainer/GridContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 31
+text = "Godot 4
+Audacity
+Wavosaur
+Gimp"
+
+[node name="SourceLab" type="Label" parent="OverStateMachine/Credits/MarginContainer/GridContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 31
+text = "Source Code:"
+horizontal_alignment = 2
+
+[node name="SourceValue" type="LinkButton" parent="OverStateMachine/Credits/MarginContainer/GridContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 31
+text = "Github wild-jam-78-erase"
+uri = "https://github.com/Habidakus/wild-jam-78-erase"
+
+[node name="Label" type="Label" parent="OverStateMachine/Credits/MarginContainer"]
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "(hit any key to continue)"
+horizontal_alignment = 1
+
 [node name="Game" type="Control" parent="OverStateMachine"]
+visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -390,6 +537,7 @@ theme_override_font_sizes/font_size = 22
 text = "(hit any key to continue)"
 
 [node name="Combat" type="Control" parent="OverStateMachine/Game/GameStateMachine"]
+visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -867,4 +1015,5 @@ theme_override_constants/margin_bottom = 20
 layout_mode = 2
 fit_content = true
 
-[connection signal="button_up" from="OverStateMachine/Menu/Button" to="OverStateMachine/Menu" method="_on_button_button_up"]
+[connection signal="button_up" from="OverStateMachine/Menu/VBoxContainer/PlayButton" to="OverStateMachine/Menu" method="_on_button_button_up"]
+[connection signal="button_up" from="OverStateMachine/Menu/VBoxContainer/CreditsButton" to="OverStateMachine/Menu" method="_on_credits_button_up"]
