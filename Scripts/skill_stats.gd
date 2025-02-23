@@ -71,11 +71,15 @@ func set_description(d : String) -> SkillStats:
 	return self
 	
 static var s_fighter_command_attack : AttackStats = AttackStats.create("Go Now", AttackStats.AttackTarget.TWO_REAR_MOST).set_on_allies().has_cooldown().set_is_command()
+static var s_rogue_bleed_attack : AttackStats = AttackStats.create("Hidden Cut", AttackStats.AttackTarget.TWO_FARTHEST_FROM_DEATH).set_armor_piercing().has_cooldown().set_bleed(5).adjust_damage(0.5)
+static var s_mage_fire_blast_attack : AttackStats = AttackStats.create("Fire Blast", AttackStats.AttackTarget.TWO_FARTHEST_FROM_DEATH).set_armor_piercing().has_cooldown().adjust_speed(1.5).adjust_damage(1.5)
 
 static func create_skill_stealth() -> SkillStats:
 	return create("Stealth", 3, SkillPhase.PRE_COMBAT, SkillClass.ROGUE, SkillScope.SELF).mod_initiative(-1.66).set_description("This hero attacks well before everyone else on the field.")
 static func create_skill_ambush() -> SkillStats:
 	return create("Ambush", 10, SkillPhase.PRE_COMBAT, SkillClass.ROGUE, SkillScope.ALL_HEROES).mod_initiative(-0.5).set_description("This hero helps the rest of the party set up an ambush, allowing them possible extra attacks at the start of combat.")
+static func create_skill_hidden_cut() -> SkillStats:
+	return create("Hidden Cut", 1, SkillPhase.WHEN_SELECTED, SkillClass.ROGUE, SkillScope.SELF).add_attack(s_rogue_bleed_attack).set_description("Can apply a persistant bleed even to the most heavily armored foes.")
 
 static func create_skill_healing_herbs() -> SkillStats:
 	return create("Healing Herbs", 4, SkillPhase.PRE_COMBAT, SkillClass.FIGHTER, SkillScope.ALL_HEROES).mod_health(0.15).set_description("This hero knows how to prepare a tea of healing herbs between combats, helping restore the health of all wounded allies.")
@@ -93,13 +97,17 @@ static func create_skill_magic_shield() -> SkillStats:
 	return create("Magic Shield", 5, SkillPhase.PRE_COMBAT, SkillClass.MAGIC, SkillScope.SELF).mod_shield(10).set_description("This magic hero is skilled in protecting themselves with a magic shield that is prepared before combat.")
 static func create_skill_group_shield() -> SkillStats:
 	return create("Group Shield", 6, SkillPhase.PRE_COMBAT, SkillClass.MAGIC, SkillScope.ALL_HEROES).mod_shield(5).set_description("This magic hero casts a minor shield spell on all their allies")
+static func create_skill_fireblast() -> SkillStats:
+	return create("Fire Blast", 1, SkillPhase.WHEN_SELECTED, SkillClass.MAGIC, SkillScope.SELF).add_attack(s_mage_fire_blast_attack).set_description("The fire blast spell is great single target damage, but it takes a bit of time to recover.")
 
 static var all_base_skills : Array[SkillStats] = [
 	create_skill_ambush(),
 	create_skill_command(),
+	create_skill_fireblast(),
 	create_skill_group_shield(),
 	create_skill_healing_herbs(),
 	create_skill_healing_prayer(),
+	create_skill_hidden_cut(),
 	create_skill_magic_shield(),
 	create_skill_stealth(),
 	create_skill_turn_undead(),

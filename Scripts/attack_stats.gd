@@ -15,7 +15,7 @@ var is_command : bool = false
 var acts_on_allies : bool = false
 var armor_piercing : bool = false
 
-enum AttackTarget { INVALID, FRONT_MOST, REAR_MOST, TWO_REAR_MOST, ANY, MOST_VULNERABLE, CLOSEST_TO_DEATH, FARTHEST_FROM_DEATH, SELF, TWO_FARTHEST_FROM_DEATH, FIRST_TWO, TWO_LEAST_ARMORED }
+enum AttackTarget { INVALID, FRONT_MOST, REAR_MOST, TWO_REAR_MOST, ANY, MOST_VULNERABLE, CLOSEST_TO_DEATH, FARTHEST_FROM_DEATH, SELF, TWO_FARTHEST_FROM_DEATH, FIRST_TWO, TWO_LEAST_ARMORED, ANY_WOUNDED }
 var attack_target : AttackTarget = AttackTarget.INVALID
 
 static func create(_name : String, _attack_target : AttackTarget) -> AttackStats:
@@ -102,6 +102,8 @@ func get_targets(actor : UnitStats, targets : Array[UnitStats]) -> Array[UnitSta
 			return UnitStats.to_array(UnitStats.select_lowest(targets, func(a : UnitStats) : return 0.0 - a.calculate_damage_from_attack(self)))
 		AttackTarget.CLOSEST_TO_DEATH:
 			return UnitStats.to_array(UnitStats.select_lowest(targets, func(a : UnitStats) : return a.current_health))
+		AttackTarget.ANY_WOUNDED:
+			return targets.filter(func(a : UnitStats) : return a.current_health < a.max_health || a.bleeding_ticks > 0)
 		AttackTarget.FARTHEST_FROM_DEATH:
 			return UnitStats.to_array(UnitStats.select_lowest(targets, func(a : UnitStats) : return 0.0 - a.current_health))
 		AttackTarget.TWO_FARTHEST_FROM_DEATH:
