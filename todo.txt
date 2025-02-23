@@ -1,5 +1,4 @@
 - Add more hero skills
-- add remaining foes (currently only three factions in the game)
 - Re-evaluate how armor works
 - add Shops & Chests to the overland map
 - Add a mimic
@@ -12,5 +11,4 @@
 Known Bugs:
 
 - player can have both net and potion, both are single use (which doesn't work with our optimization)
-- "20 Bleed" -> "20 Damage + Bleed"
 - Why are we offered a chance to drink a potion when not hurt?
