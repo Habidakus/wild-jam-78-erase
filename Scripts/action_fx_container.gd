@@ -23,7 +23,6 @@ func render_bleeding(unit_graphics_map : Dictionary) -> void:
 		var blood_drop : FallingVFX = FallingVFX.create(texture_blood_drop, 1.25)
 		blood_drop.position = unit_graphics.size / 2
 		unit_graphics.add_child(blood_drop)
-		print("Created blood drop")
 
 func render_tiring(unit_graphics_map : Dictionary) -> void:
 	if unit_graphics_map.has(tiring_unit_id):
@@ -31,7 +30,6 @@ func render_tiring(unit_graphics_map : Dictionary) -> void:
 		var sweat_drop : FallingVFX = FallingVFX.create(texture_sweat_drop, 1.25)
 		sweat_drop.position = unit_graphics.size / 2
 		unit_graphics.add_child(sweat_drop)
-		print("Created sweat drop")
 
 func render_stunned(unit_graphics_map : Dictionary) -> void:
 	if unit_graphics_map.has(stunned_unit_id):
