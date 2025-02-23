@@ -84,7 +84,7 @@ func clean_up_human_UX() -> void:
 	action_buttons.clear()
 	queue_redraw()
 
-func create_button(is_attack : bool, attack : AttackStats, target_stats : UnitStats, hover_callback : Callable, click_callback : Callable) -> Button:
+func create_button(is_attack : bool, attack : AttackStats, _target_stats : UnitStats, hover_callback : Callable, click_callback : Callable) -> Button:
 	var new_button : Button = Button.new()
 	new_button.text = attack.attack_name
 	new_button.mouse_entered.connect(hover_callback.bind(true))

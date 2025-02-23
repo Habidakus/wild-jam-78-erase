@@ -11,6 +11,7 @@ var tiring : float = 1
 var bleed_ticks : int = 0
 var speed_multiple : float = 1.0
 var attack_name : String
+var is_command : bool = false
 var acts_on_allies : bool = false
 var armor_piercing : bool = false
 
@@ -61,6 +62,11 @@ func has_cooldown() -> AttackStats:
 	cooldown = true
 	return self
 
+func set_is_command() -> AttackStats:
+	assert(is_command == false)
+	is_command = true
+	return self
+
 func has_single_use() -> AttackStats:
 	assert(single_use == false)
 	single_use = true
@@ -108,8 +114,12 @@ func generate_tooltip(target : UnitStats) -> String:
 	var dmg : float = target.calculate_damage_from_attack(self)
 	var ret_val : String = str(round(dmg * 10.0)/10.0)
 	if acts_on_allies:
-		ret_val += " Healing"
+		if is_command:
+			ret_val = "Command"
+		else:
+			ret_val += " Healing"
 	else:
+		assert(is_command == false)
 		ret_val += " Damage"
 		
 	if armor_piercing:
@@ -136,6 +146,15 @@ func generate_tooltip(target : UnitStats) -> String:
 	
 	return ret_val
 
+func dont_consider_stupid_action(targets : Array[UnitStats]) -> Array[UnitStats]:
+	if !acts_on_allies:
+		return targets
+	if targets.is_empty():
+		return targets
+	if damage > 0 && is_command == false:
+		return targets.filter(func(a : UnitStats) : return a.bleeding_ticks > 0 || ((a.current_health * 3) < (a.max_health * 2)))
+	return targets
+
 func get_moves(actor : UnitStats, units : Array[UnitStats], allow_stupid_humans : bool) -> Array[MMCAction]:
 	var ret_val : Array[MMCAction]
 	if cooldown && actor.has_cooldown(id):
@@ -144,12 +163,8 @@ func get_moves(actor : UnitStats, units : Array[UnitStats], allow_stupid_humans 
 		return ret_val
 	var target_side : UnitStats.Side = actor.side if acts_on_allies else UnitStats.get_other_side(actor.side)
 	var potential_targets : Array[UnitStats] = units.filter(func(a : UnitStats) : return a.side == target_side && a.is_alive())
-	if acts_on_allies && damage > 0 && !potential_targets.is_empty():
-		if !allow_stupid_humans:
-			potential_targets = potential_targets.filter(func(a : UnitStats) : return a.bleeding_ticks > 0 || (a.current_health < a.max_health))
-		else:
-			# Don't let the computer use it unless the character is actually down to 66% or lower
-			potential_targets = potential_targets.filter(func(a : UnitStats) : return a.bleeding_ticks > 0 || ((a.current_health * 3) < (a.max_health * 2)))
+	if !allow_stupid_humans:
+		potential_targets = dont_consider_stupid_action(potential_targets)
 	if potential_targets.is_empty():
 		return ret_val
 	var valid_targets : Array[UnitStats] = get_targets(actor, potential_targets)
@@ -163,12 +178,13 @@ func get_cost_in_time(actor : UnitStats) -> float:
 	else:
 		return speed_multiple * actor.slowness
 
-func get_cost_in_time_for_target(_target : UnitStats) -> float:
+func get_cost_in_time_for_target(attacker: UnitStats, target : UnitStats) -> float:
 	if stun > 0:
 		# lower this is, the more resistance they have
-		var stun_resistance : float = 1.0 - (_target.max_health / (_target.max_health + 333.0))
-
+		var stun_resistance : float = 1.0 - (target.max_health / (target.max_health + 333.0))
 		return damage * stun * stun_resistance
+	elif is_command:
+		return (attacker.next_attack - target.next_attack) + 0.01
 	else:
 		return 0
 
@@ -178,6 +194,9 @@ func generate_fx(actor : UnitStats, target : UnitStats) -> ActionFXContainer:
 	return ret_val
 
 func apply(actor : UnitStats, target : UnitStats, fx : ActionFXContainer) -> void:
+	# Must be computed before actor goes slower, our attack might be the command "Go Now"
+	var target_stun_cost : float = get_cost_in_time_for_target(actor, target)
+
 	if fx == null:
 		actor.next_attack += get_cost_in_time(actor)
 		
@@ -187,12 +206,12 @@ func apply(actor : UnitStats, target : UnitStats, fx : ActionFXContainer) -> voi
 		else:
 			actor.tired *= tiring
 
-	var target_stun_cost : float = get_cost_in_time_for_target(target)
 	if target_stun_cost:
 		if fx != null:
 			fx.add_stun(actor, target, target_stun_cost)
 		else:
 			target.next_attack += target_stun_cost
+			
 
 	var new_bleed_ticks : bool = true if bleed_ticks > 0 && bleed_ticks > target.bleeding_ticks else false
 	var dmg : float = target.calculate_damage_from_attack(self)

@@ -495,8 +495,8 @@ func human_hover_over_action(b : bool, move : EAction) -> void:
 		var actor : UnitStats = game_state.get_unit_by_id(move.actorID)
 		ghost_trip_sheet_pos[move.actorID] = actor.next_attack + move.attack.get_cost_in_time(actor)
 		
-		var target_slow : float = move.attack.get_cost_in_time_for_target(target)
-		if target_slow > 0:
+		var target_slow : float = move.attack.get_cost_in_time_for_target(actor, target)
+		if target_slow != 0:
 			ghost_trip_sheet_pos[move.targetID] = target.next_attack + target_slow
 			
 		update_trip_sheet()

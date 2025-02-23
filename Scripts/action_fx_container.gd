@@ -79,9 +79,12 @@ func add_tiring(unit : UnitStats):
 
 func add_stun(attacker : UnitStats, target : UnitStats, time : float):
 	assert(stunned_unit_id == -1)
-	stunner_unit_id = attacker.id
-	stunned_unit_id = target.id
-	stunned_time = time
+	if time > 0:
+		stunner_unit_id = attacker.id
+		stunned_unit_id = target.id
+		stunned_time = time
+	else:
+		print("TODO: Add Hurry Up VFX")
 
 func apply_heal(unit : UnitStats, dmg : float):
 	damages.append([unit.id, 0 - dmg])
