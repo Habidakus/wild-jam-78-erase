@@ -74,6 +74,7 @@ func set_description(d : String) -> SkillStats:
 static var s_fighter_command_attack : AttackStats = AttackStats.create("Go Now", AttackStats.AttackTarget.TWO_REAR_MOST).set_on_allies().has_cooldown().set_is_command()
 static var s_rogue_bleed_attack : AttackStats = AttackStats.create("Hidden Cut", AttackStats.AttackTarget.TWO_FARTHEST_FROM_DEATH).set_armor_piercing().has_cooldown().set_bleed(5).adjust_damage(0.5)
 static var s_mage_fire_blast_attack : AttackStats = AttackStats.create("Fire Blast", AttackStats.AttackTarget.TWO_FARTHEST_FROM_DEATH).set_armor_piercing().has_cooldown().adjust_speed(1.5).adjust_damage(1.5)
+static var s_cleric_divine_wrath_attack : AttackStats = AttackStats.create("Divine Wrath", AttackStats.AttackTarget.FARTHEST_FROM_DEATH).has_cooldown().adjust_speed(1.5).adjust_damage(1.5).set_divine_wrath()
 
 static func create_skill_stealth() -> SkillStats:
 	return create("Stealth", 3, SkillPhase.PRE_COMBAT, SkillClass.ROGUE, SkillScope.SELF).mod_initiative(-1.66).set_description("This hero attacks well before everyone else on the field.")
@@ -93,6 +94,8 @@ static func create_skill_healing_prayer() -> SkillStats:
 	return create("Resurrection", 6, SkillPhase.RESURRECTION, SkillClass.HOLY, SkillScope.ALL_DEAD_HEROES).mod_health(0.125).set_description("This holy hero helps restore the health of anyone who was defeated in a previous combat.")
 static func create_skill_turn_undead() -> SkillStats:
 	return create("Turn Undead", 6, SkillPhase.PRE_COMBAT, SkillClass.HOLY, SkillScope.FOE_UNDEAD).mod_health(-0.125).set_description("This holy hero inflicts special damage on all undead before combat is joined.")
+static func create_skill_divine_wrath() -> SkillStats:
+	return create("Divine Wrath", 1, SkillPhase.WHEN_SELECTED, SkillClass.HOLY, SkillScope.SELF).add_attack(s_cleric_divine_wrath_attack).set_advanced().set_description("Passes divine judgement against a foe - very good against Undead, and possibly Chronotyrants.")
 
 static func create_skill_magic_shield() -> SkillStats:
 	return create("Magic Shield", 5, SkillPhase.PRE_COMBAT, SkillClass.MAGIC, SkillScope.SELF).mod_shield(10).set_description("This magic hero is skilled in protecting themselves with a magic shield that is prepared before combat.")
@@ -104,6 +107,7 @@ static func create_skill_fireblast() -> SkillStats:
 static var all_base_skills : Array[SkillStats] = [
 	create_skill_ambush(),
 	create_skill_command(),
+	create_skill_divine_wrath(),
 	create_skill_fireblast(),
 	create_skill_group_shield(),
 	create_skill_healing_herbs(),

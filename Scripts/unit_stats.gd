@@ -260,6 +260,7 @@ func prepare_for_next_battle(post_battle_version : UnitStats) -> void:
 func clone() -> UnitStats:
 	var ret_val : UnitStats = UnitStats.new()
 	ret_val.id = id
+	ret_val.icon = icon
 	ret_val.max_health = max_health
 	ret_val.armor = armor
 	ret_val.current_health = current_health
@@ -273,11 +274,11 @@ func clone() -> UnitStats:
 	ret_val.cooldown_id = cooldown_id
 	ret_val.single_use = single_use
 	ret_val.unit_name = unit_name # We need this for the trip sheet
+	ret_val.undead = undead
 	
 	# The following members should need to be cloned while evaluating future turns
 	# ret_val.skill_class
 	# ret_val.skills
-	# ret_val.undead
 	
 	return ret_val
 
@@ -443,6 +444,13 @@ func get_time_until_action() -> float:
 
 func calculate_damage_from_attack(attack : AttackStats) -> float:
 	var dmg : float = attack.damage
+	
+	if attack.divine_wrath:
+		if icon == Icon.Chronotyrant || undead:
+			dmg *= 2.5
+		else:
+			dmg /= 2.5
+	
 	if attack.stun > 0:
 		dmg *= (1.0 - attack.stun)
 	if attack.acts_on_allies:

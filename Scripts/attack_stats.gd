@@ -6,6 +6,7 @@ var id : int = 0
 var damage : float = 30
 var cooldown : bool = false
 var single_use : bool = false
+var divine_wrath : bool = false
 var stun : float = 0
 var tiring : float = 1
 var bleed_ticks : int = 0
@@ -25,6 +26,11 @@ static func create(_name : String, _attack_target : AttackTarget) -> AttackStats
 	ret_val.id = s_attack_id
 	s_attack_id += 1
 	return ret_val
+
+func set_divine_wrath() -> AttackStats:
+	assert(divine_wrath == false)
+	divine_wrath = true
+	return self
 
 func tires(mod : float) -> AttackStats:
 	tiring *= mod
