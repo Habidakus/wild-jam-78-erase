@@ -33,6 +33,7 @@ func accepted_defeat() -> void:
 	game_state = null
 	game_path.clear()
 	initialize_path(rnd)
+	combat_state_machine_state.restart()
 	find_child("LoopExposition").restart(rnd)
 	path_state_machine_state.reset_node_colors()
 	our_state_machine.switch_state("Menu")

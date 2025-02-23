@@ -9,6 +9,9 @@ var human_moves : Array[EAction]
 func init(_game : Game) -> void:
 	game = _game
 
+func restart() -> void:
+	final_battle = false
+
 func set_final_battle() -> void:
 	final_battle = true
 
