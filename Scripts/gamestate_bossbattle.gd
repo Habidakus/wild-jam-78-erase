@@ -4,11 +4,15 @@ var in_decision_state : bool = false
 var final_battle : bool = false
 var game : Game
 var hero_box : GridContainer
+var audio_stream_player : AudioStreamPlayer
 
 func init(_game : Game) -> void:
 	game = _game
 	hero_box = find_child("HeroBox") as GridContainer
 	assert(hero_box)
+	audio_stream_player = find_child("AudioStreamPlayer") as AudioStreamPlayer
+	assert(audio_stream_player)
+	audio_stream_player.finished.connect(Callable(self, "release_exit"))
 
 func enter_state() -> void:
 	super.enter_state()
@@ -25,10 +29,37 @@ func enter_state() -> void:
 		find_child("FinalBattle").hide()
 		find_child("Rant").show()
 
-func exit_state(next_state: StateMachineState) -> void:
+var exit_when_stream_finishes : bool = false
+var waiting_on_stream_to_finish : bool = false
+var next_state : StateMachineState = null
+
+func _process(_delta: float) -> void:
+	if exit_when_stream_finishes:
+		if waiting_on_stream_to_finish:
+			return
+		else:
+			exit_when_stream_finishes = false
+			waiting_on_stream_to_finish = false
+			super.exit_state(next_state)
+
+func exit_state(_next_state: StateMachineState) -> void:
 	# TODO: We should ramp up the speed of the background and then ramp down, before fading out
 	game.perform_post_loop_heals()
-	super.exit_state(next_state)
+	exit_when_stream_finishes = true
+	#super.exit_state(next_state)
+
+func release_exit() -> void:
+	assert(exit_when_stream_finishes)
+	waiting_on_stream_to_finish = false
+
+func play_erase_sound() -> void:
+	
+	for child in hero_box.get_children():
+		hero_box.remove_child(child)
+		child.queue_free()
+		
+	waiting_on_stream_to_finish = true
+	audio_stream_player.play()
 
 func switch_to_decision() -> void:
 	if final_battle:

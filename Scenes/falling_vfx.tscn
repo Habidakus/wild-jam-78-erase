@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://dh2rqcs0onwgj"]
+
+[ext_resource type="Script" path="res://Scripts/falling_vfx.gd" id="1_lotoa"]
+[ext_resource type="Texture2D" uid="uid://b48rim8uke2tt" path="res://Art/SweatDrop.png" id="2_bia7e"]
+
+[node name="FallingVFX" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_lotoa")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_bia7e")

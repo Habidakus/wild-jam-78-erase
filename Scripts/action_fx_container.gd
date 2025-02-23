@@ -3,11 +3,37 @@ class_name ActionFXContainer extends RefCounted
 var damages : Array[Array] # <unit id, float>
 var stunned_unit_id : int = -1
 var stunner_unit_id : int = -1
+var bleeding_unit_id : int = -1
+var tiring_unit_id : int = -1
 var stunned_time : float = 0
 
 const texture_stunned : Texture = preload("res://Art/Net.png")
+const texture_blood_drop : Texture = preload("res://Art/BloodDrop.png")
+const texture_sweat_drop : Texture = preload("res://Art/SweatDrop.png")
 
 func render_fx(unit_graphics_map : Dictionary) -> void: # <unit id, UnitGraphics>
+	render_stunned(unit_graphics_map)
+	render_damages(unit_graphics_map)
+	render_bleeding(unit_graphics_map)
+	render_tiring(unit_graphics_map)
+
+func render_bleeding(unit_graphics_map : Dictionary) -> void:
+	if unit_graphics_map.has(bleeding_unit_id):
+		var unit_graphics : UnitGraphics = unit_graphics_map[bleeding_unit_id]
+		var blood_drop : FallingVFX = FallingVFX.create(texture_blood_drop, 1.25)
+		blood_drop.position = unit_graphics.size / 2
+		unit_graphics.add_child(blood_drop)
+		print("Created blood drop")
+
+func render_tiring(unit_graphics_map : Dictionary) -> void:
+	if unit_graphics_map.has(tiring_unit_id):
+		var unit_graphics : UnitGraphics = unit_graphics_map[tiring_unit_id]
+		var sweat_drop : FallingVFX = FallingVFX.create(texture_sweat_drop, 1.25)
+		sweat_drop.position = unit_graphics.size / 2
+		unit_graphics.add_child(sweat_drop)
+		print("Created sweat drop")
+
+func render_stunned(unit_graphics_map : Dictionary) -> void:
 	if unit_graphics_map.has(stunned_unit_id):
 		var attacker_graphics : UnitGraphics = unit_graphics_map[stunner_unit_id]
 		var unit_graphics : UnitGraphics = unit_graphics_map[stunned_unit_id]
@@ -21,6 +47,8 @@ func render_fx(unit_graphics_map : Dictionary) -> void: # <unit id, UnitGraphics
 		tween.tween_property(net, "position", unit_graphics.size / 2, 0.75)
 		tween.tween_property(net, "modulate", Color(1, 1, 1, 0), 0.20)
 		tween.tween_callback(Callable(self, "clean_up_net").bind(unit_graphics, net))
+
+func render_damages(unit_graphics_map : Dictionary) -> void:
 	for entry in damages:
 		var unit_id : int = entry[0]
 		if unit_graphics_map.has(unit_id):
@@ -40,14 +68,16 @@ func clean_up_net(unit_graphics : UnitGraphics, net : Sprite2D) -> void:
 	unit_graphics.remove_child(net)
 	net.queue_free()
 
-func add_tiring(_unit : UnitStats):
-	print("TODO: Add Tiring VFX")
-func apply_bleed(_unit : UnitStats):
-	print("TODO: Add Bleed-applied VFX")
 func add_cooldown(_unit : UnitStats):
 	print("TODO: Add Cooldown triggered VFX")
 func expend_single_use(_unit : UnitStats):
 	print("TODO: Add single-use consumed VFX")
+
+func apply_bleed(unit : UnitStats):
+	bleeding_unit_id = unit.id
+
+func add_tiring(unit : UnitStats):
+	tiring_unit_id = unit.id
 
 func add_stun(attacker : UnitStats, target : UnitStats, time : float):
 	assert(stunned_unit_id == -1)

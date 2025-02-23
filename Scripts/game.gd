@@ -97,6 +97,7 @@ func initialize_foes() -> void:
 	#	foes.append(UnitStats.create_foes__goblin(rnd, i == 1))
 
 func destroy_hero(hero : UnitStats) -> void:
+	find_child("BossBattle").play_erase_sound()
 	heroes = heroes.filter(func(a : UnitStats) : return a.id != hero.id)
 	current_path_encounter_stat = game_path.filter(func(a : PathEncounterStat) : return a.graph_pos == Vector2i.ZERO)[0]
 	path_state_machine_state.our_state_machine.switch_state("LoopExposition")
