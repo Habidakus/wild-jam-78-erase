@@ -3,10 +3,14 @@ class_name SMSCombat extends StateMachineState
 var game : Game = null
 const rest : float = 1.0
 var cooldown : float = rest
+var final_battle : bool = false
 var human_moves : Array[EAction]
 
 func init(_game : Game) -> void:
 	game = _game
+
+func set_final_battle() -> void:
+	final_battle = true
 
 func enter_state() -> void:
 	super.enter_state()
@@ -25,6 +29,8 @@ func _process(_delta: float) -> void:
 	if game.is_fight_finished():
 		if game.are_all_hereos_dead():
 			our_state_machine.switch_state("Defeated")
+		elif final_battle:
+			our_state_machine.switch_state("Victory")
 		else:
 			our_state_machine.switch_state("PostCombat")
 		return

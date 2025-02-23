@@ -1,5 +1,3 @@
-- Add win condition
-- Fix it so that boss level foes show up
 - Add more hero skills
 - add remaining foes (currently only three factions in the game)
 - Better tooltip window
@@ -14,7 +12,6 @@
 
 Known Bugs:
 
-- shouldn't give magic shield to the dead
 - player can have both net and potion, both are single use (which doesn't work with our optimization)
 - "20 Bleed" -> "20 Damage + Bleed"
 - Why are we offered a chance to drink a potion when not hurt?

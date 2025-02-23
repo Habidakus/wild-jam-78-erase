@@ -20,6 +20,7 @@ func _ready() -> void:
 	path_state_machine_state = find_child("PathSelection") as SMSPath
 	path_state_machine_state.init(self, rnd)
 	(find_child("Defeated") as StateMachineState).state_exit.connect(Callable(self, "accepted_defeat"))
+	(find_child("Victory") as StateMachineState).state_exit.connect(Callable(self, "accepted_defeat"))
 	find_child("PreGame").init(self)
 	find_child("PostCombat").init(self)
 	find_child("LoopExposition").init(self, rnd)
@@ -35,6 +36,9 @@ func accepted_defeat() -> void:
 	find_child("LoopExposition").restart(rnd)
 	path_state_machine_state.reset_node_colors()
 	our_state_machine.switch_state("Menu")
+
+func set_final_battle() -> void:
+	combat_state_machine_state.set_final_battle()
 
 var hero_cgs : EGameState.CalculusGetScore
 var foe_cgs : EGameState.CalculusGetScore

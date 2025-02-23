@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=3 uid="uid://b5t3tpb66grx0"]
+[gd_scene load_steps=35 format=3 uid="uid://b5t3tpb66grx0"]
 
 [ext_resource type="Script" path="res://addons/statemachine/StateMachine.gd" id="1_p7e6l"]
 [ext_resource type="Script" path="res://addons/statemachine/StateMachineState_AnyKeyToContinue.gd" id="2_mqr82"]
@@ -195,6 +195,19 @@ gradient = SubResource("Gradient_ctt8h")
 shader = SubResource("Shader_gc61x")
 shader_parameter/speed = 0.1
 shader_parameter/color_gradient = SubResource("GradientTexture1D_n8t20")
+shader_parameter/noiseX = SubResource("NoiseTexture2D_xs4ou")
+shader_parameter/noiseY = SubResource("NoiseTexture2D_yjbvs")
+
+[sub_resource type="Gradient" id="Gradient_4qwsc"]
+colors = PackedColorArray(0.299968, 0.511606, 1, 1, 1, 1, 1, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_4h2yq"]
+gradient = SubResource("Gradient_4qwsc")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fpjmy"]
+shader = SubResource("Shader_gc61x")
+shader_parameter/speed = 0.1
+shader_parameter/color_gradient = SubResource("GradientTexture1D_4h2yq")
 shader_parameter/noiseX = SubResource("NoiseTexture2D_xs4ou")
 shader_parameter/noiseY = SubResource("NoiseTexture2D_yjbvs")
 
@@ -562,7 +575,46 @@ Muhahaha!\"
 [center]... and with that the Chronomancer
 lept through his time portal.[/center]"
 
+[node name="FinalBattle" type="Control" parent="OverStateMachine/Game/GameStateMachine/BossBattle/Panel/MarginContainer"]
+visible = false
+layout_mode = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="OverStateMachine/Game/GameStateMachine/BossBattle/Panel/MarginContainer/FinalBattle"]
+layout_mode = 2
+offset_right = 610.0
+offset_bottom = 588.0
+theme_override_colors/default_color = Color(0, 0, 0, 1)
+theme_override_colors/font_selected_color = Color(0, 0, 0, 1)
+theme_override_colors/selection_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/normal_font_size = 24
+bbcode_enabled = true
+text = "\"You fools! You think you can defeat me? Me?! With your oh so mortal lives? Muhahaha!
+
+I have the power of time itself! I shall simply jump through this time portal here ...
+
+What?
+
+What have you done? Where is my portal? This could only happen if we'd already done this dance countless times before!\""
+
+[node name="Label" type="Label" parent="OverStateMachine/Game/GameStateMachine/BossBattle/Panel/MarginContainer/FinalBattle"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -161.0
+offset_top = -63.0
+offset_right = 161.0
+offset_bottom = -29.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 24
+text = "(Hit any button to continue)"
+
 [node name="Choice" type="Control" parent="OverStateMachine/Game/GameStateMachine/BossBattle/Panel/MarginContainer"]
+visible = false
 layout_mode = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="OverStateMachine/Game/GameStateMachine/BossBattle/Panel/MarginContainer/Choice"]
@@ -642,6 +694,7 @@ offset_bottom = 40.0
 script = ExtResource("15_b6n3m")
 
 [node name="Defeated" type="Control" parent="OverStateMachine/Game/GameStateMachine" node_paths=PackedStringArray("next_state")]
+visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -701,5 +754,64 @@ text = "[center][b]Inevitable Defeat[/b][/center]
 ... It must have been fated that the Chronotyrant was never to be overthrown. An act of madness to even think that anyone, no matter how skilled, could stop his eventual rule over every epoch.
 
 Knowing this... who would be foolish enough to try - again?"
+
+[node name="Victory" type="Control" parent="OverStateMachine/Game/GameStateMachine" node_paths=PackedStringArray("next_state")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2_mqr82")
+next_state = NodePath("../PreGame")
+
+[node name="Background" type="ColorRect" parent="OverStateMachine/Game/GameStateMachine/Victory"]
+material = SubResource("ShaderMaterial_fpjmy")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="OverStateMachine/Game/GameStateMachine/Victory"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -104.0
+offset_top = -48.0
+offset_right = 104.0
+offset_bottom = -25.0
+grow_horizontal = 2
+grow_vertical = 0
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "(press any key to continue)"
+
+[node name="MarginContainer" type="MarginContainer" parent="OverStateMachine/Game/GameStateMachine/Victory"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 40
+
+[node name="RichTextLabel" type="RichTextLabel" parent="OverStateMachine/Game/GameStateMachine/Victory/MarginContainer"]
+layout_mode = 2
+theme_override_colors/default_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/normal_font_size = 32
+theme_override_font_sizes/bold_font_size = 64
+bbcode_enabled = true
+text = "[center][b]Victory[/b][/center]
+
+Finally, after endless battles through the eons, the Chronotyrant has been slain. His cruel machinations come to an end. All, thanks to you, you mighty three remaining heroes."
 
 [connection signal="button_up" from="OverStateMachine/Menu/Button" to="OverStateMachine/Menu" method="_on_button_button_up"]

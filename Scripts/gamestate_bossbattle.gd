@@ -1,6 +1,7 @@
 extends StateMachineState
 
 var in_decision_state : bool = false
+var final_battle : bool = false
 var game : Game
 var hero_box : GridContainer
 
@@ -12,11 +13,17 @@ func init(_game : Game) -> void:
 func enter_state() -> void:
 	super.enter_state()
 	in_decision_state = false
-	find_child("Rant").show()
 	find_child("Choice").hide()
 	for child in hero_box.get_children():
 		hero_box.remove_child(child)
 		child.queue_free()
+	if game.heroes.size() == 3:
+		final_battle = true
+		find_child("Rant").hide()
+		find_child("FinalBattle").show()
+	else:
+		find_child("FinalBattle").hide()
+		find_child("Rant").show()
 
 func exit_state(next_state: StateMachineState) -> void:
 	# TODO: We should ramp up the speed of the background and then ramp down, before fading out
@@ -24,8 +31,15 @@ func exit_state(next_state: StateMachineState) -> void:
 	super.exit_state(next_state)
 
 func switch_to_decision() -> void:
+	if final_battle:
+		final_battle = false
+		game.set_final_battle()
+		our_state_machine.switch_state("Combat")
+		return
+
 	in_decision_state = true
 	find_child("Rant").hide()
+	find_child("FinalBattle").hide()
 	find_child("Choice").show()
 	
 	for hero : UnitStats in game.heroes:
