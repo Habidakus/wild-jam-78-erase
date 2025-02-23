@@ -40,8 +40,8 @@ func enter_state() -> void:
 	skill_a.show()
 	skill_a.modulate = Color.WHITE
 	skill_a.init(skill_list[0][1], skill_list[0][0])
-	callable_a_on = Callable(self, "skill_hover").bind(true, skill_a)
-	callable_a_off = Callable(self, "skill_hover").bind(false, skill_a)
+	callable_a_on = Callable(self, "skill_hover").bind(true, skill_a, skill_list[0][0])
+	callable_a_off = Callable(self, "skill_hover").bind(false, skill_a, skill_list[0][0])
 	callable_a_click = Callable(game, "skill_click").bind(skill_list[0][1], skill_list[0][0])
 	skill_a.mouse_entered.connect(callable_a_on)
 	skill_a.mouse_exited.connect(callable_a_off)
@@ -51,8 +51,8 @@ func enter_state() -> void:
 		skill_b.show()
 		skill_b.modulate = Color.WHITE
 		skill_b.init(skill_list[1][1], skill_list[1][0])
-		callable_b_on = Callable(self, "skill_hover").bind(true, skill_b)
-		callable_b_off = Callable(self, "skill_hover").bind(false, skill_b)
+		callable_b_on = Callable(self, "skill_hover").bind(true, skill_b, skill_list[1][0])
+		callable_b_off = Callable(self, "skill_hover").bind(false, skill_b, skill_list[1][0])
 		callable_b_click = Callable(game, "skill_click").bind(skill_list[1][1], skill_list[1][0])
 		skill_b.mouse_entered.connect(callable_b_on)
 		skill_b.mouse_exited.connect(callable_b_off)
@@ -64,8 +64,8 @@ func enter_state() -> void:
 		skill_c.show()
 		skill_c.modulate = Color.WHITE
 		skill_c.init(skill_list[2][1], skill_list[2][0])
-		callable_c_on = Callable(self, "skill_hover").bind(true, skill_c)
-		callable_c_off = Callable(self, "skill_hover").bind(false, skill_c)
+		callable_c_on = Callable(self, "skill_hover").bind(true, skill_c, skill_list[2][0])
+		callable_c_off = Callable(self, "skill_hover").bind(false, skill_c, skill_list[2][0])
 		callable_c_click = Callable(game, "skill_click").bind(skill_list[2][1], skill_list[2][0])
 		skill_c.mouse_entered.connect(callable_c_on)
 		skill_c.mouse_exited.connect(callable_c_off)
@@ -77,10 +77,12 @@ func enter_state() -> void:
 	
 	#game.initialize_heroes()
 
-func skill_hover(entered : bool, card : SkillGraphic) -> void:
+func skill_hover(entered : bool, card : SkillGraphic, unit : UnitStats) -> void:
 	if entered:
+		game.show_unit_skills_in_tooltip(unit, true)
 		card.modulate = Color.AQUA
 	else:
+		game.show_unit_skills_in_tooltip(unit, false)
 		card.modulate = Color.WHITE
 
 func exit_state(next_state: StateMachineState) -> void:

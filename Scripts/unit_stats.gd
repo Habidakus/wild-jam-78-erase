@@ -282,6 +282,17 @@ func clone() -> UnitStats:
 	
 	return ret_val
 
+func create_skill_select_tooltip() -> String:
+	var ret_val : String = "Attacks: " if attacks.size() > 1 else "Attacs: "
+	for index in range(0, attacks.size()):
+		if index > 0:
+			ret_val += ", "
+		ret_val += attacks[index].attack_name
+	var learned_skills : String = describe_learned_skills()
+	if !learned_skills.is_empty():
+		ret_val += "\n" + learned_skills
+	return ret_val
+
 func create_tooltip() -> String:
 	var ret_val : String = unit_name
 	if armor > 0:

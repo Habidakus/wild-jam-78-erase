@@ -1,9 +1,4 @@
-- Add more hero skills
-  - Add the "Command" skill to knights so that they can have another player go right after them
-  - Give the rogues a bleed attack, which will be really useful against the Chronotyrant
-  - Holy?
-  - Magic?
-- Have tooltip appear when granting skills, so you know who you're granting skills to.
+- Credits page
 - Re-evaluate how armor works
 - add Shops & Chests to the overland map
 - Add a mimic
@@ -11,7 +6,6 @@
 - add UI & attack sounds
 - Replace targeting lines with nice looking particles
 - Add monster & hero attack "animations"
-- Credits page
 
 Known Bugs:
 

@@ -306,7 +306,16 @@ func ready_battle_space() -> void:
 	for unitID : int in battle_space_figures.keys():
 		(battle_space_figures[unitID] as UnitGraphics).queue_free()
 	battle_space_figures.clear()
-	
+
+func show_unit_skills_in_tooltip(unit_stats : UnitStats, hovering : bool) -> void:
+	var tooltip_widget : Control = find_child("Tooltip") as Control
+	if hovering:
+		if unit_stats != null:
+			tooltip_widget.show()
+			tooltip_widget.find_child("TooltipTextArea").text = unit_stats.create_skill_select_tooltip()
+	else:
+		tooltip_widget.hide()
+
 func show_unit_tooltip(unit_id : int, hovering : bool) -> void:
 	var tooltip_widget : Control = find_child("Tooltip") as Control
 	if hovering:
