@@ -15,6 +15,7 @@ var adjust_health : float = 0
 var shield : float = 0
 var desc : String = "???"
 var attack : AttackStats = null
+var is_advanced : bool = false
 var filter : Callable = func(_a : UnitStats) : return true
 
 func describe_skill() -> String:
@@ -79,14 +80,14 @@ static func create_skill_stealth() -> SkillStats:
 static func create_skill_ambush() -> SkillStats:
 	return create("Ambush", 10, SkillPhase.PRE_COMBAT, SkillClass.ROGUE, SkillScope.ALL_HEROES).mod_initiative(-0.5).set_description("This hero helps the rest of the party set up an ambush, allowing them possible extra attacks at the start of combat.")
 static func create_skill_hidden_cut() -> SkillStats:
-	return create("Hidden Cut", 1, SkillPhase.WHEN_SELECTED, SkillClass.ROGUE, SkillScope.SELF).add_attack(s_rogue_bleed_attack).set_description("Can apply a persistant bleed even to the most heavily armored foes.")
+	return create("Hidden Cut", 1, SkillPhase.WHEN_SELECTED, SkillClass.ROGUE, SkillScope.SELF).add_attack(s_rogue_bleed_attack).set_advanced().set_description("Can apply a persistant bleed even to the most heavily armored foes.")
 
 static func create_skill_healing_herbs() -> SkillStats:
 	return create("Healing Herbs", 4, SkillPhase.PRE_COMBAT, SkillClass.FIGHTER, SkillScope.ALL_HEROES).mod_health(0.15).set_description("This hero knows how to prepare a tea of healing herbs between combats, helping restore the health of all wounded allies.")
 static func create_skill_walk_it_off() -> SkillStats:
 	return create("Walk It Off", 3, SkillPhase.PRE_COMBAT, SkillClass.FIGHTER, SkillScope.SELF).mod_health(0.25).set_description("This hero is a veteran of patching themselves up, and heals quickly between combats.")
 static func create_skill_command() -> SkillStats:
-	return create("Go Now", 1, SkillPhase.WHEN_SELECTED, SkillClass.FIGHTER, SkillScope.SELF).add_attack(s_fighter_command_attack).set_description("This hero can get another hero to act next, regardless of their stunned state.")
+	return create("Go Now", 1, SkillPhase.WHEN_SELECTED, SkillClass.FIGHTER, SkillScope.SELF).add_attack(s_fighter_command_attack).set_advanced().set_description("This hero can get another hero to act next, regardless of their stunned state.")
 
 static func create_skill_healing_prayer() -> SkillStats:
 	return create("Resurrection", 6, SkillPhase.RESURRECTION, SkillClass.HOLY, SkillScope.ALL_DEAD_HEROES).mod_health(0.125).set_description("This holy hero helps restore the health of anyone who was defeated in a previous combat.")
@@ -98,7 +99,7 @@ static func create_skill_magic_shield() -> SkillStats:
 static func create_skill_group_shield() -> SkillStats:
 	return create("Group Shield", 6, SkillPhase.PRE_COMBAT, SkillClass.MAGIC, SkillScope.ALL_HEROES).mod_shield(5).set_description("This magic hero casts a minor shield spell on all their allies")
 static func create_skill_fireblast() -> SkillStats:
-	return create("Fire Blast", 1, SkillPhase.WHEN_SELECTED, SkillClass.MAGIC, SkillScope.SELF).add_attack(s_mage_fire_blast_attack).set_description("The fire blast spell is great single target damage, but it takes a bit of time to recover.")
+	return create("Fire Blast", 1, SkillPhase.WHEN_SELECTED, SkillClass.MAGIC, SkillScope.SELF).add_attack(s_mage_fire_blast_attack).set_advanced().set_description("The fire blast spell is great single target damage, but it takes a bit of time to recover.")
 
 static var all_base_skills : Array[SkillStats] = [
 	create_skill_ambush(),
@@ -114,9 +115,12 @@ static var all_base_skills : Array[SkillStats] = [
 	create_skill_walk_it_off(),
 ]
 
-func can_use(unit : UnitStats) -> bool:
+func can_use(unit : UnitStats, number_of_heroes : int) -> bool:
 	if unit.skill_class != skill_class:
 		return false
+	if is_advanced:
+		if number_of_heroes == 5:
+			return false
 	return filter.call(unit)
 
 func at_max() -> bool:
@@ -126,7 +130,7 @@ static func get_viable_skills(units : Array[UnitStats]) -> Array[Array]:
 	var ret_val : Array[Array]
 	for unit : UnitStats in units:
 		for skill : SkillStats in all_base_skills:
-			if skill.can_use(unit):
+			if skill.can_use(unit, units.size()):
 				var found_match : Array[SkillStats] = unit.skills.filter(func(a : SkillStats) : return a.skill_name == skill.skill_name)
 				if found_match.is_empty():
 					ret_val.append([unit, skill])
@@ -140,7 +144,6 @@ static func get_viable_skills(units : Array[UnitStats]) -> Array[Array]:
 func add_to_unit(unit : UnitStats) -> void:
 	var found_match : Array[SkillStats] = unit.skills.filter(func(a : SkillStats) : return a.skill_name == skill_name)
 	if found_match.is_empty():
-		assert(can_use(unit))
 		unit.skills.append(self)
 		if phase == SkillPhase.WHEN_SELECTED:
 			assert(scope == SkillScope.SELF)
@@ -169,6 +172,10 @@ func mod_initiative(v : float) -> SkillStats:
 
 func mod_health(v : float) -> SkillStats:
 	adjust_health += v
+	return self
+
+func set_advanced() -> SkillStats:
+	is_advanced = true
 	return self
 
 func mod_shield(v : float) -> SkillStats:
