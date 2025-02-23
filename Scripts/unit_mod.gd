@@ -170,9 +170,9 @@ static var s_equipment_guard_gear : UnitMod = create("Rusty Sword").set_attack(s
 static var s_equipment_cpt_gear : UnitMod = create("Goblin Sword").set_attack(s_goblin_sword_attack)
 static var s_equipment_lord_gear : UnitMod = create("Wicked Sword").set_attack(s_wicked_sword_attack)
 
-static var s_temporal_zap_attack : AttackStats = AttackStats.create("Temporal Zap", AttackStats.AttackTarget.FIRST_TWO).set_stun(0.95).adjust_damage(1.25).has_cooldown().adjust_speed(0.85)
-static var s_age_flesh_attack : AttackStats = AttackStats.create("Aging Touch", AttackStats.AttackTarget.FARTHEST_FROM_DEATH).set_armor_piercing().adjust_damage(1.4)
-static var s_weakest_link_attack : AttackStats = AttackStats.create("Forsee Vulnerability", AttackStats.AttackTarget.MOST_VULNERABLE).adjust_damage(1.15).adjust_speed(0.95).has_cooldown()
+static var s_temporal_zap_attack : AttackStats = AttackStats.create("Temporal Zap", AttackStats.AttackTarget.FIRST_TWO).set_stun(0.85).adjust_damage(1.2).has_cooldown().adjust_speed(0.85)
+static var s_age_flesh_attack : AttackStats = AttackStats.create("Aging Touch", AttackStats.AttackTarget.FARTHEST_FROM_DEATH).set_armor_piercing().adjust_damage(1.35)
+static var s_weakest_link_attack : AttackStats = AttackStats.create("Forsee Vulnerability", AttackStats.AttackTarget.MOST_VULNERABLE).adjust_damage(1.1).adjust_speed(0.95).has_cooldown()
 
 static var s_species_chronotyrant : UnitMod = create("Chrono").set_attack(s_temporal_zap_attack).set_icon(UnitStats.Icon.Chronotyrant).add_health(670)
 static var s_occupation_chronotyrant : UnitMod = create("Tyrant").set_attack(s_age_flesh_attack).add_armor(15)
@@ -225,7 +225,7 @@ static var s_attack_magic_missile : AttackStats = AttackStats.create("Zzzap", At
 static var s_attack_smash : AttackStats = AttackStats.create("Smash", AttackStats.AttackTarget.FARTHEST_FROM_DEATH).adjust_damage(1.55).adjust_speed(1.25)
 static var s_attack_heal : AttackStats = AttackStats.create("Heal", AttackStats.AttackTarget.CLOSEST_TO_DEATH).adjust_damage(1.25).set_on_allies().has_cooldown()
 static var s_attack_net : AttackStats = AttackStats.create("Net", AttackStats.AttackTarget.TWO_REAR_MOST).set_stun(0.95).adjust_damage(2).has_single_use().adjust_speed(1.25)
-static var s_attack_blood_curse : AttackStats = AttackStats.create("Blood Curse", AttackStats.AttackTarget.TWO_LEAST_ARMORED).set_bleed(5)
+static var s_attack_blood_curse : AttackStats = AttackStats.create("Blood Fire", AttackStats.AttackTarget.TWO_LEAST_ARMORED).set_bleed(5)
 static var s_attack_mace : AttackStats = AttackStats.create("Mace", AttackStats.AttackTarget.FRONT_MOST).adjust_damage(1.25).adjust_speed(1.15)
 static var s_attack_trident : AttackStats = AttackStats.create("Trident", AttackStats.AttackTarget.REAR_MOST).set_armor_piercing()
 static var s_attack_throw_rock : AttackStats = AttackStats.create("Throw Rock", AttackStats.AttackTarget.MOST_VULNERABLE).adjust_speed(0.95).has_cooldown()

@@ -86,7 +86,6 @@ static func create_difficulty_foes_dragon_fight(difficulty : float, rnd : Random
 				else:
 					foe.init(UnitMod.s_species_pike_dragon, UnitMod.s_occupation_dragonkin, UnitMod.s_equipment_dragonkin, UnitStats.Side.COMPUTER, rnd)
 					foe.unit_name = "Pike Dragon"
-		foe.undead = true
 		ret_val.append(foe)
 		difficulty -= v
 	return ret_val
