@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://yn1j86y4tp3v" path="res://icon.svg" id="1_2o4by"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_g3ci5"]
-font_size = 24
+font_size = 12
 font_color = Color(0, 0, 0, 1)
 
 [node name="PathEncounter" type="Control"]
@@ -31,13 +31,15 @@ layout_mode = 1
 anchors_preset = 4
 anchor_top = 0.5
 anchor_bottom = 0.5
-offset_left = 43.0
+offset_left = 60.0
 offset_top = -16.0
-offset_right = 188.0
+offset_right = 215.0
 offset_bottom = 18.0
 grow_vertical = 2
+theme_override_font_sizes/font_size = 12
 text = "What is here"
 label_settings = SubResource("LabelSettings_g3ci5")
+vertical_alignment = 1
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 visible = false

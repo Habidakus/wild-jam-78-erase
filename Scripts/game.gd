@@ -415,6 +415,7 @@ func skill_click(event : InputEvent, skill : SkillStats, unit : UnitStats) -> vo
 		return
 
 	if event is InputEventMouseButton:
+		show_unit_skills_in_tooltip(unit, false)
 		skill.add_to_unit(unit)
 		path_state_machine_state.our_state_machine.switch_state("PathSelection")
 
@@ -542,7 +543,7 @@ func all_path_encounter_stats_at_depth(depth : int) -> Array[PathEncounterStat]:
 
 func initialize_path(_rnd: RandomNumberGenerator) -> void:
 	assert(game_path.is_empty())
-	var wiggle_range : Vector2 = Vector2(0.15 / float(path_depth + 2.0), 0.15 / float(path_width + 2.0))
+	var wiggle_range : Vector2 = Vector2(0.25 / float(path_depth + 2.0), 0.25 / float(path_width + 2.0))
 	for d : int in range(0, path_depth):
 		var current_width : int = path_width
 		if d == 0 || d == path_depth - 1:
@@ -552,9 +553,9 @@ func initialize_path(_rnd: RandomNumberGenerator) -> void:
 		for w : int in range(0, current_width):
 			var pos : Vector2
 			pos.x = float(d + 0.40) / float(path_depth + 1)
-			pos.y = float(w + 1) / float(current_width + 2)
+			pos.y = float(w + 0.5) / float(current_width)
 			pos.x += _rnd.randf_range(-wiggle_range.x, wiggle_range.x)
-			pos.x += _rnd.randf_range(-wiggle_range.y, wiggle_range.y)
+			pos.y += _rnd.randf_range(-wiggle_range.y, wiggle_range.y)
 			var pe : PathEncounterStat = PathEncounterStat.new()
 			pe.init(d, w, pos, _rnd.randf())
 			game_path.append(pe)
