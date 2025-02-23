@@ -109,22 +109,28 @@ func generate_tooltip(target : UnitStats) -> String:
 	var ret_val : String = str(round(dmg * 10.0)/10.0)
 	if acts_on_allies:
 		ret_val += " Healing"
-	elif armor_piercing:
-		ret_val += " Armor Piercing"
-	elif stun > 0:
-		ret_val += " Stunning"
-	elif bleed_ticks > 0:
-		ret_val += " Bleed"
 	else:
 		ret_val += " Damage"
+		
+	if armor_piercing:
+		ret_val += ", ignores armor"
+	elif stun > 0:
+		ret_val += ", delays"
+	elif bleed_ticks > 0:
+		ret_val += ", causes bleeding"
+
 	if single_use:
 		ret_val += ", single use"
 	if cooldown:
 		ret_val += ", cooldown"
 	if tiring > 1:
 		ret_val += ", tiring"
-	if speed_multiple > 1:
+	if speed_multiple > 1.2:
+		ret_val += ", very slow"
+	elif speed_multiple > 1:
 		ret_val += ", slow"
+	elif speed_multiple < 0.9:
+		ret_val += ", very quick"
 	elif speed_multiple < 1:
 		ret_val += ", quick"
 	

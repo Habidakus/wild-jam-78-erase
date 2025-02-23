@@ -246,19 +246,22 @@ func clone() -> UnitStats:
 	return ret_val
 
 func create_tooltip() -> String:
-	var ret_val : String = ""
-	for e : String in elo:
-		if !ret_val.is_empty():
-			ret_val += ", "
-		ret_val += e
+	var ret_val : String = unit_name
 	if armor > 0:
-		if !ret_val.is_empty():
+		ret_val += "\n" + str(armor) + " armor"
+		if bleeding_ticks > 0:
+			ret_val += ", bleeding"
+	elif bleeding_ticks > 0:
+		ret_val += "\nbleeding"
+	ret_val += "\n"
+	if attacks.size() > 1:
+		ret_val += "Attack: "
+	else:
+		ret_val += "Attacks: "
+	for index in range(0, attacks.size()):
+		if index > 0:
 			ret_val += ", "
-		ret_val += "Armor: " + str(armor)
-	if bleeding_ticks > 0:
-		if !ret_val.is_empty():
-			ret_val += ", "
-		ret_val += "Bleeding"
+		ret_val += attacks[index].attack_name
 	return ret_val
 
 const icon_human : Texture = preload("res://Art/Species_Human.png")

@@ -8,9 +8,12 @@ var attack_list : Array[UnitGraphics]
 var action_buttons : Array[Button]
 var attack_buttons : Array[Button]
 
-static func create(unit_stats : UnitStats) -> UnitGraphics:
+static func create(unit_stats : UnitStats, game : Game) -> UnitGraphics:
 	var ret_val : UnitGraphics = our_scene.instantiate()
-	(ret_val.find_child("HealthBar") as Control).tooltip_text = unit_stats.create_tooltip()
+	var healthbar_control : Control = ret_val.find_child("HealthBar") as Control
+	healthbar_control.mouse_entered.connect(Callable(game, "show_unit_tooltip").bind(unit_stats.id, true))
+	healthbar_control.mouse_exited.connect(Callable(game, "show_unit_tooltip").bind(unit_stats.id, false))
+	#healthbar_control.tooltip_text = unit_stats.create_tooltip()
 	var texture : Texture2D = unit_stats.get_texture()
 	if texture != null:
 		var sprite : Sprite2D = ret_val.find_child("Sprite2D") as Sprite2D
@@ -87,8 +90,7 @@ func create_button(is_attack : bool, attack : AttackStats, target_stats : UnitSt
 	new_button.mouse_entered.connect(hover_callback.bind(true))
 	new_button.mouse_exited.connect(hover_callback.bind(false))
 	new_button.pressed.connect(click_callback)
-	new_button.tooltip_text = attack.generate_tooltip(target_stats)
-	# TODO: Consult _make_custom_tooltip to see if we can make this look better
+	#new_button.tooltip_text = attack.generate_tooltip(target_stats)
 	if is_attack:
 		new_button.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 		find_child("AttackBox").add_child(new_button)

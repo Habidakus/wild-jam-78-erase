@@ -1,4 +1,4 @@
-[gd_scene load_steps=36 format=3 uid="uid://b5t3tpb66grx0"]
+[gd_scene load_steps=37 format=3 uid="uid://b5t3tpb66grx0"]
 
 [ext_resource type="Script" path="res://addons/statemachine/StateMachine.gd" id="1_p7e6l"]
 [ext_resource type="Script" path="res://addons/statemachine/StateMachineState_AnyKeyToContinue.gd" id="2_mqr82"]
@@ -16,6 +16,7 @@
 [ext_resource type="AudioStream" uid="uid://btjo4waad4s7d" path="res://Sounds/resurrection_03.wav" id="13_vblk6"]
 [ext_resource type="Script" path="res://Scripts/testing_prep_elo.gd" id="14_fk8kq"]
 [ext_resource type="Script" path="res://Scenes/testing_process_fight.gd" id="15_b6n3m"]
+[ext_resource type="Texture2D" uid="uid://c2khk1sps05hp" path="res://Art/Large9Rect.png" id="17_llpd5"]
 
 [sub_resource type="Shader" id="Shader_gc61x"]
 code = "shader_type canvas_item;
@@ -308,7 +309,6 @@ theme_override_font_sizes/font_size = 32
 text = "Play"
 
 [node name="Game" type="Control" parent="OverStateMachine"]
-visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -390,7 +390,6 @@ theme_override_font_sizes/font_size = 22
 text = "(hit any key to continue)"
 
 [node name="Combat" type="Control" parent="OverStateMachine/Game/GameStateMachine"]
-visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -761,6 +760,7 @@ text = "[center][b]Inevitable Defeat[/b][/center]
 Knowing this... who would be foolish enough to try - again?"
 
 [node name="Victory" type="Control" parent="OverStateMachine/Game/GameStateMachine" node_paths=PackedStringArray("next_state")]
+visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -818,5 +818,53 @@ bbcode_enabled = true
 text = "[center][b]Victory[/b][/center]
 
 Finally, after endless battles through the eons, the Chronotyrant has been slain. His cruel machinations come to an end. All, thanks to you, you mighty three remaining heroes."
+
+[node name="Tooltip" type="Control" parent="OverStateMachine/Game"]
+visible = false
+top_level = true
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 15.0
+offset_top = -121.0
+offset_right = 233.0
+offset_bottom = -13.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="NinePatchRect" type="NinePatchRect" parent="OverStateMachine/Game/Tooltip"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("17_llpd5")
+region_rect = Rect2(0, 0, 64, 64)
+patch_margin_left = 24
+patch_margin_top = 24
+patch_margin_right = 24
+patch_margin_bottom = 24
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="OverStateMachine/Game/Tooltip"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="TooltipTextArea" type="RichTextLabel" parent="OverStateMachine/Game/Tooltip/MarginContainer"]
+layout_mode = 2
+fit_content = true
 
 [connection signal="button_up" from="OverStateMachine/Menu/Button" to="OverStateMachine/Menu" method="_on_button_button_up"]

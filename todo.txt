@@ -1,6 +1,5 @@
 - Add more hero skills
 - add remaining foes (currently only three factions in the game)
-- Better tooltip window
 - Re-evaluate how armor works
 - add Shops & Chests to the overland map
 - Add a mimic

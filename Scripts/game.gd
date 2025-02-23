@@ -306,6 +306,16 @@ func ready_battle_space() -> void:
 	for unitID : int in battle_space_figures.keys():
 		(battle_space_figures[unitID] as UnitGraphics).queue_free()
 	battle_space_figures.clear()
+	
+func show_unit_tooltip(unit_id : int, hovering : bool) -> void:
+	var tooltip_widget : Control = find_child("Tooltip") as Control
+	if hovering:
+		var unit_stats : UnitStats = game_state.get_unit_by_id(unit_id)
+		if unit_stats != null:
+			tooltip_widget.show()
+			tooltip_widget.find_child("TooltipTextArea").text = unit_stats.create_tooltip()
+	else:
+		tooltip_widget.hide()
 
 func update_battle_space() -> void:
 	var display_order : Array
@@ -343,7 +353,7 @@ func update_battle_space() -> void:
 	var arena : ColorRect = find_child("Arena") as ColorRect
 	for unit : UnitStats in game_state.units:
 		if !battle_space_figures.has(unit.id):
-			var unit_graphics : UnitGraphics = UnitGraphics.create(unit)
+			var unit_graphics : UnitGraphics = UnitGraphics.create(unit, self)
 			unit_graphics.set_unit_name(unit.unit_name)
 			battle_space_figures[unit.id] = unit_graphics
 			arena.add_child(unit_graphics)
@@ -473,18 +483,26 @@ func harvest_fx(action : EAction) -> void:
 
 func human_hover_over_action(b : bool, move : EAction) -> void:
 	
+	var tooltip_widget : Control = find_child("Tooltip") as Control
 	if b:
+		var target : UnitStats = game_state.get_unit_by_id(move.targetID)
+
+		if move.attack != null:
+			tooltip_widget.show()
+			tooltip_widget.find_child("TooltipTextArea").text = move.attack.generate_tooltip(target)
+
 		#var dmg : float = game_state.get_unit_by_id(move.targetID).calculate_damage_from_attack(move.attack)
 		var actor : UnitStats = game_state.get_unit_by_id(move.actorID)
 		ghost_trip_sheet_pos[move.actorID] = actor.next_attack + move.attack.get_cost_in_time(actor)
 		
-		var target : UnitStats = game_state.get_unit_by_id(move.targetID)
 		var target_slow : float = move.attack.get_cost_in_time_for_target(target)
 		if target_slow > 0:
 			ghost_trip_sheet_pos[move.targetID] = target.next_attack + target_slow
 			
 		update_trip_sheet()
 	else:
+		tooltip_widget.hide()
+
 		ghost_trip_sheet_pos.erase(move.actorID)
 		assert(!ghost_trip_sheet_pos.has(move.actorID))
 		if ghost_trip_sheet_pos.has(move.targetID):
