@@ -68,9 +68,9 @@ func set_description(d : String) -> SkillStats:
 	return self
 
 static func create_skill_stealth() -> SkillStats:
-	return create("Stealth", 3, SkillPhase.PRE_COMBAT, SkillClass.ROGUE, SkillScope.SELF).mod_initiative(-3.33).set_description("This hero attacks well before everyone else on the field.")
+	return create("Stealth", 3, SkillPhase.PRE_COMBAT, SkillClass.ROGUE, SkillScope.SELF).mod_initiative(-1.66).set_description("This hero attacks well before everyone else on the field.")
 static func create_skill_ambush() -> SkillStats:
-	return create("Ambush", 10, SkillPhase.PRE_COMBAT, SkillClass.ROGUE, SkillScope.ALL_HEROES).mod_initiative(-1).set_description("This hero helps the rest of the party set up an ambush, allowing them possible extra attacks at the start of combat.")
+	return create("Ambush", 10, SkillPhase.PRE_COMBAT, SkillClass.ROGUE, SkillScope.ALL_HEROES).mod_initiative(-0.5).set_description("This hero helps the rest of the party set up an ambush, allowing them possible extra attacks at the start of combat.")
 
 static func create_skill_healing_herbs() -> SkillStats:
 	return create("Healing Herbs", 4, SkillPhase.PRE_COMBAT, SkillClass.FIGHTER, SkillScope.ALL_HEROES).mod_health(0.15).set_description("This hero knows how to prepare a tea of healing herbs between combats, helping restore the health of all wounded allies.")

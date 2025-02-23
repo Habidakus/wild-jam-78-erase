@@ -9,7 +9,7 @@ var path_state_machine_state : SMSPath
 var game_state : EGameState = null
 
 const calculation_depth : int = 7 # This is how many look aheads the min-max engine computes
-const path_depth : int = 6 # 6 This is how many encounters before the chronotyrant
+const path_depth : int = 7 # 6 This is how many encounters before the chronotyrant
 const path_width : int = 4
 
 # Called when the node enters the scene tree for the first time.

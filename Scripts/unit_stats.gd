@@ -1,7 +1,10 @@
 class_name UnitStats extends RefCounted
 
 enum Side { NEITHER, HUMAN, COMPUTER }
-enum Icon { UNSET, Dwarf, Halfling, Human, Orc, Goblin, Ogre, Ratman, Elf, Skeleton, SkeletonKing, Demon, Spider, MantisDrone, MantisQueen, Chronotyrant }
+enum Icon { UNSET, Dwarf, Halfling, Human, Orc, Goblin, Ogre, Ratman, Elf, Skeleton, SkeletonKing, Demon, Spider, MantisDrone, MantisQueen, Chronotyrant, Kobald, Moonman, PikeDragon }
+
+const difficulty_base : float = 3
+const difficulty_mult : float = 15
 
 var id : int = -1
 var max_health : float
@@ -31,10 +34,13 @@ static func create_difficulty_foes(difficulty : float, rnd : RandomNumberGenerat
 		PathEncounterStat.EncounterType.GATE_FIGHT:
 			return create_difficulty_foes_gate_fight(difficulty, rnd)
 		PathEncounterStat.EncounterType.REGULAR_FIGHT:
-			if rnd.randf() > 0.55:
-				return create_difficulty_foes_gate_fight(difficulty, rnd)
-			else:
-				return create_difficulty_foes_spider_fight(difficulty, rnd)
+			match rnd.randi() % 3:
+				0: 
+					return create_difficulty_foes_dragon_fight(difficulty, rnd)
+				1:
+					return create_difficulty_foes_gate_fight(difficulty, rnd)
+				2:
+					return create_difficulty_foes_spider_fight(difficulty, rnd)
 		PathEncounterStat.EncounterType.UNDEAD:
 			return create_difficulty_foes_undead_fight(difficulty, rnd)
 		PathEncounterStat.EncounterType.CHRONOTYRANT:
@@ -52,9 +58,9 @@ static func create_difficulty_foes_chronotyrant(rnd : RandomNumberGenerator) -> 
 	ret_val.append(foe)
 	return ret_val
 
-static func create_difficulty_foes_undead_fight(difficulty : float, rnd : RandomNumberGenerator) -> Array[UnitStats]:
-	difficulty += 3.0
-	difficulty *= 20.0
+static func create_difficulty_foes_dragon_fight(difficulty : float, rnd : RandomNumberGenerator) -> Array[UnitStats]:
+	difficulty += difficulty_base
+	difficulty *= difficulty_mult
 	var ret_val : Array[UnitStats]
 	while difficulty >= 10 && ret_val.size() < 5:
 		var selector : Array[int]
@@ -64,8 +70,39 @@ static func create_difficulty_foes_undead_fight(difficulty : float, rnd : Random
 			selector.append(20)
 		if difficulty > 60:
 			selector.append(40)
-		if difficulty > 90:
-			selector.append(80)
+		var v = selector[rnd.randi_range(0, selector.size() - 1)]
+		var foe : UnitStats = UnitStats.new()
+		match v:
+			10:
+				foe.init(UnitMod.s_species_kobald, UnitMod.s_occupation_dragonkin, UnitMod.s_equipment_dragonkin, UnitStats.Side.COMPUTER, rnd)
+				foe.unit_name = "Kobold"
+			20:
+				foe.init(UnitMod.s_species_kobald_elite, UnitMod.s_occupation_dragonkin, UnitMod.s_equipment_dragonkin, UnitStats.Side.COMPUTER, rnd)
+				foe.unit_name = "Kobald Elite"
+			40:
+				if rnd.randf() < 0.66:
+					foe.init(UnitMod.s_species_moonman, UnitMod.s_occupation_dragonkin, UnitMod.s_equipment_dragonkin, UnitStats.Side.COMPUTER, rnd)
+					foe.unit_name = "Moon Worm"
+				else:
+					foe.init(UnitMod.s_species_pike_dragon, UnitMod.s_occupation_dragonkin, UnitMod.s_equipment_dragonkin, UnitStats.Side.COMPUTER, rnd)
+					foe.unit_name = "Pike Dragon"
+		foe.undead = true
+		ret_val.append(foe)
+		difficulty -= v
+	return ret_val
+
+static func create_difficulty_foes_undead_fight(difficulty : float, rnd : RandomNumberGenerator) -> Array[UnitStats]:
+	difficulty += difficulty_base
+	difficulty *= difficulty_mult
+	var ret_val : Array[UnitStats]
+	while difficulty >= 10 && ret_val.size() < 5:
+		var selector : Array[int]
+		if difficulty < 35:
+			selector.append(10)
+		if difficulty > 25 && difficulty < 75:
+			selector.append(20)
+		if difficulty > 60:
+			selector.append(40)
 		var v = selector[rnd.randi_range(0, selector.size() - 1)]
 		var foe : UnitStats = UnitStats.new()
 		match v:
@@ -76,19 +113,20 @@ static func create_difficulty_foes_undead_fight(difficulty : float, rnd : Random
 				foe.init(UnitMod.s_species_skeleton, UnitMod.s_occupation_undead_mage, UnitMod.s_equipment_undead, UnitStats.Side.COMPUTER, rnd)
 				foe.unit_name = "Skeleton Mage"
 			40:
-				foe.init(UnitMod.s_species_skeleton_king, UnitMod.s_occupation_undead_physical, UnitMod.s_equipment_undead, UnitStats.Side.COMPUTER, rnd)
-				foe.unit_name = "Skeleton King"
-			80:
-				foe.init(UnitMod.s_species_demon, UnitMod.s_occupation_demon, UnitMod.s_equipment_undead, UnitStats.Side.COMPUTER, rnd)
-				foe.unit_name = "Demon"
+				if rnd.randf() < 0.66:
+					foe.init(UnitMod.s_species_skeleton_king, UnitMod.s_occupation_undead_physical, UnitMod.s_equipment_undead, UnitStats.Side.COMPUTER, rnd)
+					foe.unit_name = "Skeleton King"
+				else:
+					foe.init(UnitMod.s_species_demon, UnitMod.s_occupation_demon, UnitMod.s_equipment_undead, UnitStats.Side.COMPUTER, rnd)
+					foe.unit_name = "Demon"
 		foe.undead = true
 		ret_val.append(foe)
 		difficulty -= v
 	return ret_val
 
 static func create_difficulty_foes_gate_fight(difficulty : float, rnd : RandomNumberGenerator) -> Array[UnitStats]:
-	difficulty += 3.0
-	difficulty *= 20.0
+	difficulty += difficulty_base
+	difficulty *= difficulty_mult
 	var ret_val : Array[UnitStats]
 	while difficulty >= 10 && ret_val.size() < 5:
 		var selector : Array[int]
@@ -98,8 +136,6 @@ static func create_difficulty_foes_gate_fight(difficulty : float, rnd : RandomNu
 			selector.append(20)
 		if difficulty > 60:
 			selector.append(40)
-		if difficulty > 90:
-			selector.append(80)
 		var v = selector[rnd.randi_range(0, selector.size() - 1)]
 		var foe : UnitStats = UnitStats.new()
 		match v:
@@ -110,26 +146,26 @@ static func create_difficulty_foes_gate_fight(difficulty : float, rnd : RandomNu
 				foe.init(UnitMod.s_species_goblin, UnitMod.s_occupation_guard_sgt, UnitMod.s_equipment_guard_gear, UnitStats.Side.COMPUTER, rnd)
 				foe.unit_name = "Goblin Sargent"
 			40:
-				foe.init(UnitMod.s_species_goblin, UnitMod.s_occupation_guard_cpt, UnitMod.s_equipment_cpt_gear, UnitStats.Side.COMPUTER, rnd)
-				foe.unit_name = "Goblin Captain"
-			80:
-				foe.init(UnitMod.s_species_ogre, UnitMod.s_occupation_guard_lord, UnitMod.s_equipment_lord_gear, UnitStats.Side.COMPUTER, rnd)
-				foe.unit_name = "Ogre Lord"
+				if rnd.randf() > 0.5:
+					foe.init(UnitMod.s_species_goblin, UnitMod.s_occupation_guard_cpt, UnitMod.s_equipment_cpt_gear, UnitStats.Side.COMPUTER, rnd)
+					foe.unit_name = "Goblin Captain"
+				else:
+					foe.init(UnitMod.s_species_ogre, UnitMod.s_occupation_guard_lord, UnitMod.s_equipment_lord_gear, UnitStats.Side.COMPUTER, rnd)
+					foe.unit_name = "Ogre Lord"
 		ret_val.append(foe)
 		difficulty -= v
 	return ret_val
 
 static func create_difficulty_foes_spider_fight(difficulty : float, rnd : RandomNumberGenerator) -> Array[UnitStats]:
-	difficulty += 3.0
-	difficulty *= 20.0
+	difficulty += difficulty_base
+	difficulty *= difficulty_mult
 	var ret_val : Array[UnitStats]
 	while difficulty >= 10 && ret_val.size() < 5:
 		var selector : Array[int]
-		selector.append(10)
-		if difficulty > 60:
+		if difficulty <= 70:
+			selector.append(10)
+		if difficulty >= 60:
 			selector.append(40)
-		if difficulty > 90:
-			selector.append(80)
 		var v = selector[rnd.randi_range(0, selector.size() - 1)]
 		var foe : UnitStats = UnitStats.new()
 		match v:
@@ -141,11 +177,12 @@ static func create_difficulty_foes_spider_fight(difficulty : float, rnd : Random
 					foe.init(UnitMod.s_species_spider, UnitMod.s_occupation_spider, UnitMod.s_equipment_large_spider, UnitStats.Side.COMPUTER, rnd)
 					foe.unit_name = "Large Spider"
 			40:
-				foe.init(UnitMod.s_species_mantis_drone, UnitMod.s_occupation_mantis, UnitMod.s_equipment_mantis_drone, UnitStats.Side.COMPUTER, rnd)
-				foe.unit_name = "Mantis Drone"
-			80:
-				foe.init(UnitMod.s_species_mantis_queen, UnitMod.s_occupation_mantis, UnitMod.s_equipment_mantis_queen, UnitStats.Side.COMPUTER, rnd)
-				foe.unit_name = "Mantis Queen"
+				if rnd.randf() < 0.66:
+					foe.init(UnitMod.s_species_mantis_drone, UnitMod.s_occupation_mantis, UnitMod.s_equipment_mantis_drone, UnitStats.Side.COMPUTER, rnd)
+					foe.unit_name = "Mantis Drone"
+				else:
+					foe.init(UnitMod.s_species_mantis_queen, UnitMod.s_occupation_mantis, UnitMod.s_equipment_mantis_queen, UnitStats.Side.COMPUTER, rnd)
+					foe.unit_name = "Mantis Queen"
 		ret_val.append(foe)
 		difficulty -= v
 	return ret_val
@@ -279,8 +316,17 @@ const icon_spider : Texture = preload("res://Art/Species_Spider.png")
 const icon_mantis_queen : Texture = preload("res://Art/Species_Bugman.png")
 const icon_mantis_drone : Texture = preload("res://Art/Species_Mantis.png")
 const icon_cronotyrant : Texture = preload("res://Art/Chronotyrant.png")
+const icon_kobald : Texture = preload("res://Art/Species_Kobald.png")
+const icon_moonman : Texture = preload("res://Art/Species_Moonman.png")
+const icon_pikedragon : Texture = preload("res://Art/Species_BirdDragon.png")
 func get_texture() -> Texture:
 	match icon:
+		UnitStats.Icon.Kobald:
+			return icon_kobald
+		UnitStats.Icon.Moonman:
+			return icon_moonman
+		UnitStats.Icon.PikeDragon:
+			return icon_pikedragon
 		UnitStats.Icon.Human:
 			return icon_human
 		UnitStats.Icon.Dwarf:
