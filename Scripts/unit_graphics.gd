@@ -33,11 +33,33 @@ func calculate_offset(index : int, c : int, r : float) -> float:
 		return 0
 	return lerpf(-r, r, float(index) / float(c - 1))
 
+func create_curve(from : Vector2, mid : Vector2, to: Vector2, count : int) -> Array[Vector2]:
+	var ret_val : Array[Vector2]
+	ret_val.append(from)
+	for i in range(1, count - 2):
+		var frac : float = float(i) / float(count - 1)
+		var start : Vector2 = lerp(from, mid, frac)
+		var end : Vector2 = lerp(mid, to, frac)
+		var point : Vector2 = lerp(start, end, frac)
+		ret_val.append(point)
+	ret_val.append(to)
+	return ret_val
+
+func our_draw_line(from : Vector2, to : Vector2, color : Color) -> void:
+	var mid : Vector2 = Vector2((from.x + to.x)/ 2, to.y)
+	var points : Array[Vector2] = create_curve(from, mid, to, 24)
+	for i : int in range(1, points.size()):
+		draw_line(points[i - 1], points[i], color, 2, true)
+
 func _draw() -> void:
 	const half_unit_graphic_height : float = 16.0
 	for target : UnitGraphics in attack_list:
 		var target_pos : Vector2 = Vector2(0, 16 + half_unit_graphic_height / 2) + target.global_position - self.global_position
-		draw_line(Vector2(32, 16), target_pos, Color.RED, 4)
+		var color : Color = Color.RED
+		if target_pos.x < 0:
+			target_pos.x += 48
+			color = Color.GREEN
+		our_draw_line(Vector2(48, 16), target_pos, color)
 
 func set_unit_name(n : String) -> void:
 	(find_child("Name") as Label).text = n
