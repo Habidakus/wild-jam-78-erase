@@ -318,6 +318,9 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 32
 text = "Credits"
 
+[node name="ButtonPlayer" type="AudioStreamPlayer" parent="OverStateMachine/Menu"]
+bus = &"UI"
+
 [node name="Credits" type="Control" parent="OverStateMachine" node_paths=PackedStringArray("next_state")]
 visible = false
 layout_mode = 3
@@ -1020,9 +1023,6 @@ theme_override_constants/margin_bottom = 20
 [node name="TooltipTextArea" type="RichTextLabel" parent="OverStateMachine/Game/Tooltip/MarginContainer"]
 layout_mode = 2
 fit_content = true
-
-[node name="ButtonPlayer" type="AudioStreamPlayer" parent="."]
-bus = &"UI"
 
 [connection signal="button_up" from="OverStateMachine/Menu/VBoxContainer/PlayButton" to="OverStateMachine/Menu" method="_on_button_button_up"]
 [connection signal="button_up" from="OverStateMachine/Menu/VBoxContainer/CreditsButton" to="OverStateMachine/Menu" method="_on_credits_button_up"]

@@ -10,3 +10,8 @@ Known Bugs:
 
 - player can have both net and potion, both are single use (which doesn't work with our optimization)
 - Why are we offered a chance to drink a potion when not hurt?
+- Go Now should not be able to be cast on self
+
+Future work:
+
+- Add the "Guard" ability to knights
