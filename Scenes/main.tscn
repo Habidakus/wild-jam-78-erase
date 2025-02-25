@@ -1,4 +1,4 @@
-[gd_scene load_steps=37 format=3 uid="uid://b5t3tpb66grx0"]
+[gd_scene load_steps=38 format=3 uid="uid://b5t3tpb66grx0"]
 
 [ext_resource type="Script" path="res://addons/statemachine/StateMachine.gd" id="1_p7e6l"]
 [ext_resource type="Script" path="res://addons/statemachine/StateMachineState_AnyKeyToContinue.gd" id="2_mqr82"]
@@ -13,6 +13,7 @@
 [ext_resource type="PackedScene" uid="uid://ue7rvsoy6ai5" path="res://Scenes/card_graphic.tscn" id="9_i0xyt"]
 [ext_resource type="Script" path="res://Scripts/gamestate_bossbattle.gd" id="11_ytujf"]
 [ext_resource type="Texture2D" uid="uid://bw12xauevdwyr" path="res://Art/Chronotyrant.png" id="12_dih5f"]
+[ext_resource type="AudioStream" uid="uid://coieqfcesjoqk" path="res://Sounds/rant.mp3" id="13_rvtvi"]
 [ext_resource type="AudioStream" uid="uid://btjo4waad4s7d" path="res://Sounds/resurrection_03.wav" id="13_vblk6"]
 [ext_resource type="Script" path="res://Scripts/testing_prep_elo.gd" id="14_fk8kq"]
 [ext_resource type="Script" path="res://Scenes/testing_process_fight.gd" id="15_b6n3m"]
@@ -665,7 +666,11 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("11_ytujf")
 
-[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="OverStateMachine/Game/GameStateMachine/BossBattle"]
+[node name="RantPlayer" type="AudioStreamPlayer" parent="OverStateMachine/Game/GameStateMachine/BossBattle"]
+stream = ExtResource("13_rvtvi")
+bus = &"Ranting"
+
+[node name="ErasePlayer" type="AudioStreamPlayer" parent="OverStateMachine/Game/GameStateMachine/BossBattle"]
 stream = ExtResource("13_vblk6")
 bus = &"FX"
 
@@ -1015,6 +1020,9 @@ theme_override_constants/margin_bottom = 20
 [node name="TooltipTextArea" type="RichTextLabel" parent="OverStateMachine/Game/Tooltip/MarginContainer"]
 layout_mode = 2
 fit_content = true
+
+[node name="ButtonPlayer" type="AudioStreamPlayer" parent="."]
+bus = &"UI"
 
 [connection signal="button_up" from="OverStateMachine/Menu/VBoxContainer/PlayButton" to="OverStateMachine/Menu" method="_on_button_button_up"]
 [connection signal="button_up" from="OverStateMachine/Menu/VBoxContainer/CreditsButton" to="OverStateMachine/Menu" method="_on_credits_button_up"]

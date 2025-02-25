@@ -3,6 +3,8 @@ class_name UnitGraphics extends Control
 var max_health_width : float
 var shield_bar : ColorRect
 const our_scene : Resource = preload("res://Scenes/unit.tscn")
+const red_arrow_line_texture : Texture = preload("res://Art/RedPointerPath.png")
+const green_arrow_line_texture : Texture = preload("res://Art/GreenPointerPath.png")
 
 var attack_list : Array[UnitGraphics]
 var action_buttons : Array[Button]
@@ -45,21 +47,48 @@ func create_curve(from : Vector2, mid : Vector2, to: Vector2, count : int) -> Ar
 	ret_val.append(to)
 	return ret_val
 
-func our_draw_line(from : Vector2, to : Vector2, color : Color) -> void:
+func create_line(from : Vector2, to : Vector2, friendly : bool) -> Line2D:
 	var mid : Vector2 = Vector2((from.x + to.x)/ 2, to.y)
 	var points : Array[Vector2] = create_curve(from, mid, to, 24)
-	for i : int in range(1, points.size()):
-		draw_line(points[i - 1], points[i], color, 2, true)
+	var line : Line2D = Line2D.new()
+	line.texture = green_arrow_line_texture if friendly else red_arrow_line_texture
+	line.texture_mode = Line2D.LINE_TEXTURE_TILE
+	line.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
+	line.antialiased = true
+	line.add_point(from)
+	for i : int in range(0, points.size()):
+		line.add_point(points[i])
+	line.add_point(to)
+	return line
 
-func _draw() -> void:
+#func our_draw_line(from : Vector2, to : Vector2, color : Color) -> void:
+	#var mid : Vector2 = Vector2((from.x + to.x)/ 2, to.y)
+	#var points : Array[Vector2] = create_curve(from, mid, to, 24)
+	#for i : int in range(1, points.size()):
+		#draw_line(points[i - 1], points[i], color, 2, true)
+
+#func _draw() -> void:
+	#const half_unit_graphic_height : float = 16.0
+	#for target : UnitGraphics in attack_list:
+		#var target_pos : Vector2 = Vector2(0, 16 + half_unit_graphic_height / 2) + target.global_position - self.global_position
+		#var color : Color = Color.RED
+		#if target_pos.x < 0:
+			#target_pos.x += 48
+			#color = Color.GREEN
+		#our_draw_line(Vector2(48, 16), target_pos, color)
+
+var attack_lines : Array[Line2D]
+func add_attack_lines() -> void:
 	const half_unit_graphic_height : float = 16.0
 	for target : UnitGraphics in attack_list:
 		var target_pos : Vector2 = Vector2(0, 16 + half_unit_graphic_height / 2) + target.global_position - self.global_position
-		var color : Color = Color.RED
+		var friendly : bool = false
 		if target_pos.x < 0:
 			target_pos.x += 48
-			color = Color.GREEN
-		our_draw_line(Vector2(48, 16), target_pos, color)
+			friendly = true
+		var line : Line2D = create_line(Vector2(48, 16), target_pos, friendly)
+		add_child(line)
+		attack_lines.append(line)
 
 func set_unit_name(n : String) -> void:
 	(find_child("Name") as Label).text = n
@@ -89,7 +118,8 @@ func add_draw_attack(target_graphics : UnitGraphics, attack : AttackStats, targe
 	if !attack_list.has(target_graphics):
 		attack_list.append(target_graphics)
 	target_graphics.activate_attack_button(hover_callback, click_callback, attack, target_stats)
-	queue_redraw()
+	add_attack_lines()
+	#queue_redraw()
 		
 func activate_attack_button(hover_callback : Callable, click_callback : Callable, attack : AttackStats, target_stats : UnitStats) -> void:
 	attack_buttons.append(create_button(true, attack, target_stats, hover_callback, click_callback))
@@ -104,7 +134,10 @@ func clean_up_human_UX() -> void:
 		find_child("ActionBox").remove_child(button)
 		button.queue_free()
 	action_buttons.clear()
-	queue_redraw()
+	for al : Line2D in attack_lines:
+		al.queue_free()
+	attack_lines.clear()
+	#queue_redraw()
 
 func create_button(is_attack : bool, attack : AttackStats, _target_stats : UnitStats, hover_callback : Callable, click_callback : Callable) -> Button:
 	var new_button : Button = Button.new()
