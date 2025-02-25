@@ -5,6 +5,8 @@ var final_battle : bool = false
 var game : Game
 var hero_box : GridContainer
 var audio_stream_player : AudioStreamPlayer
+var rant_sound : AudioStreamMP3 = preload("res://Sounds/rant.mp3")
+var resurrection_sound : AudioStreamWAV = preload("res://Sounds/resurrection_03.wav")
 
 func init(_game : Game) -> void:
 	game = _game
@@ -28,6 +30,10 @@ func enter_state() -> void:
 	else:
 		find_child("FinalBattle").hide()
 		find_child("Rant").show()
+		if game.heroes.size() == 5:
+			audio_stream_player.stop()
+			audio_stream_player.stream = rant_sound
+			audio_stream_player.play()
 
 var exit_when_stream_finishes : bool = false
 var waiting_on_stream_to_finish : bool = false
@@ -59,6 +65,8 @@ func play_erase_sound() -> void:
 		child.queue_free()
 		
 	waiting_on_stream_to_finish = true
+	audio_stream_player.stop()
+	audio_stream_player.stream = resurrection_sound
 	audio_stream_player.play()
 
 func switch_to_decision() -> void:
