@@ -1,0 +1,7 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://xes4tgyq54wq"]
+
+[ext_resource type="Shader" path="res://Art/ScrollingRedArrow.gdshader" id="1_eiu8u"]
+
+[resource]
+shader = ExtResource("1_eiu8u")
+shader_parameter/speed = 1.0

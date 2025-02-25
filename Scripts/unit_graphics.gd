@@ -5,6 +5,8 @@ var shield_bar : ColorRect
 const our_scene : Resource = preload("res://Scenes/unit.tscn")
 const red_arrow_line_texture : Texture = preload("res://Art/RedPointerPath.png")
 const green_arrow_line_texture : Texture = preload("res://Art/GreenPointerPath.png")
+const scrolling_line_shader : Shader = preload("res://Art/ScrollingRedArrow.gdshader")
+var shader_material : ShaderMaterial = ShaderMaterial.new()
 
 var attack_list : Array[UnitGraphics]
 var action_buttons : Array[Button]
@@ -15,7 +17,6 @@ static func create(unit_stats : UnitStats, game : Game) -> UnitGraphics:
 	var healthbar_control : Control = ret_val.find_child("HealthBar") as Control
 	healthbar_control.mouse_entered.connect(Callable(game, "show_unit_tooltip").bind(unit_stats.id, true))
 	healthbar_control.mouse_exited.connect(Callable(game, "show_unit_tooltip").bind(unit_stats.id, false))
-	#healthbar_control.tooltip_text = unit_stats.create_tooltip()
 	var texture : Texture2D = unit_stats.get_texture()
 	if texture != null:
 		var sprite : Sprite2D = ret_val.find_child("Sprite2D") as Sprite2D
@@ -29,6 +30,7 @@ static func create(unit_stats : UnitStats, game : Game) -> UnitGraphics:
 func _ready() -> void:
 	max_health_width = (find_child("Blood Background") as ColorRect).size.x
 	shield_bar = (find_child("Shield") as ColorRect)
+	shader_material.shader = scrolling_line_shader
 
 func calculate_offset(index : int, c : int, r : float) -> float:
 	if c == 1:
@@ -51,6 +53,7 @@ func create_line(from : Vector2, to : Vector2, friendly : bool) -> Line2D:
 	var mid : Vector2 = Vector2((from.x + to.x)/ 2, to.y)
 	var points : Array[Vector2] = create_curve(from, mid, to, 24)
 	var line : Line2D = Line2D.new()
+	line.material = shader_material
 	line.texture = green_arrow_line_texture if friendly else red_arrow_line_texture
 	line.texture_mode = Line2D.LINE_TEXTURE_TILE
 	line.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
@@ -60,22 +63,6 @@ func create_line(from : Vector2, to : Vector2, friendly : bool) -> Line2D:
 		line.add_point(points[i])
 	line.add_point(to)
 	return line
-
-#func our_draw_line(from : Vector2, to : Vector2, color : Color) -> void:
-	#var mid : Vector2 = Vector2((from.x + to.x)/ 2, to.y)
-	#var points : Array[Vector2] = create_curve(from, mid, to, 24)
-	#for i : int in range(1, points.size()):
-		#draw_line(points[i - 1], points[i], color, 2, true)
-
-#func _draw() -> void:
-	#const half_unit_graphic_height : float = 16.0
-	#for target : UnitGraphics in attack_list:
-		#var target_pos : Vector2 = Vector2(0, 16 + half_unit_graphic_height / 2) + target.global_position - self.global_position
-		#var color : Color = Color.RED
-		#if target_pos.x < 0:
-			#target_pos.x += 48
-			#color = Color.GREEN
-		#our_draw_line(Vector2(48, 16), target_pos, color)
 
 var attack_lines : Array[Line2D]
 func add_attack_lines() -> void:
@@ -119,7 +106,6 @@ func add_draw_attack(target_graphics : UnitGraphics, attack : AttackStats, targe
 		attack_list.append(target_graphics)
 	target_graphics.activate_attack_button(hover_callback, click_callback, attack, target_stats)
 	add_attack_lines()
-	#queue_redraw()
 		
 func activate_attack_button(hover_callback : Callable, click_callback : Callable, attack : AttackStats, target_stats : UnitStats) -> void:
 	attack_buttons.append(create_button(true, attack, target_stats, hover_callback, click_callback))
@@ -137,7 +123,6 @@ func clean_up_human_UX() -> void:
 	for al : Line2D in attack_lines:
 		al.queue_free()
 	attack_lines.clear()
-	#queue_redraw()
 
 func create_button(is_attack : bool, attack : AttackStats, _target_stats : UnitStats, hover_callback : Callable, click_callback : Callable) -> Button:
 	var new_button : Button = Button.new()
@@ -145,7 +130,6 @@ func create_button(is_attack : bool, attack : AttackStats, _target_stats : UnitS
 	new_button.mouse_entered.connect(hover_callback.bind(true))
 	new_button.mouse_exited.connect(hover_callback.bind(false))
 	new_button.pressed.connect(click_callback)
-	#new_button.tooltip_text = attack.generate_tooltip(target_stats)
 	if is_attack:
 		new_button.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 		find_child("AttackBox").add_child(new_button)
