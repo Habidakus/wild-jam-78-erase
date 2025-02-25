@@ -6,6 +6,8 @@ var encounter_type : EncounterType = EncounterType.UNDEFINED
 var graph_pos : Vector2i
 var map_pos : Vector2
 var sort_value : float
+var visited : bool = false
+var can_visit : bool = false
 var title : String = "???"
 var west : Array[PathEncounterStat]
 var east : Array[PathEncounterStat]
@@ -14,6 +16,21 @@ const combat_texture : Texture = preload("res://Art/TwoSwords.png")
 const chest_texture : Texture = preload("res://Art/Chest.png")
 const chronotyrant_texture : Texture = preload("res://Art/Hourglass.png")
 const undead_texture : Texture = preload("res://Art/TombStone.png")
+
+func visit() -> void:
+	visited = true
+
+func flood_fill() -> void:
+	if visited:
+		can_visit = true
+		var left : bool = false
+		for e : PathEncounterStat in east:
+			if e.visited:
+				left = true
+				e.flood_fill()
+		if left == false:
+			for ef : PathEncounterStat in east:
+				ef.flood_fill()
 
 func get_icon() -> Texture:
 	if encounter_type == EncounterType.GATE_FIGHT || encounter_type == EncounterType.REGULAR_FIGHT:

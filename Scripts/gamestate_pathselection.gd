@@ -8,37 +8,45 @@ const color_mouse_node : Color = Color(Color.GREEN_YELLOW, 0.33)
 
 const path_graphic_scene : Resource = preload("res://Scenes/path_encounter.tscn")
 
+#var path_logic_node : PathLogicNode = null
 var graphic_nodes : Dictionary # <PathEncounterStat, Control>
 var draw_lines : Array
 var game : Game = null
 
-func init(_game : Game, rnd : RandomNumberGenerator) -> void:
+func init(_game : Game) -> void:
 	game = _game
-	game.initialize_path(rnd)
+	game.initialize_path()
 
-func reset_node_colors() -> void:
-	for pes : PathEncounterStat in graphic_nodes:
-		var graphic : Control = graphic_nodes[pes]
-		var poly : Polygon2D = graphic.find_child("Polygon2D") as Polygon2D
-		poly.color = color_live_node
+func restart_post_game() -> void:
+	game.initialize_path()
+
+func restart_in_game() -> void:
+	game.unvisit_path_nodes()
+	#for pes : PathEncounterStat in graphic_nodes:
+	#	var graphic : Control = graphic_nodes[pes]
+	#	var poly : Polygon2D = graphic.find_child("Polygon2D") as Polygon2D
+	#	poly.color = color_live_node
 	
 func enter_state() -> void:
 	super.enter_state()
 	draw_lines.clear()
+	game.flood_fill_paths()
+
 	for path_encounter_stat : PathEncounterStat in game.game_path:
-		if path_encounter_stat == game.current_path_encounter_stat:
-			var graphic : Control = graphic_nodes[path_encounter_stat]
-			var poly : Polygon2D = graphic.find_child("Polygon2D") as Polygon2D
-			poly.color = color_current_node
-			for e : PathEncounterStat in path_encounter_stat.west:
-				draw_lines.append([graphic.global_position, e.map_pos * self.size, color_current_node])
+		var graphic : Control = graphic_nodes[path_encounter_stat]
+		var poly : Polygon2D = graphic.find_child("Polygon2D") as Polygon2D
+		if path_encounter_stat.visited:
+			if path_encounter_stat == game.current_path_encounter_stat:
+				poly.color = color_current_node
+			else:
+				poly.color = color_past_path
 		else:
-			var graphic : Control = graphic_nodes[path_encounter_stat]
-			for e : PathEncounterStat in path_encounter_stat.west:
-				if e.graph_pos.x > path_encounter_stat.graph_pos.x:
-					draw_lines.append([graphic.global_position, e.map_pos * self.size, color_live_node])
-				else:
-					draw_lines.append([graphic.global_position, e.map_pos * self.size, color_dead_node])
+			if path_encounter_stat.can_visit:
+				poly.color = color_dead_node
+			else:
+				poly.color = color_dead_node
+		for e : PathEncounterStat in path_encounter_stat.east:
+			draw_lines.append([graphic.global_position, e.map_pos * self.size, poly.color])
 			
 	queue_redraw()
 	

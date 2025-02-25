@@ -18,7 +18,7 @@ func _ready() -> void:
 	combat_state_machine_state = find_child("Combat") as SMSCombat
 	combat_state_machine_state.init(self)
 	path_state_machine_state = find_child("PathSelection") as SMSPath
-	path_state_machine_state.init(self, rnd)
+	path_state_machine_state.init(self)
 	(find_child("Defeated") as StateMachineState).state_exit.connect(Callable(self, "accepted_defeat"))
 	(find_child("Victory") as StateMachineState).state_exit.connect(Callable(self, "accepted_defeat"))
 	find_child("PreGame").init(self)
@@ -31,11 +31,10 @@ func accepted_defeat() -> void:
 	foes.clear()
 	game_state.release()
 	game_state = null
-	game_path.clear()
-	initialize_path(rnd)
 	combat_state_machine_state.restart()
 	find_child("LoopExposition").restart(rnd)
-	path_state_machine_state.reset_node_colors()
+	game_path.clear()
+	path_state_machine_state.restart_post_game()
 	our_state_machine.switch_state("Menu")
 
 func set_final_battle() -> void:
@@ -86,10 +85,10 @@ func restore_defeated_heroes() -> void:
 			print("Resurrecting " + heroes[i].unit_name)
 			heroes[i].current_health = 1
 
-func perform_post_loop_heals() -> void:
+func perform_post_loop_heals_and_path_reset() -> void:
 	for i in range(0, heroes.size()):
 		heroes[i].current_health = heroes[i].max_health
-	path_state_machine_state.reset_node_colors()
+	path_state_machine_state.restart_in_game()
 
 func initialize_foes() -> void:
 	foes.clear()
@@ -541,7 +540,19 @@ func get_current_difficulty() -> float:
 func all_path_encounter_stats_at_depth(depth : int) -> Array[PathEncounterStat]:
 	return game_path.filter(func(a : PathEncounterStat) : return a.graph_pos.x == depth)
 
-func initialize_path(_rnd: RandomNumberGenerator) -> void:
+func flood_fill_paths() -> void:
+	current_path_encounter_stat.visit()
+	for pes : PathEncounterStat in game_path:
+		pes.can_visit = false
+	var start_pes : PathEncounterStat = all_path_encounter_stats_at_depth(0)[0]
+	start_pes.flood_fill()
+
+func unvisit_path_nodes() -> void:
+	for pes : PathEncounterStat in game_path:
+		pes.can_visit = false
+		pes.visited = false
+
+func initialize_path() -> void:
 	assert(game_path.is_empty())
 	var wiggle_range : Vector2 = Vector2(0.25 / float(path_depth + 2.0), 0.25 / float(path_width + 2.0))
 	for d : int in range(0, path_depth):
@@ -554,10 +565,10 @@ func initialize_path(_rnd: RandomNumberGenerator) -> void:
 			var pos : Vector2
 			pos.x = float(d + 0.40) / float(path_depth + 1)
 			pos.y = float(w + 0.5) / float(current_width)
-			pos.x += _rnd.randf_range(-wiggle_range.x, wiggle_range.x)
-			pos.y += _rnd.randf_range(-wiggle_range.y, wiggle_range.y)
+			pos.x += rnd.randf_range(-wiggle_range.x, wiggle_range.x)
+			pos.y += rnd.randf_range(-wiggle_range.y, wiggle_range.y)
 			var pe : PathEncounterStat = PathEncounterStat.new()
-			pe.init(d, w, pos, _rnd.randf())
+			pe.init(d, w, pos, rnd.randf())
 			game_path.append(pe)
 	var start_pes : PathEncounterStat = all_path_encounter_stats_at_depth(0)[0]
 	start_pes.set_encounter_type("Gate Guards", PathEncounterStat.EncounterType.GATE_FIGHT)
@@ -570,7 +581,7 @@ func initialize_path(_rnd: RandomNumberGenerator) -> void:
 	game_path.sort_custom(func(a : PathEncounterStat, b: PathEncounterStat) : return a.sort_value < b.sort_value)
 	var needs_paths : Array[PathEncounterStat] = game_path.filter(func(a : PathEncounterStat) : return a.needs_paths())
 	while !needs_paths.is_empty():
-		needs_paths[0].add_paths(game_path, _rnd)
+		needs_paths[0].add_paths(game_path, rnd)
 		needs_paths.remove_at(0)
 		needs_paths = game_path.filter(func(a : PathEncounterStat) : return a.needs_paths())
 	var regular_count : int = 0

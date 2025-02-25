@@ -51,7 +51,7 @@ func _process(_delta: float) -> void:
 
 func exit_state(_next_state: StateMachineState) -> void:
 	# TODO: We should ramp up the speed of the background and then ramp down, before fading out
-	game.perform_post_loop_heals()
+	game.perform_post_loop_heals_and_path_reset()
 	exit_when_stream_finishes = true
 	#super.exit_state(next_state)
 

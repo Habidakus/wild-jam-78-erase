@@ -3,7 +3,6 @@
 - Add a mimic
 - Rather than always random heroes, have Initial hero crafting by the player (select race, occupation, extra gear)
 - add UI & attack sounds
-- Replace targeting lines with nice looking particles
 - Add monster & hero attack "animations"
 
 Known Bugs:
@@ -11,7 +10,9 @@ Known Bugs:
 - player can have both net and potion, both are single use (which doesn't work with our optimization)
 - Why are we offered a chance to drink a potion when not hurt?
 - Go Now should not be able to be cast on self
+- Resurrection didn't heal the turn it was learned
 
 Future work:
 
 - Add the "Guard" ability to knights
+- better graphics on the path screen
