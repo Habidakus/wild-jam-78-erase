@@ -131,6 +131,10 @@ func create_button(is_attack : bool, attack : AttackStats, _target_stats : UnitS
 	new_button.mouse_exited.connect(hover_callback.bind(false))
 	new_button.pressed.connect(click_callback)
 	if is_attack:
+		if !attack.acts_on_allies:
+			if _target_stats.calculate_damage_from_attack(attack) > (_target_stats.current_health + _target_stats.magic_shield):
+				new_button.add_theme_color_override("font_color", Color.ORANGE_RED)
+				new_button.add_theme_color_override("font_hover_color", Color.RED)
 		new_button.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 		find_child("AttackBox").add_child(new_button)
 	else:
