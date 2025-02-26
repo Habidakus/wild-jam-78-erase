@@ -4,17 +4,20 @@ static var s_attack_id : int = 1
 
 var id : int = 0
 var damage : float = 30
-var cooldown : bool = false
-var single_use : bool = false
-var divine_wrath : bool = false
 var stun : float = 0
 var tiring : float = 1
 var bleed_ticks : int = 0
 var speed_multiple : float = 1.0
 var attack_name : String
-var is_command : bool = false
 var acts_on_allies : bool = false
 var armor_piercing : bool = false
+# All of these single-purpose no-damage booleans should instead be in one enum
+var is_command : bool = false
+var divine_wrath : bool = false
+var blocks : bool = false
+# All of these single-purpose use-determiners should instead be in one enum
+var cooldown : bool = false
+var single_use : bool = false
 
 enum AttackTarget { INVALID, FRONT_MOST, REAR_MOST, TWO_REAR_MOST, ANY, MOST_VULNERABLE, CLOSEST_TO_DEATH, FARTHEST_FROM_DEATH, SELF, TWO_FARTHEST_FROM_DEATH, FIRST_TWO, TWO_LEAST_ARMORED, ANY_WOUNDED }
 var attack_target : AttackTarget = AttackTarget.INVALID
@@ -39,6 +42,12 @@ func tires(mod : float) -> AttackStats:
 func set_bleed(ticks : int) -> AttackStats:
 	assert(bleed_ticks == 0)
 	bleed_ticks = ticks
+	return self
+
+func grants_block() -> AttackStats:
+	assert(acts_on_allies)
+	assert(blocks == false)
+	blocks = true
 	return self
 
 func set_on_allies() -> AttackStats:
@@ -69,6 +78,7 @@ func has_cooldown() -> AttackStats:
 	return self
 
 func set_is_command() -> AttackStats:
+	assert(acts_on_allies)
 	assert(is_command == false)
 	is_command = true
 	return self
@@ -124,6 +134,8 @@ func generate_tooltip(target : UnitStats) -> String:
 	if acts_on_allies:
 		if is_command:
 			ret_val = "Command"
+		elif blocks:
+			ret_val = "Bodyguard"
 		else:
 			ret_val += " Healing"
 	else:
@@ -159,7 +171,7 @@ func dont_consider_stupid_action(targets : Array[UnitStats]) -> Array[UnitStats]
 		return targets
 	if targets.is_empty():
 		return targets
-	if damage > 0 && is_command == false:
+	if damage > 0 && is_command == false && blocks == false:
 		return targets.filter(func(a : UnitStats) : return a.bleeding_ticks > 0 || ((a.current_health * 3) < (a.max_health * 2)))
 	return targets
 
@@ -170,12 +182,35 @@ func get_moves(actor : UnitStats, units : Array[UnitStats], allow_stupid_humans 
 	if single_use && actor.has_used():
 		return ret_val
 	var target_side : UnitStats.Side = actor.side if acts_on_allies else UnitStats.get_other_side(actor.side)
-	var potential_targets : Array[UnitStats] = units.filter(func(a : UnitStats) : return a.side == target_side && a.is_alive())
-	if !allow_stupid_humans:
-		potential_targets = dont_consider_stupid_action(potential_targets)
+	var all_living_units_on_target_side : Array[UnitStats] = units.filter(func(a : UnitStats) : return a.side == target_side && a.is_alive())
+	var potential_targets : Array[UnitStats] = all_living_units_on_target_side if allow_stupid_humans else dont_consider_stupid_action(all_living_units_on_target_side)
+	if acts_on_allies:
+		if is_command || blocks:
+			# These two actions can't be performed on ourself
+			if potential_targets.has(actor):
+				potential_targets = potential_targets.filter(func(a : UnitStats) : return a != actor)
 	if potential_targets.is_empty():
 		return ret_val
 	var valid_targets : Array[UnitStats] = get_targets(actor, potential_targets)
+	
+	if !acts_on_allies:
+		# If anyone on the target side has blocking, replace their target with the blocker
+		if !valid_targets.is_empty():
+			var replace : Dictionary
+			for t : UnitStats in all_living_units_on_target_side:
+				if t.blocking >= 0:
+					replace[t.blocking] = t
+			if !replace.is_empty():
+				var with_blocking : Array[UnitStats]
+				for p : UnitStats in valid_targets:
+					if replace.has(p.id):
+						if !with_blocking.has(replace[p.id]):
+							with_blocking.push_back(replace[p.id])
+					else:
+						if !with_blocking.has(p):
+							with_blocking.push_back(p)
+				valid_targets = with_blocking
+			
 	for target : UnitStats in valid_targets:
 		ret_val.append(EAction.create(actor, target, self))
 	return ret_val
@@ -204,6 +239,7 @@ func generate_fx(actor : UnitStats, target : UnitStats) -> ActionFXContainer:
 func apply(actor : UnitStats, target : UnitStats, fx : ActionFXContainer) -> void:
 	# Must be computed before actor goes slower, our attack might be the command "Go Now"
 	var target_stun_cost : float = get_cost_in_time_for_target(actor, target)
+	actor.blocking = -1
 
 	if fx == null:
 		actor.next_attack += get_cost_in_time(actor)
@@ -219,20 +255,25 @@ func apply(actor : UnitStats, target : UnitStats, fx : ActionFXContainer) -> voi
 			fx.add_stun(actor, target, target_stun_cost)
 		else:
 			target.next_attack += target_stun_cost
-			
 
 	var new_bleed_ticks : bool = true if bleed_ticks > 0 && bleed_ticks > target.bleeding_ticks else false
 	var dmg : float = target.calculate_damage_from_attack(self)
 
 	if acts_on_allies:
-		if fx != null:
+		if fx != null && dmg != 0:
 			fx.apply_heal(target, dmg)
 		else:
-			target.current_health = min(target.current_health + dmg, target.max_health)
-			if target.bleeding_ticks > 0:
-				target.bleeding_ticks = 0
+			if is_command:
+				pass # we already moved them forward
+			elif blocks:
+				actor.blocking = target.id
+			else:
+				# healing
+				target.current_health = min(target.current_health + dmg, target.max_health)
+				if target.bleeding_ticks > 0:
+					target.bleeding_ticks = 0
 	else:
-		if fx != null:
+		if fx != null && dmg != 0:
 			fx.apply_damage(target, dmg)
 		else:
 			if target.magic_shield > dmg:

@@ -22,6 +22,7 @@ var unit_name : String
 var side : UnitStats.Side
 var icon : Icon = Icon.UNSET
 var undead : bool = false
+var blocking : int = -1
 var elo : Array[String]
 var skill_class : SkillStats.SkillClass = SkillStats.SkillClass.NONE
 var skills : Array[SkillStats]
@@ -275,6 +276,7 @@ func clone() -> UnitStats:
 	ret_val.single_use = single_use
 	ret_val.unit_name = unit_name # We need this for the trip sheet
 	ret_val.undead = undead
+	ret_val.blocking = blocking
 	
 	# The following members should need to be cloned while evaluating future turns
 	# ret_val.skill_class

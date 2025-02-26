@@ -229,14 +229,20 @@ static var s_attack_blood_curse : AttackStats = AttackStats.create("Blood Fire",
 static var s_attack_mace : AttackStats = AttackStats.create("Mace", AttackStats.AttackTarget.FRONT_MOST).adjust_damage(1.25).adjust_speed(1.15)
 static var s_attack_trident : AttackStats = AttackStats.create("Trident", AttackStats.AttackTarget.REAR_MOST).set_armor_piercing()
 static var s_attack_throw_rock : AttackStats = AttackStats.create("Throw Rock", AttackStats.AttackTarget.MOST_VULNERABLE).adjust_speed(0.95).has_cooldown()
+static var s_attack_arming_sword : AttackStats = AttackStats.create("Arming Sword", AttackStats.AttackTarget.TWO_FARTHEST_FROM_DEATH).adjust_damage(1.3).adjust_speed(1.2)
+static var s_attack_tower_shield : AttackStats = AttackStats.create("Tower Shield", AttackStats.AttackTarget.CLOSEST_TO_DEATH).adjust_damage(0).set_on_allies().grants_block()
 
 static var s_occupation_knight : UnitMod = create("Knight").set_skill_class(SkillStats.SkillClass.FIGHTER).set_attack(s_attack_longsword).add_armor(7.5).add_slowness(1)
-static var s_occupation_assassin : UnitMod = create("Assassin").set_skill_class(SkillStats.SkillClass.ROGUE).set_attack(s_attack_backstab).add_slowness(-1)
-static var s_occupation_mage : UnitMod = create("Mage").set_skill_class(SkillStats.SkillClass.MAGIC).set_attack(s_attack_magic_missile)
 static var s_occupation_barbarian : UnitMod = create("Barbarian").set_skill_class(SkillStats.SkillClass.FIGHTER).set_attack(s_attack_smash).add_health(70).set_attack(s_attack_throw_rock)
-static var s_occupation_cleric : UnitMod = create("Cleric").set_skill_class(SkillStats.SkillClass.HOLY).set_attack(s_attack_heal).add_armor(5).set_attack(s_attack_mace)
 static var s_occupation_retiarius : UnitMod = create("Retiarius").set_skill_class(SkillStats.SkillClass.FIGHTER).set_attack(s_attack_net).set_attack(s_attack_trident)
+
+static var s_occupation_assassin : UnitMod = create("Assassin").set_skill_class(SkillStats.SkillClass.ROGUE).set_attack(s_attack_backstab).add_slowness(-1)
+
+static var s_occupation_mage : UnitMod = create("Mage").set_skill_class(SkillStats.SkillClass.MAGIC).set_attack(s_attack_magic_missile)
 static var s_occupation_warlock : UnitMod = create("Warlock").set_skill_class(SkillStats.SkillClass.MAGIC).set_attack(s_attack_blood_curse)
+
+static var s_occupation_cleric : UnitMod = create("Cleric").set_skill_class(SkillStats.SkillClass.HOLY).set_attack(s_attack_heal).add_armor(5).set_attack(s_attack_mace)
+static var s_occupation_paladin : UnitMod = create("Paladin").set_skill_class(SkillStats.SkillClass.HOLY).add_armor(15).add_health(15).set_attack(s_attack_arming_sword).set_attack(s_attack_tower_shield)
 
 static func create_occupation_shuffle(rnd : RandomNumberGenerator) -> Array[UnitMod]:
 	var sort_order : Array = [
@@ -246,6 +252,7 @@ static func create_occupation_shuffle(rnd : RandomNumberGenerator) -> Array[Unit
 		[rnd.randf(), s_occupation_barbarian],
 		[rnd.randf(), s_occupation_retiarius],
 		[rnd.randf(), s_occupation_warlock],
+		[rnd.randf(), s_occupation_paladin],
 		[rnd.randf(), s_occupation_cleric],
 	]
 	sort_order.sort_custom(func(a,b) : return a[0] < b[0])

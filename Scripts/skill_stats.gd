@@ -38,6 +38,8 @@ func apply(_phase : SkillPhase, hero : UnitStats, heroes : Array[UnitStats], foe
 			for unit : UnitStats in heroes:
 				if !unit.is_alive():
 					apply_to_unit(unit)
+				elif unit.current_health == 1:
+					pass
 
 func apply_to_unit(unit : UnitStats) -> void:
 	if adjust_health != 0:
@@ -71,7 +73,7 @@ func set_description(d : String) -> SkillStats:
 	desc = d
 	return self
 	
-static var s_fighter_command_attack : AttackStats = AttackStats.create("Go Now", AttackStats.AttackTarget.TWO_REAR_MOST).adjust_damage(0.1).set_on_allies().has_cooldown().set_is_command()
+static var s_fighter_command_attack : AttackStats = AttackStats.create("Go Now", AttackStats.AttackTarget.TWO_REAR_MOST).adjust_damage(0).set_on_allies().has_cooldown().set_is_command()
 static var s_rogue_bleed_attack : AttackStats = AttackStats.create("Hidden Cut", AttackStats.AttackTarget.TWO_FARTHEST_FROM_DEATH).set_armor_piercing().has_cooldown().set_bleed(5).adjust_damage(0.5)
 static var s_mage_fire_blast_attack : AttackStats = AttackStats.create("Fire Blast", AttackStats.AttackTarget.TWO_FARTHEST_FROM_DEATH).set_armor_piercing().has_cooldown().adjust_speed(1.5).adjust_damage(1.5)
 static var s_cleric_divine_wrath_attack : AttackStats = AttackStats.create("Divine Wrath", AttackStats.AttackTarget.FARTHEST_FROM_DEATH).has_cooldown().adjust_speed(1.5).adjust_damage(1.5).set_divine_wrath()
