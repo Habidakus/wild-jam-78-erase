@@ -191,7 +191,7 @@ func get_summary() -> String:
 	if divine_wrath:
 		ret_val += ", does massive damage only to undead and Chronotyrants"
 	if tiring > 1:
-		ret_val += ", will be slower each time used in a combat"
+		ret_val += ", slower each time used in a combat"
 
 	return ret_val
 

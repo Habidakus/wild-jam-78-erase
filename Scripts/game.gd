@@ -9,6 +9,7 @@ var path_state_machine_state : SMSPath
 var game_state : EGameState = null
 var tooltip_widget : Control
 var summary_widget : Control
+var summary_alt_tip : Label
 
 const calculation_depth : int = 7 # This is how many look aheads the min-max engine computes
 const path_depth : int = 8 # 6 This is how many encounters before the chronotyrant
@@ -26,7 +27,9 @@ func exit_state(next_state : StateMachineState) -> void:
 func _ready() -> void:
 	rnd.seed = int(Time.get_unix_time_from_system())
 	tooltip_widget = find_child("Tooltip") as Control
+	summary_alt_tip = tooltip_widget.find_child("AltTip") as Label
 	tooltip_widget.hide()
+	summary_alt_tip.hide()
 	summary_widget = find_child("Summary") as Control
 	summary_widget.hide()
 	combat_state_machine_state = find_child("Combat") as SMSCombat
@@ -39,6 +42,13 @@ func _ready() -> void:
 	find_child("PostCombat").init(self)
 	find_child("LoopExposition").init(self, rnd)
 	find_child("BossBattle").init(self)
+	
+var current_holding_ALT : bool
+func _process(_delta: float) -> void:
+	var new_holding_ALT : bool = Input.is_key_pressed(KEY_ALT) || Input.is_key_pressed(KEY_CTRL) || Input.is_key_pressed(KEY_SHIFT)
+	if new_holding_ALT != current_holding_ALT:
+		current_holding_ALT = new_holding_ALT
+		update_show_unit_tooltip()
 
 func accepted_defeat() -> void:
 	heroes.clear()
@@ -324,15 +334,42 @@ func show_unit_skills_in_tooltip(unit_stats : UnitStats, hovering : bool) -> voi
 			tooltip_widget.find_child("TooltipTextArea").text = unit_stats.create_skill_select_tooltip()
 	else:
 		tooltip_widget.hide()
+	summary_alt_tip.hide()
 
+var sut_state_unit_id : int
+var sut_state_hovering : bool = false
 func show_unit_tooltip(unit_id : int, hovering : bool) -> void:
-	if hovering:
-		var unit_stats : UnitStats = game_state.get_unit_by_id(unit_id)
-		if unit_stats != null:
-			tooltip_widget.show()
-			tooltip_widget.find_child("TooltipTextArea").text = unit_stats.create_tooltip()
+	sut_state_unit_id = unit_id
+	sut_state_hovering = hovering
+	update_show_unit_tooltip()
+
+func update_show_unit_tooltip() -> void:
+	if sut_state_hovering:
+		if current_holding_ALT:
+			if !summary_widget.visible:
+				var unit_stats : UnitStats = game_state.get_unit_by_id(sut_state_unit_id)
+				if unit_stats != null:
+					if unit_stats.side == UnitStats.Side.HUMAN:
+						summary_widget.position.x = 650
+					else:
+						summary_widget.position.x = 350
+					summary_widget.find_child("TooltipTextArea").text = unit_stats.create_summary()
+					summary_widget.show()
+					summary_alt_tip.hide()
+					tooltip_widget.hide()
+		else:
+			if !tooltip_widget.visible:
+				var unit_stats : UnitStats = game_state.get_unit_by_id(sut_state_unit_id)
+				if unit_stats != null:
+					tooltip_widget.find_child("TooltipTextArea").text = unit_stats.create_tooltip()
+					tooltip_widget.show()
+					summary_alt_tip.show()
+					summary_widget.hide()
 	else:
 		tooltip_widget.hide()
+		summary_widget.position.x = 350;
+		summary_widget.hide()
+		summary_alt_tip.hide()
 
 func toggle_mod_summary_tooltip(mod : UnitMod, hovering : bool) -> void:
 	if hovering:
@@ -507,13 +544,12 @@ func harvest_fx(action : EAction) -> void:
 	combat_state_machine_state.apply_fx(fx)
 
 func human_hover_over_action(b : bool, move : EAction) -> void:
-	
-	var tooltip_widget : Control = find_child("Tooltip") as Control
 	if b:
 		var target : UnitStats = game_state.get_unit_by_id(move.targetID)
 
 		if move.attack != null:
 			tooltip_widget.show()
+			summary_alt_tip.hide()
 			tooltip_widget.find_child("TooltipTextArea").text = move.attack.generate_tooltip(target)
 
 		#var dmg : float = game_state.get_unit_by_id(move.targetID).calculate_damage_from_attack(move.attack)

@@ -1,4 +1,4 @@
-[gd_scene load_steps=39 format=3 uid="uid://b5t3tpb66grx0"]
+[gd_scene load_steps=40 format=3 uid="uid://b5t3tpb66grx0"]
 
 [ext_resource type="Script" path="res://addons/statemachine/StateMachine.gd" id="1_p7e6l"]
 [ext_resource type="Script" path="res://addons/statemachine/StateMachineState_AnyKeyToContinue.gd" id="2_mqr82"]
@@ -218,6 +218,10 @@ shader_parameter/speed = 0.1
 shader_parameter/color_gradient = SubResource("GradientTexture1D_4h2yq")
 shader_parameter/noiseX = SubResource("NoiseTexture2D_xs4ou")
 shader_parameter/noiseY = SubResource("NoiseTexture2D_yjbvs")
+
+[sub_resource type="LabelSettings" id="LabelSettings_pngnd"]
+font_size = 20
+font_color = Color(0, 0, 0, 1)
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -1033,6 +1037,7 @@ offset_bottom = 40.0
 script = ExtResource("4_jdfnt")
 
 [node name="Tooltip" type="Control" parent="OverStateMachine/Game"]
+visible = false
 top_level = true
 layout_mode = 1
 anchors_preset = 7
@@ -1079,7 +1084,19 @@ theme_override_constants/margin_bottom = 20
 layout_mode = 2
 fit_content = true
 
+[node name="AltTip" type="Label" parent="OverStateMachine/Game/Tooltip"]
+visible = false
+layout_mode = 0
+offset_left = 222.0
+offset_top = 65.0
+offset_right = 541.0
+offset_bottom = 105.0
+text = "(Hold ALT for more attack details)"
+label_settings = SubResource("LabelSettings_pngnd")
+vertical_alignment = 2
+
 [node name="Summary" type="Control" parent="OverStateMachine/Game"]
+visible = false
 top_level = true
 layout_mode = 1
 anchors_preset = 7
@@ -1087,9 +1104,9 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -226.0
+offset_left = -236.0
 offset_top = -261.0
-offset_right = 224.0
+offset_right = 234.0
 offset_bottom = -46.0
 grow_horizontal = 2
 grow_vertical = 0

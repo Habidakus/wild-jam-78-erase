@@ -300,6 +300,20 @@ func create_skill_select_tooltip() -> String:
 		ret_val += "\n" + learned_skills
 	return ret_val
 
+func create_summary() -> String:
+	var ret_val : String = unit_name
+	if armor > 0:
+		ret_val += "\n" + str(armor) + " armor"
+		if bleeding_ticks > 0:
+			ret_val += ", bleeding"
+	elif bleeding_ticks > 0:
+		ret_val += "\nbleeding"
+	for index in range(0, attacks.size()):
+		if !ret_val.is_empty():
+			ret_val += "\n"
+		ret_val += attacks[index].get_summary()
+	return ret_val
+
 func create_tooltip() -> String:
 	var ret_val : String = unit_name
 	if armor > 0:
