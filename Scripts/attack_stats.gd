@@ -128,6 +128,73 @@ func get_targets(actor : UnitStats, targets : Array[UnitStats]) -> Array[UnitSta
 			return UnitStats.select_two_lowest_amount(targets, func(a : UnitStats) : return a.armor if a.armor > 0 else 0 - a.current_health)
 	return []
 
+func get_targetting_summary() -> String:
+	var side_string_solo : String = "ally" if acts_on_allies else "foe"
+	var side_string_plural : String = "allies" if acts_on_allies else "foes"
+	match attack_target:
+		AttackTarget.SELF:
+			return "ourself"
+		AttackTarget.FRONT_MOST:
+			return "next " + side_string_solo + " to act"
+		AttackTarget.FIRST_TWO:
+			return "next " + side_string_plural + " to act"
+		AttackTarget.REAR_MOST:
+			return "slowest " + side_string_solo
+		AttackTarget.TWO_REAR_MOST:
+			return "slowest " + side_string_plural
+		AttackTarget.ANY:
+			return "any " + side_string_solo
+		AttackTarget.MOST_VULNERABLE:
+			return "most vulnerable " + side_string_solo
+		AttackTarget.CLOSEST_TO_DEATH:
+			return side_string_solo + " closest to death"
+		AttackTarget.ANY_WOUNDED:
+			return "any wounded " + side_string_solo
+		AttackTarget.FARTHEST_FROM_DEATH:
+			return "least wounded " + side_string_solo
+		AttackTarget.TWO_FARTHEST_FROM_DEATH:
+			return "least wounded " + side_string_plural
+		AttackTarget.TWO_LEAST_ARMORED:
+			return "least armored " + side_string_plural
+	assert(false)
+	return "???"
+
+func get_summary() -> String:
+	var hp_dmg : float = round(10.0 * damage * (1.0 - stun)) / 10.0
+	var ret_val : String = attack_name + ": "
+	if acts_on_allies:
+		if is_command:
+			ret_val += "Commands " + get_targetting_summary() + " to act immediately after us"
+		elif blocks:
+			ret_val += "Intercepts damage on " + get_targetting_summary()
+		else:
+			ret_val += str(hp_dmg) + " health heal on " + get_targetting_summary()
+	else:
+		if stun > 0:
+			var stn_dmg = round(10.0 * damage * stun) / 10.0
+			ret_val += str(stn_dmg) + " stun with " + str(hp_dmg) + " damage"
+		else:
+			ret_val += str(hp_dmg) + " damage"
+		ret_val += " vs " + get_targetting_summary()
+	if speed_multiple < 1:
+		ret_val += ", " + str(round(100 * (1 - speed_multiple))) + "% faster than other actions"
+	elif speed_multiple > 1:
+		ret_val += ", " + str(round(100 * (speed_multiple - 1))) + "% slower than other actions"
+	if cooldown:
+		ret_val += ", can't be used twice in a row"
+	elif single_use:
+		ret_val += ", only once per combat"
+	if bleed_ticks > 0:
+		ret_val += ", foe will bleed " + str(bleed_ticks * 10) + "% on good hit"
+	if armor_piercing:
+		ret_val += ", ignores enemy armor"
+	if divine_wrath:
+		ret_val += ", does massive damage only to undead and Chronotyrants"
+	if tiring > 1:
+		ret_val += ", will be slower each time used in a combat"
+
+	return ret_val
+
 func generate_tooltip(target : UnitStats) -> String:
 	var dmg : float = target.calculate_damage_from_attack(self)
 	var ret_val : String = str(round(dmg * 10.0)/10.0)

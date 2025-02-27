@@ -465,7 +465,6 @@ text = "(hit any key to continue)"
 horizontal_alignment = 1
 
 [node name="Game" type="Control" parent="OverStateMachine"]
-visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -1034,7 +1033,6 @@ offset_bottom = 40.0
 script = ExtResource("4_jdfnt")
 
 [node name="Tooltip" type="Control" parent="OverStateMachine/Game"]
-visible = false
 top_level = true
 layout_mode = 1
 anchors_preset = 7
@@ -1078,6 +1076,53 @@ theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 20
 
 [node name="TooltipTextArea" type="RichTextLabel" parent="OverStateMachine/Game/Tooltip/MarginContainer"]
+layout_mode = 2
+fit_content = true
+
+[node name="Summary" type="Control" parent="OverStateMachine/Game"]
+top_level = true
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -226.0
+offset_top = -261.0
+offset_right = 224.0
+offset_bottom = -46.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="NinePatchRect" type="NinePatchRect" parent="OverStateMachine/Game/Summary"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("17_llpd5")
+region_rect = Rect2(0, 0, 64, 64)
+patch_margin_left = 24
+patch_margin_top = 24
+patch_margin_right = 24
+patch_margin_bottom = 24
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="OverStateMachine/Game/Summary"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="TooltipTextArea" type="RichTextLabel" parent="OverStateMachine/Game/Summary/MarginContainer"]
 layout_mode = 2
 fit_content = true
 

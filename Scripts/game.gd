@@ -7,6 +7,8 @@ var calc : MinMaxCalculator = MinMaxCalculator.new()
 var combat_state_machine_state : SMSCombat
 var path_state_machine_state : SMSPath
 var game_state : EGameState = null
+var tooltip_widget : Control
+var summary_widget : Control
 
 const calculation_depth : int = 7 # This is how many look aheads the min-max engine computes
 const path_depth : int = 8 # 6 This is how many encounters before the chronotyrant
@@ -23,6 +25,10 @@ func exit_state(next_state : StateMachineState) -> void:
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	rnd.seed = int(Time.get_unix_time_from_system())
+	tooltip_widget = find_child("Tooltip") as Control
+	tooltip_widget.hide()
+	summary_widget = find_child("Summary") as Control
+	summary_widget.hide()
 	combat_state_machine_state = find_child("Combat") as SMSCombat
 	combat_state_machine_state.init(self)
 	path_state_machine_state = find_child("PathSelection") as SMSPath
@@ -312,7 +318,6 @@ func ready_battle_space() -> void:
 	battle_space_figures.clear()
 
 func show_unit_skills_in_tooltip(unit_stats : UnitStats, hovering : bool) -> void:
-	var tooltip_widget : Control = find_child("Tooltip") as Control
 	if hovering:
 		if unit_stats != null:
 			tooltip_widget.show()
@@ -321,7 +326,6 @@ func show_unit_skills_in_tooltip(unit_stats : UnitStats, hovering : bool) -> voi
 		tooltip_widget.hide()
 
 func show_unit_tooltip(unit_id : int, hovering : bool) -> void:
-	var tooltip_widget : Control = find_child("Tooltip") as Control
 	if hovering:
 		var unit_stats : UnitStats = game_state.get_unit_by_id(unit_id)
 		if unit_stats != null:
@@ -329,6 +333,13 @@ func show_unit_tooltip(unit_id : int, hovering : bool) -> void:
 			tooltip_widget.find_child("TooltipTextArea").text = unit_stats.create_tooltip()
 	else:
 		tooltip_widget.hide()
+
+func toggle_mod_summary_tooltip(mod : UnitMod, hovering : bool) -> void:
+	if hovering:
+		summary_widget.show()
+		summary_widget.find_child("TooltipTextArea").text = mod.get_summary()
+	else:
+		summary_widget.hide()
 
 func update_battle_space() -> void:
 	var display_order : Array

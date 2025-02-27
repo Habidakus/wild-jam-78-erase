@@ -27,6 +27,12 @@ func get_home() -> void:
 func get_dist_from_home() -> float:
 	return home.distance_to(global_position)
 
+func _on_hover_on_event() -> void:
+	callback.bind(self, 3).call()
+	
+func _on_hover_off_event() -> void:
+	callback.bind(self, 4).call()
+
 func _on_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		if tween != null:

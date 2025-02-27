@@ -17,13 +17,18 @@ static func create(mod_name : String) -> UnitMod:
 func get_mod_name() -> String:
 	return elo_name
 
-func get_description(rnd : RandomNumberGenerator) -> String:
-	var name : String
-	if will_name():
-		name = generate_name(rnd) + " the " + elo_name
+func get_summary() -> String:
+	var stat_summary : String = get_stat_summary()
+	var attack_summary : String = get_attack_summary()
+	if stat_summary.is_empty():
+		return attack_summary
+	elif attack_summary.is_empty():
+		return stat_summary
 	else:
-		name = elo_name
-	var data : String
+		return stat_summary + "\n" + attack_summary
+
+func get_stat_summary() -> String:
+	var data : String = ""
 	if extra_health > 0:
 		data = "+" + str(extra_health) + " health"
 	elif extra_health < 0:
@@ -40,16 +45,36 @@ func get_description(rnd : RandomNumberGenerator) -> String:
 			data += "-" + str(extra_slowness) + " speed"
 		else:
 			data += "+" + str(0 - extra_slowness) + " speed"
-	if !attacks.is_empty():
-		var attack_string : String = ""
-		for attack : AttackStats in attacks:
-			if !attack_string.is_empty():
-				attack_string += ", "
-			attack_string += attack.attack_name
-		if !data.is_empty():
-			data += "\nAttacks: " + attack_string
-		else:
-			data = attack_string
+	return data
+
+func get_attack_summary() -> String:
+	var attack_string : String = ""
+	for attack : AttackStats in attacks:
+		if !attack_string.is_empty():
+			attack_string += "\n"
+		attack_string += attack.get_summary()
+	return attack_string
+
+func get_attack_tooltip() -> String:
+	var attack_string : String = ""
+	for attack : AttackStats in attacks:
+		if !attack_string.is_empty():
+			attack_string += ", "
+		attack_string += attack.attack_name
+	return attack_string
+
+func get_description(rnd : RandomNumberGenerator) -> String:
+	var name : String
+	if will_name():
+		name = generate_name(rnd) + " the " + elo_name
+	else:
+		name = elo_name
+	var data : String = get_stat_summary()
+	var attack_string : String = get_attack_tooltip()
+	if !data.is_empty():
+		data += "\nAttacks: " + attack_string
+	else:
+		data = attack_string
 	return name if data.is_empty() || data == name else name + ":\n" + data
 
 func set_skill_class(_class : SkillStats.SkillClass) -> UnitMod:

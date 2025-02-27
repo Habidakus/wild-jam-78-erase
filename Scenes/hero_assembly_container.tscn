@@ -81,3 +81,10 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[connection signal="mouse_entered" from="Species/ColorRect" to="." method="_on_species_hover_start"]
+[connection signal="mouse_exited" from="Species/ColorRect" to="." method="_on_species_hover_stop"]
+[connection signal="mouse_entered" from="Class/ColorRect" to="." method="_on_class_hover_start"]
+[connection signal="mouse_exited" from="Class/ColorRect" to="." method="_on_class_hover_stop"]
+[connection signal="mouse_entered" from="Equipment/ColorRect" to="." method="_on_equipment_hover_start"]
+[connection signal="mouse_exited" from="Equipment/ColorRect" to="." method="_on_color_equipment_hover_stop"]

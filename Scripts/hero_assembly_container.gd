@@ -7,7 +7,11 @@ var equip : UnitMod = null
 var species_label : Label
 var occupation_label : Label
 var equipment_label : Label
+var callback : Callable
 
+func init(_callback : Callable) -> void:
+	callback = _callback
+	
 func assign_hero_name(hero_name : String) -> void:
 	unit_name = hero_name
 
@@ -60,3 +64,21 @@ func _ready() -> void:
 	occupation_label.hide()
 	equipment_label = find_child("Equipment") as Label
 	equipment_label.hide()
+
+func _on_equipment_hover_start() -> void:
+	callback.bind(equip, 3).call()
+
+func _on_equipment_hover_stop() -> void:
+	callback.bind(equip, 4).call()
+
+func _on_class_hover_start() -> void:
+	callback.bind(occupation, 3).call()
+
+func _on_class_hover_stop() -> void:
+	callback.bind(occupation, 4).call()
+
+func _on_species_hover_start() -> void:
+	callback.bind(species, 3).call()
+
+func _on_species_hover_stop() -> void:
+	callback.bind(species, 4).call()

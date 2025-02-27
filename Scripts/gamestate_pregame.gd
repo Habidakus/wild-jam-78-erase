@@ -55,12 +55,13 @@ func change_phase(new_phase : Phase) -> void:
 				var x : int = i % 2
 				var y : int = (i - x) >> 1
 				var hero_container = hero_container_scene.instantiate()
+				hero_container.init(Callable(self, "hero_event"))
 				hero_containers.append(hero_container)
 				hero_container.global_position = global_corner_min;
 				hero_container.global_position.x += 100 + (x * 300)
 				hero_container.global_position.y += (y + 0.5) * (global_corner_max.y - global_corner_min.y) / 3
 				#heroes_column.add_child(hero_container)
-				hero_container.scale = Vector2(0.42, 0.42) * 5.0 / 3.0
+				hero_container.scale = Vector2(0.4, 0.4) * 5.0 / 3.0
 				add_child(hero_container)
 		
 			assert(species.size() >= 5)
@@ -116,6 +117,16 @@ func get_closest_hero_assembly(unit_mod_container : UnitModContainer) -> HeroAss
 var umc_mouse_offset : Vector2
 var current_closest_hero_assembly : HeroAssemblyContainer = null
 
+# TODO: Replace event with an enum, not a magic number int
+func hero_event(unit_mod : UnitMod, event : int) -> void:
+	if event == 3: # Start hover
+		game.toggle_mod_summary_tooltip(unit_mod, true)
+	elif event == 4: # End hover
+		game.toggle_mod_summary_tooltip(unit_mod, false)
+	else:
+		assert(false)
+
+# TODO: Replace event with an enum, not a magic number int
 func mod_event(unit_mod_container : UnitModContainer, event : int) -> void:
 	if event == 0: # click on
 		umc_mouse_offset = get_global_mouse_position() - unit_mod_container.global_position
@@ -137,6 +148,11 @@ func mod_event(unit_mod_container : UnitModContainer, event : int) -> void:
 		current_closest_hero_assembly = closest_hero
 		if current_closest_hero_assembly != null:
 			current_closest_hero_assembly.start_glowing()
+	elif event == 3: # Start hover
+		game.toggle_mod_summary_tooltip(unit_mod_container.mod, true)
+	elif event == 4: # End hover
+		game.toggle_mod_summary_tooltip(unit_mod_container.mod, false)
+		
 
 func enter_state() -> void:
 	super.enter_state()
