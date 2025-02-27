@@ -63,6 +63,7 @@ func load_in_heroes(unit_stats : Array[UnitStats]) -> void:
 	foe_cgs = EGameState.CalculusGetScore.Default
 	foe_cds = EGameState.CalculusDiffScore.Reversed
 	heroes = unit_stats
+	assert(!heroes[0].unit_name.is_empty())
 
 func initialize_heroes() -> void:
 	assert(heroes.is_empty())
@@ -75,6 +76,7 @@ func initialize_heroes() -> void:
 	var equipment = UnitMod.create_equipment_shuffle(rnd)
 	for i in range(0, 5):
 		heroes.append(UnitStats.create_shuffle_hero(i, species, occupation, equipment, rnd))
+	assert(!heroes[0].unit_name.is_empty())
 
 func preserve_heroes() -> void:
 	for i in range(0, heroes.size()):
@@ -249,7 +251,7 @@ func update_trip_sheet() -> void:
 						label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 						label.size_flags_vertical = Control.SIZE_EXPAND_FILL
 						label.size_flags_stretch_ratio = 2
-						label.text = unit.unit_name
+						label.text = unit.unit_name if !unit.unit_name.is_empty() else "???"
 						trip_sheet_labels[ghost_id] = label
 					var unit_label : Label = trip_sheet_labels[ghost_id]
 					if trip_sheet.get_children().has(unit_label):

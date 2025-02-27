@@ -432,6 +432,7 @@ func init_base(_species : UnitMod, _occupation : UnitMod, _equipment : UnitMod, 
 	armor = _species.extra_armor + _occupation.extra_armor + _equipment.extra_armor
 	slowness = 10 + _species.extra_slowness + _occupation.extra_slowness + _equipment.extra_slowness
 	next_attack = slowness + noise.randf_range(0, 0.01)
+	unit_name = _hero_name
 	add_attacks(_species.attacks)
 	add_attacks(_occupation.attacks)
 	add_attacks(_equipment.attacks)
