@@ -1,4 +1,4 @@
-[gd_scene load_steps=38 format=3 uid="uid://b5t3tpb66grx0"]
+[gd_scene load_steps=39 format=3 uid="uid://b5t3tpb66grx0"]
 
 [ext_resource type="Script" path="res://addons/statemachine/StateMachine.gd" id="1_p7e6l"]
 [ext_resource type="Script" path="res://addons/statemachine/StateMachineState_AnyKeyToContinue.gd" id="2_mqr82"]
@@ -16,7 +16,7 @@
 [ext_resource type="AudioStream" uid="uid://coieqfcesjoqk" path="res://Sounds/rant.mp3" id="13_rvtvi"]
 [ext_resource type="AudioStream" uid="uid://btjo4waad4s7d" path="res://Sounds/resurrection_03.wav" id="13_vblk6"]
 [ext_resource type="Script" path="res://Scripts/testing_prep_elo.gd" id="14_fk8kq"]
-[ext_resource type="Script" path="res://Scenes/testing_process_fight.gd" id="15_b6n3m"]
+[ext_resource type="Script" path="res://Scripts/testing_process_fight.gd" id="15_b6n3m"]
 [ext_resource type="Texture2D" uid="uid://c2khk1sps05hp" path="res://Art/Large9Rect.png" id="17_llpd5"]
 
 [sub_resource type="Shader" id="Shader_gc61x"]
@@ -167,6 +167,11 @@ shader_parameter/noiseY = SubResource("NoiseTexture2D_yjbvs")
 font_size = 112
 outline_size = 16
 outline_color = Color(0.00184107, 0.00184107, 0.00184107, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_c44qh"]
+font_size = 24
+font_color = Color(0, 0, 0, 1)
+outline_size = 2
 
 [sub_resource type="LabelSettings" id="LabelSettings_oxvky"]
 font_size = 32
@@ -471,10 +476,10 @@ script = ExtResource("4_gtwke")
 
 [node name="GameStateMachine" type="Node" parent="OverStateMachine/Game" node_paths=PackedStringArray("initial_state")]
 script = ExtResource("1_p7e6l")
-initial_state = NodePath("PreGame")
+initial_state = NodePath("Idle")
 
 [node name="PreGame" type="Control" parent="OverStateMachine/Game/GameStateMachine"]
-visible = false
+process_mode = 3
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -483,6 +488,51 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("5_d37js")
+
+[node name="Background" type="ColorRect" parent="OverStateMachine/Game/GameStateMachine/PreGame"]
+material = SubResource("ShaderMaterial_tll2r")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="OverStateMachine/Game/GameStateMachine/PreGame"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 65
+
+[node name="ReferenceRect" type="ReferenceRect" parent="OverStateMachine/Game/GameStateMachine/PreGame/MarginContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="OverStateMachine/Game/GameStateMachine/PreGame"]
+layout_mode = 2
+offset_left = 173.0
+offset_top = 600.0
+offset_right = 879.0
+offset_bottom = 634.0
+text = "Drag selections onto your five heroes to build them, or just:   "
+label_settings = SubResource("LabelSettings_c44qh")
+
+[node name="RandomButton" type="Button" parent="OverStateMachine/Game/GameStateMachine/PreGame"]
+layout_mode = 2
+offset_left = 883.0
+offset_top = 590.0
+offset_right = 978.0
+offset_bottom = 644.0
+size_flags_horizontal = 4
+size_flags_vertical = 8
+text = "Randomize
+and Go!"
 
 [node name="LoopExposition" type="Control" parent="OverStateMachine/Game/GameStateMachine" node_paths=PackedStringArray("next_state")]
 visible = false
@@ -976,6 +1026,13 @@ text = "[center][b]Victory[/b][/center]
 
 Finally, after endless battles through the eons, the Chronotyrant has been slain. His cruel machinations come to an end. All, thanks to you, you mighty three remaining heroes."
 
+[node name="Idle" type="Control" parent="OverStateMachine/Game/GameStateMachine"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("4_jdfnt")
+
 [node name="Tooltip" type="Control" parent="OverStateMachine/Game"]
 visible = false
 top_level = true
@@ -1026,3 +1083,4 @@ fit_content = true
 
 [connection signal="button_up" from="OverStateMachine/Menu/VBoxContainer/PlayButton" to="OverStateMachine/Menu" method="_on_button_button_up"]
 [connection signal="button_up" from="OverStateMachine/Menu/VBoxContainer/CreditsButton" to="OverStateMachine/Menu" method="_on_credits_button_up"]
+[connection signal="button_up" from="OverStateMachine/Game/GameStateMachine/PreGame/RandomButton" to="OverStateMachine/Game/GameStateMachine/PreGame" method="_on_random_button_button_up"]

@@ -12,6 +12,14 @@ const calculation_depth : int = 7 # This is how many look aheads the min-max eng
 const path_depth : int = 8 # 6 This is how many encounters before the chronotyrant
 const path_width : int = 4
 
+func enter_state() -> void:
+	super.enter_state()
+	combat_state_machine_state.our_state_machine.switch_state("PreGame")
+
+func exit_state(next_state : StateMachineState) -> void:
+	combat_state_machine_state.our_state_machine.switch_state("Idle")
+	super.exit_state(next_state)
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	rnd.seed = int(Time.get_unix_time_from_system())
@@ -45,33 +53,27 @@ var foe_cgs : EGameState.CalculusGetScore
 var hero_cds : EGameState.CalculusDiffScore
 var foe_cds : EGameState.CalculusDiffScore
 
-func initialize_heroes() -> void:
+func clear_heroes() -> void:
 	heroes.clear()
+
+func load_in_heroes(unit_stats : Array[UnitStats]) -> void:
+	assert(heroes.is_empty)
 	hero_cgs = EGameState.CalculusGetScore.Default
 	hero_cds = EGameState.CalculusDiffScore.Reversed
 	foe_cgs = EGameState.CalculusGetScore.Default
 	foe_cds = EGameState.CalculusDiffScore.Reversed
-	#if rnd.randf() < 0.5:
-		#hero_cgs = EGameState.CalculusGetScore.Default
-	#else:
-		#hero_cgs = EGameState.CalculusGetScore.Reversed
-	#if rnd.randf() < 0.5:
-		#foe_cgs = EGameState.CalculusGetScore.Reversed
-	#else:
-		#foe_cgs = EGameState.CalculusGetScore.Default
-	#if rnd.randf() < 0.5:
-		#hero_cds = EGameState.CalculusDiffScore.Default
-	#else:
-		#hero_cds = EGameState.CalculusDiffScore.Reversed
-	#if rnd.randf() < 0.5:
-		#foe_cds = EGameState.CalculusDiffScore.Reversed
-	#else:
-		#foe_cds = EGameState.CalculusDiffScore.Default
+	heroes = unit_stats
+
+func initialize_heroes() -> void:
+	assert(heroes.is_empty())
+	hero_cgs = EGameState.CalculusGetScore.Default
+	hero_cds = EGameState.CalculusDiffScore.Reversed
+	foe_cgs = EGameState.CalculusGetScore.Default
+	foe_cds = EGameState.CalculusDiffScore.Reversed
 	var species = UnitMod.create_species_shuffle(rnd)
 	var occupation = UnitMod.create_occupation_shuffle(rnd)
 	var equipment = UnitMod.create_equipment_shuffle(rnd)
 	for i in range(0, 5):
-		#heroes.append(UnitStats.create_random(rnd, UnitStats.Side.HUMAN))
 		heroes.append(UnitStats.create_shuffle_hero(i, species, occupation, equipment, rnd))
 
 func preserve_heroes() -> void:

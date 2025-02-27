@@ -14,6 +14,44 @@ static func create(mod_name : String) -> UnitMod:
 	ret_val.elo_name = mod_name
 	return ret_val
 
+func get_mod_name() -> String:
+	return elo_name
+
+func get_description(rnd : RandomNumberGenerator) -> String:
+	var name : String
+	if will_name():
+		name = generate_name(rnd) + " the " + elo_name
+	else:
+		name = elo_name
+	var data : String
+	if extra_health > 0:
+		data = "+" + str(extra_health) + " health"
+	elif extra_health < 0:
+		data = str(extra_health) + " health"
+	if extra_armor != 0:
+		assert(extra_armor > 0)
+		if !data.is_empty():
+			data += ", "
+		data += "+" + str(extra_armor) + " armor"
+	if extra_slowness != 0:
+		if !data.is_empty():
+			data += ", "
+		if extra_slowness > 0:
+			data += "-" + str(extra_slowness) + " speed"
+		else:
+			data += "+" + str(0 - extra_slowness) + " speed"
+	if !attacks.is_empty():
+		var attack_string : String = ""
+		for attack : AttackStats in attacks:
+			if !attack_string.is_empty():
+				attack_string += ", "
+			attack_string += attack.attack_name
+		if !data.is_empty():
+			data += "\nAttacks: " + attack_string
+		else:
+			data = attack_string
+	return name if data.is_empty() || data == name else name + ":\n" + data
+
 func set_skill_class(_class : SkillStats.SkillClass) -> UnitMod:
 	skill_class = _class
 	return self

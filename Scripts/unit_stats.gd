@@ -187,6 +187,11 @@ static func create_difficulty_foes_spider_fight(difficulty : float, rnd : Random
 		difficulty -= v
 	return ret_val
 
+static func load_hero(species : UnitMod, occupation : UnitMod, equipment : UnitMod, hero_name : String) -> UnitStats:
+	var ret_val : UnitStats = UnitStats.new()
+	ret_val.init_with_name(species, occupation, equipment, Side.HUMAN, hero_name)
+	return ret_val
+
 static func create_shuffle_hero(index : int, species : Array[UnitMod], occupation : Array[UnitMod], equipment : Array[UnitMod], rnd : RandomNumberGenerator) -> UnitStats:
 	var ret_val : UnitStats = UnitStats.new()
 	ret_val.init(species[index], occupation[index], equipment[index], Side.HUMAN, rnd)
@@ -405,7 +410,18 @@ func get_moves(units : Array[UnitStats], allow_stupid_humans : bool) -> Array[MM
 		ret_val.append_array(actions)
 	return ret_val
 
+func init_with_name(_species : UnitMod, _occupation : UnitMod, _equipment : UnitMod, _side : UnitStats.Side, hero_name : String) -> void:
+	init_base(_species, _occupation, _equipment, _side, hero_name)
+
 func init(_species : UnitMod, _occupation : UnitMod, _equipment : UnitMod, _side : UnitStats.Side, rnd : RandomNumberGenerator) -> void:
+	var hero_name : String = "???"
+	if _species.will_name():
+		hero_name = _species.generate_name(rnd)
+	else:
+		hero_name = UnitStats.Side.keys()[_side] + "/" + _species.elo_name + "/" + _occupation.elo_name + "/" + _equipment.elo_name + "#" + str(id)
+	init_base(_species, _occupation, _equipment, _side, hero_name)
+
+func init_base(_species : UnitMod, _occupation : UnitMod, _equipment : UnitMod, _side : UnitStats.Side, _hero_name : String) -> void:
 	id = next_id
 	next_id += 1
 	
@@ -413,10 +429,6 @@ func init(_species : UnitMod, _occupation : UnitMod, _equipment : UnitMod, _side
 	max_health = 100 + _species.extra_health + _occupation.extra_health + _equipment.extra_health
 	current_health = max_health
 	skill_class = _occupation.skill_class
-	if _species.will_name():
-		unit_name = _species.generate_name(rnd)
-	else:
-		unit_name = UnitStats.Side.keys()[_side] + "/" + _species.elo_name + "/" + _occupation.elo_name + "/" + _equipment.elo_name + "#" + str(id)
 	armor = _species.extra_armor + _occupation.extra_armor + _equipment.extra_armor
 	slowness = 10 + _species.extra_slowness + _occupation.extra_slowness + _equipment.extra_slowness
 	next_attack = slowness + noise.randf_range(0, 0.01)
@@ -432,7 +444,6 @@ func init(_species : UnitMod, _occupation : UnitMod, _equipment : UnitMod, _side
 		icon = _occupation.get_icon()
 	elif _equipment.has_icon():
 		icon = _equipment.get_icon()
-	#assert(attacks.filter(func(a : AttackStats) : return a.single_use).size() < 2)
 
 func clear_cooldowns() -> void:
 	cooldown_id = -1
