@@ -1,7 +1,6 @@
 - Re-evaluate how armor works
 - add Shops & Chests to the overland map
 - Add a mimic
-- Rather than always random heroes, have Initial hero crafting by the player (select race, occupation, extra gear)
 - add UI & attack sounds
 - Add monster & hero attack "animations"
 
@@ -14,5 +13,4 @@ Known Bugs:
 
 Future work:
 
-- Add the "Guard" ability to knights
 - better graphics on the path screen
