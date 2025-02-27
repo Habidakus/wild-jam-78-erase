@@ -52,13 +52,15 @@ func change_phase(new_phase : Phase) -> void:
 			
 			hero_containers.clear()
 			for i in range(0, 5):
+				var x : int = i % 2
+				var y : int = (i - x) >> 1
 				var hero_container = hero_container_scene.instantiate()
 				hero_containers.append(hero_container)
 				hero_container.global_position = global_corner_min;
-				hero_container.global_position.x += 100
-				hero_container.global_position.y += (i + 0.5) * (global_corner_max.y - global_corner_min.y) / 5
+				hero_container.global_position.x += 100 + (x * 300)
+				hero_container.global_position.y += (y + 0.5) * (global_corner_max.y - global_corner_min.y) / 3
 				#heroes_column.add_child(hero_container)
-				hero_container.scale = Vector2(0.44, 0.44)
+				hero_container.scale = Vector2(0.42, 0.42) * 5.0 / 3.0
 				add_child(hero_container)
 		
 			assert(species.size() >= 5)
