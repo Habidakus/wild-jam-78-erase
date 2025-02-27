@@ -2,7 +2,7 @@
 - add Shops & Chests to the overland map
 - Add a mimic
 - add UI & attack sounds
-- Add monster & hero attack "animations"
+- Add better monster & hero attack "animations"
 
 Known Bugs:
 

@@ -341,7 +341,7 @@ func apply(actor : UnitStats, target : UnitStats, fx : ActionFXContainer) -> voi
 					target.bleeding_ticks = 0
 	else:
 		if fx != null && dmg != 0:
-			fx.apply_damage(target, dmg)
+			fx.apply_damage(actor, target, dmg)
 		else:
 			if target.magic_shield > dmg:
 				target.magic_shield -= dmg
