@@ -48,7 +48,7 @@ func _process(_delta: float) -> void:
 	var new_holding_ALT : bool = Input.is_key_pressed(KEY_ALT) || Input.is_key_pressed(KEY_CTRL) || Input.is_key_pressed(KEY_SHIFT)
 	if new_holding_ALT != current_holding_ALT:
 		current_holding_ALT = new_holding_ALT
-		update_show_unit_tooltip()
+		update_tooltip_and_summary()
 
 func accepted_defeat() -> void:
 	heroes.clear()
@@ -327,44 +327,44 @@ func ready_battle_space() -> void:
 		(battle_space_figures[unitID] as UnitGraphics).queue_free()
 	battle_space_figures.clear()
 
-func show_unit_skills_in_tooltip(unit_stats : UnitStats, hovering : bool) -> void:
+var tooltip_and_summary_state_hovering : bool = false
+var susit_there_is_summary_data : bool = false
+func show_unit_skills_in_tooltip(unit_stats : UnitStats, skill : SkillStats, hovering : bool) -> void:
+	tooltip_and_summary_state_hovering = hovering
 	if hovering:
-		if unit_stats != null:
-			tooltip_widget.show()
-			tooltip_widget.find_child("TooltipTextArea").text = unit_stats.create_skill_select_tooltip()
-	else:
-		tooltip_widget.hide()
-	summary_alt_tip.hide()
+		tooltip_widget.find_child("TooltipTextArea").text = unit_stats.create_skill_select_tooltip()
+		var skill_summary : String = skill.get_summary()
+		susit_there_is_summary_data = !skill_summary.is_empty()
+		summary_widget.find_child("TooltipTextArea").text = skill_summary
+	update_tooltip_and_summary()
 
-var sut_state_unit_id : int
-var sut_state_hovering : bool = false
 func show_unit_tooltip(unit_id : int, hovering : bool) -> void:
-	sut_state_unit_id = unit_id
-	sut_state_hovering = hovering
-	update_show_unit_tooltip()
+	tooltip_and_summary_state_hovering = hovering
+	if hovering:
+		var unit_stats : UnitStats = game_state.get_unit_by_id(unit_id)
+		if unit_stats != null:
+			if unit_stats.side == UnitStats.Side.HUMAN:
+				summary_widget.position.x = 650
+			else:
+				summary_widget.position.x = 350
+			summary_widget.find_child("TooltipTextArea").text = unit_stats.create_summary()
+			tooltip_widget.find_child("TooltipTextArea").text = unit_stats.create_tooltip()
+			susit_there_is_summary_data = true
+	update_tooltip_and_summary()
 
-func update_show_unit_tooltip() -> void:
-	if sut_state_hovering:
+func update_tooltip_and_summary() -> void:
+	if tooltip_and_summary_state_hovering:
 		if current_holding_ALT:
 			if !summary_widget.visible:
-				var unit_stats : UnitStats = game_state.get_unit_by_id(sut_state_unit_id)
-				if unit_stats != null:
-					if unit_stats.side == UnitStats.Side.HUMAN:
-						summary_widget.position.x = 650
-					else:
-						summary_widget.position.x = 350
-					summary_widget.find_child("TooltipTextArea").text = unit_stats.create_summary()
-					summary_widget.show()
-					summary_alt_tip.hide()
-					tooltip_widget.hide()
+				summary_widget.show()
+				summary_alt_tip.hide()
+				tooltip_widget.hide()
 		else:
 			if !tooltip_widget.visible:
-				var unit_stats : UnitStats = game_state.get_unit_by_id(sut_state_unit_id)
-				if unit_stats != null:
-					tooltip_widget.find_child("TooltipTextArea").text = unit_stats.create_tooltip()
-					tooltip_widget.show()
+				tooltip_widget.show()
+				if susit_there_is_summary_data:
 					summary_alt_tip.show()
-					summary_widget.hide()
+				summary_widget.hide()
 	else:
 		tooltip_widget.hide()
 		summary_widget.position.x = 350;
@@ -466,7 +466,8 @@ func skill_click(event : InputEvent, skill : SkillStats, unit : UnitStats) -> vo
 		return
 
 	if event is InputEventMouseButton:
-		show_unit_skills_in_tooltip(unit, false)
+		SoundBar.play_button_up()
+		show_unit_skills_in_tooltip(unit, skill, false)
 		skill.add_to_unit(unit)
 		path_state_machine_state.our_state_machine.switch_state("PathSelection")
 

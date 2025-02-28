@@ -1,7 +1,7 @@
 - Re-evaluate how armor works
 - add Shops & Chests to the overland map
 - Add a mimic
-- add UI & attack sounds
+- add attack sounds
 - Add better monster & hero attack "animations"
 
 Known Bugs:

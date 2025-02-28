@@ -79,10 +79,12 @@ func enter_state() -> void:
 
 func skill_hover(entered : bool, card : SkillGraphic, unit : UnitStats) -> void:
 	if entered:
-		game.show_unit_skills_in_tooltip(unit, true)
+		SoundBar.play_button_hover_start()
+		game.show_unit_skills_in_tooltip(unit, card.skill, true)
 		card.modulate = Color.AQUA
 	else:
-		game.show_unit_skills_in_tooltip(unit, false)
+		SoundBar.play_button_hover_end()
+		game.show_unit_skills_in_tooltip(unit, card.skill, false)
 		card.modulate = Color.WHITE
 
 func exit_state(next_state: StateMachineState) -> void:

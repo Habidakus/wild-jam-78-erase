@@ -21,6 +21,12 @@ var filter : Callable = func(_a : UnitStats) : return true
 func describe_skill() -> String:
 	return skill_name + " (" + str(current_level) + ")"
 
+func get_summary() -> String:
+	var ret_val : String = ""
+	if attack != null:
+		ret_val += attack.get_summary()
+	return ret_val
+
 func apply(_phase : SkillPhase, hero : UnitStats, heroes : Array[UnitStats], foes : Array[UnitStats]) -> void:
 	if phase != _phase:
 		return
@@ -43,14 +49,13 @@ func apply(_phase : SkillPhase, hero : UnitStats, heroes : Array[UnitStats], foe
 
 func apply_to_unit(unit : UnitStats) -> void:
 	if adjust_health != 0:
-		print()
 		var new_health : float = min(unit.current_health + unit.max_health * adjust_health * current_level, unit.max_health)
-		if new_health != unit.current_health:
-			print("Healing " + unit.unit_name + " for " + str(new_health - unit.current_health) + " hp")
+		#if new_health != unit.current_health:
+		#	print("Healing " + unit.unit_name + " for " + str(new_health - unit.current_health) + " hp")
 		unit.current_health = new_health
 	if adjust_initiative != 0:
 		unit.next_attack += adjust_initiative * current_level
-		print("lowering " + unit.unit_name + " initiative by " + str(adjust_initiative * current_level)  + " seconds")
+		#print("lowering " + unit.unit_name + " initiative by " + str(adjust_initiative * current_level)  + " seconds")
 	if shield != 0:
 		unit.magic_shield += shield * current_level
 
@@ -161,7 +166,6 @@ func add_to_unit(unit : UnitStats) -> void:
 		found_match[0].current_level += 1
 	else:
 		assert(false, "too many matches")
-	
 
 static func create(_skill_name : String, _max_level : int, _phase : SkillPhase, _class : SkillClass, _scope : SkillScope) -> SkillStats:
 	var ret_val : SkillStats = SkillStats.new()

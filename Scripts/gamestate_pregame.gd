@@ -114,14 +114,18 @@ func get_closest_hero_assembly(unit_mod_container : UnitModContainer) -> HeroAss
 				ret_val = hero
 	return ret_val
 
-var umc_mouse_offset : Vector2
+var umc_mouse_offset : Vector2 = Vector2.INF
 var current_closest_hero_assembly : HeroAssemblyContainer = null
 
 # TODO: Replace event with an enum, not a magic number int
 func hero_event(unit_mod : UnitMod, event : int) -> void:
 	if event == 3: # Start hover
+		if umc_mouse_offset == Vector2.INF:
+			SoundBar.play_button_hover_start()
 		game.toggle_mod_summary_tooltip(unit_mod, true)
 	elif event == 4: # End hover
+		if umc_mouse_offset == Vector2.INF:
+			SoundBar.play_button_hover_end()
 		game.toggle_mod_summary_tooltip(unit_mod, false)
 	else:
 		assert(false)
@@ -135,9 +139,11 @@ func mod_event(unit_mod_container : UnitModContainer, event : int) -> void:
 		if current_closest_hero_assembly == null:
 			unit_mod_container.return_home()
 		else:
+			SoundBar.play_button_up()
 			current_closest_hero_assembly.add_mod_container(unit_mod_container, phase)
 			mod_containers.erase(unit_mod_container)
 			unit_mod_container.queue_free()
+		umc_mouse_offset = Vector2.INF
 	elif event == 2: # mouse move
 		unit_mod_container.global_position = get_global_mouse_position() - umc_mouse_offset
 		var closest_hero : HeroAssemblyContainer = get_closest_hero_assembly(unit_mod_container)
@@ -149,10 +155,13 @@ func mod_event(unit_mod_container : UnitModContainer, event : int) -> void:
 		if current_closest_hero_assembly != null:
 			current_closest_hero_assembly.start_glowing()
 	elif event == 3: # Start hover
+		if umc_mouse_offset == Vector2.INF:
+			SoundBar.play_button_hover_start()
 		game.toggle_mod_summary_tooltip(unit_mod_container.mod, true)
 	elif event == 4: # End hover
+		if umc_mouse_offset == Vector2.INF:
+			SoundBar.play_button_hover_end()
 		game.toggle_mod_summary_tooltip(unit_mod_container.mod, false)
-		
 
 func enter_state() -> void:
 	super.enter_state()
