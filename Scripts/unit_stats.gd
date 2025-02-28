@@ -32,16 +32,12 @@ static var noise : RandomNumberGenerator = RandomNumberGenerator.new()
 
 static func create_difficulty_foes(difficulty : float, rnd : RandomNumberGenerator, encounter_type : PathEncounterStat.EncounterType) -> Array[UnitStats]:
 	match encounter_type:
-		PathEncounterStat.EncounterType.GATE_FIGHT:
+		PathEncounterStat.EncounterType.GOBLIN:
 			return create_difficulty_foes_gate_fight(difficulty, rnd)
-		PathEncounterStat.EncounterType.REGULAR_FIGHT:
-			match rnd.randi() % 3:
-				0: 
-					return create_difficulty_foes_dragon_fight(difficulty, rnd)
-				1:
-					return create_difficulty_foes_gate_fight(difficulty, rnd)
-				2:
-					return create_difficulty_foes_spider_fight(difficulty, rnd)
+		PathEncounterStat.EncounterType.SPIDERS:
+			return create_difficulty_foes_spider_fight(difficulty, rnd)
+		PathEncounterStat.EncounterType.DRACONIC:
+			return create_difficulty_foes_dragon_fight(difficulty, rnd)
 		PathEncounterStat.EncounterType.UNDEAD:
 			return create_difficulty_foes_undead_fight(difficulty, rnd)
 		PathEncounterStat.EncounterType.CHRONOTYRANT:
@@ -49,7 +45,6 @@ static func create_difficulty_foes(difficulty : float, rnd : RandomNumberGenerat
 		_:
 			assert(false)
 	return []
-	#	foes.append(UnitStats.create_foes__goblin(rnd, i == 1))
 
 static func create_difficulty_foes_chronotyrant(rnd : RandomNumberGenerator) -> Array[UnitStats]:
 	var ret_val : Array[UnitStats]

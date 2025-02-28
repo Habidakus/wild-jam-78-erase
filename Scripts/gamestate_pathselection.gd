@@ -78,14 +78,15 @@ func gui_input(event: InputEvent, path_encounter_stat : PathEncounterStat) -> vo
 	if game.current_path_encounter_stat.east.has(path_encounter_stat):
 		game.current_path_encounter_stat = path_encounter_stat
 		match path_encounter_stat.encounter_type:
-			PathEncounterStat.EncounterType.GATE_FIGHT:
+			PathEncounterStat.EncounterType.GOBLIN:
 				our_state_machine.switch_state("Combat")
-			PathEncounterStat.EncounterType.REGULAR_FIGHT:
+			PathEncounterStat.EncounterType.DRACONIC:
+				our_state_machine.switch_state("Combat")
+			PathEncounterStat.EncounterType.SPIDERS:
 				our_state_machine.switch_state("Combat")
 			PathEncounterStat.EncounterType.UNDEAD:
 				our_state_machine.switch_state("Combat")
 			PathEncounterStat.EncounterType.CHRONOTYRANT:
-				#our_state_machine.switch_state("Combat")
 				our_state_machine.switch_state("BossBattle")
 			_:
 				assert(false)

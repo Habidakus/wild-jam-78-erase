@@ -623,7 +623,7 @@ func initialize_path() -> void:
 			pe.init(d, w, pos, rnd.randf())
 			game_path.append(pe)
 	var start_pes : PathEncounterStat = all_path_encounter_stats_at_depth(0)[0]
-	start_pes.set_encounter_type("Gate Guards", PathEncounterStat.EncounterType.GATE_FIGHT)
+	start_pes.set_encounter_type("Gate Guards", PathEncounterStat.EncounterType.GOBLIN)
 	for n : PathEncounterStat in all_path_encounter_stats_at_depth(1):
 		n.connect_path_to(start_pes)
 	var end_pes : PathEncounterStat = all_path_encounter_stats_at_depth(path_depth - 1)[0]
@@ -636,18 +636,17 @@ func initialize_path() -> void:
 		needs_paths[0].add_paths(game_path, rnd)
 		needs_paths.remove_at(0)
 		needs_paths = game_path.filter(func(a : PathEncounterStat) : return a.needs_paths())
-	var regular_count : int = 0
+	var allocation_array : Array = [
+		["Goblin", PathEncounterStat.EncounterType.GOBLIN], 
+		["Spiderkin", PathEncounterStat.EncounterType.SPIDERS],
+		["Draconic", PathEncounterStat.EncounterType.DRACONIC],
+		["Undead", PathEncounterStat.EncounterType.UNDEAD],
+	]
+	allocation_array.shuffle()
+	var allocation_index : int = 0
 	for entry : PathEncounterStat in game_path:
 		if entry.encounter_type == PathEncounterStat.EncounterType.UNDEFINED:
-			entry.set_encounter_type("Combat", PathEncounterStat.EncounterType.REGULAR_FIGHT)
-		if entry.encounter_type == PathEncounterStat.EncounterType.REGULAR_FIGHT:
-			regular_count += 1
-	var undead_count : int = 0
-	var place_index : int = 0
-	while undead_count * 3 < regular_count:
-		if game_path[place_index].encounter_type == PathEncounterStat.EncounterType.REGULAR_FIGHT:
-			game_path[place_index].set_encounter_type("Undead", PathEncounterStat.EncounterType.UNDEAD)
-			undead_count += 1
-		place_index += 1
+			entry.set_encounter_type(allocation_array[allocation_index][0], allocation_array[allocation_index][1])
+			allocation_index = (allocation_index + 1) % allocation_array.size()
 	path_state_machine_state.place_paths()
 	current_path_encounter_stat = start_pes

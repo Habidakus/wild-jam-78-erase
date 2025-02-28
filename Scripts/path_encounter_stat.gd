@@ -1,6 +1,6 @@
 class_name PathEncounterStat extends RefCounted
 
-enum EncounterType { UNDEFINED, GATE_FIGHT, CHRONOTYRANT, REGULAR_FIGHT, MISC, UNDEAD, CHEST}
+enum EncounterType { UNDEFINED, GOBLIN, SPIDERS, DRACONIC, UNDEAD, MISC, CHEST, CHRONOTYRANT}
 
 var encounter_type : EncounterType = EncounterType.UNDEFINED
 var graph_pos : Vector2i
@@ -12,10 +12,12 @@ var title : String = "???"
 var west : Array[PathEncounterStat]
 var east : Array[PathEncounterStat]
 
-const combat_texture : Texture = preload("res://Art/TwoSwords.png")
+const goblin_texture : Texture = preload("res://Art/TwoSwords.png")
 const chest_texture : Texture = preload("res://Art/Chest.png")
 const chronotyrant_texture : Texture = preload("res://Art/Hourglass.png")
 const undead_texture : Texture = preload("res://Art/TombStone.png")
+const spider_texture : Texture = preload("res://Art/SpiderMapIcon.png")
+const dragon_texture : Texture = preload("res://Art/DragonMapIcon.png")
 
 func visit() -> void:
 	visited = true
@@ -33,8 +35,14 @@ func flood_fill() -> void:
 				ef.flood_fill()
 
 func get_icon() -> Texture:
-	if encounter_type == EncounterType.GATE_FIGHT || encounter_type == EncounterType.REGULAR_FIGHT:
-		return combat_texture
+	if encounter_type == EncounterType.SPIDERS:
+		return spider_texture
+	if encounter_type == EncounterType.DRACONIC:
+		return dragon_texture
+	if encounter_type == EncounterType.GOBLIN:
+		return goblin_texture
+	if encounter_type == EncounterType.GOBLIN:
+		return goblin_texture
 	elif encounter_type == EncounterType.CHRONOTYRANT:
 		return chronotyrant_texture
 	elif encounter_type == EncounterType.UNDEAD:
@@ -63,7 +71,7 @@ func connect_path_to(other : PathEncounterStat) -> void:
 		east.append(other)
 
 func needs_paths() -> bool:
-	if encounter_type != EncounterType.GATE_FIGHT && west.is_empty():
+	if graph_pos != Vector2i.ZERO && west.is_empty():
 		return true
 	if encounter_type != EncounterType.CHRONOTYRANT && east.is_empty():
 		return true
@@ -76,7 +84,7 @@ static func get_path_encounter_stat_at_graph_coords(all_paths : Array[PathEncoun
 	return null
 
 func add_paths(all_paths : Array[PathEncounterStat], rnd : RandomNumberGenerator) -> void:
-	if encounter_type != EncounterType.GATE_FIGHT && west.is_empty():
+	if graph_pos != Vector2i.ZERO && west.is_empty():
 		var potential : Array[PathEncounterStat]
 		var w = get_path_encounter_stat_at_graph_coords(all_paths, graph_pos + Vector2i(-1, 0))
 		if w != null:
