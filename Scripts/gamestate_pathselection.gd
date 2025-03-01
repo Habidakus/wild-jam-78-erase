@@ -1,10 +1,10 @@
 class_name SMSPath extends StateMachineState
 
-const color_dead_node : Color = Color(Color.DARK_GRAY, 0.33)
-const color_live_node : Color = Color(Color.WHITE, 0.33)
-const color_current_node : Color = Color(Color.GREEN, 0.33)
-const color_past_path : Color = Color(Color.DARK_GREEN, 0.33)
-const color_mouse_node : Color = Color(Color.GREEN_YELLOW, 0.33)
+const color_dead_node : Color = Color(0.5, 0.5, 0.5, 1)
+const color_live_node : Color = Color(Color.WHITE, 0.5)
+const color_current_node : Color = Color(Color.GREEN, 0.5)
+const color_past_path : Color = Color(Color.DARK_GREEN, 0.66)
+const color_mouse_node : Color = Color(Color.GREEN_YELLOW, 1)
 
 const path_graphic_scene : Resource = preload("res://Scenes/path_encounter.tscn")
 
