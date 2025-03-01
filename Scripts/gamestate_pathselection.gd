@@ -43,6 +43,14 @@ func enter_state() -> void:
 	for path_encounter_stat : PathEncounterStat in game.game_path:
 		var graphic : Control = graphic_nodes[path_encounter_stat]
 		var poly : Polygon2D = graphic.find_child("Polygon2D") as Polygon2D
+
+		#var label : Label = graphic.find_child("Label") as Label
+		#label.text = "visited" if path_encounter_stat.visited else "unv"
+		#if path_encounter_stat.can_visit:
+			#label.text += "/can"
+		#else:
+			#label.text += "/cannot"
+
 		if path_encounter_stat.visited:
 			if path_encounter_stat == game.current_path_encounter_stat:
 				poly.color = color_current_node
@@ -65,7 +73,7 @@ func enter_state() -> void:
 			elif e.can_visit:
 				if path_encounter_stat == game.current_path_encounter_stat:
 					texture = texture_green_dot
-				else:
+				elif path_encounter_stat.can_visit:
 					texture = texture_hollow_dot
 			create_line(graphic.global_position + Vector2(20,20), e.map_pos * self.size + Vector2(20,20), texture)
 			#draw_lines.append([graphic.global_position, e.map_pos * self.size, poly.color])
@@ -80,8 +88,8 @@ func create_line(from : Vector2, to : Vector2, texture : Texture) -> void:
 	line.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
 	line.antialiased = true
 	var direction_norm : Vector2 = (to - from).normalized()
-	line.add_point(from + direction_norm * 30)
-	line.add_point(to - direction_norm * 30)
+	line.add_point(from + direction_norm * 35)
+	line.add_point(to - direction_norm * 35)
 	path_lines.append(line)
 	add_child(line)
 

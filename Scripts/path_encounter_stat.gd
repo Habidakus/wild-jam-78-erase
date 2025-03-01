@@ -23,16 +23,9 @@ func visit() -> void:
 	visited = true
 
 func flood_fill() -> void:
-	if visited:
-		can_visit = true
-		var left : bool = false
-		for e : PathEncounterStat in east:
-			if e.visited:
-				left = true
-				e.flood_fill()
-		if left == false:
-			for ef : PathEncounterStat in east:
-				ef.flood_fill()
+	can_visit = true
+	for e : PathEncounterStat in east:
+		e.flood_fill()
 
 func get_icon() -> Texture:
 	if encounter_type == EncounterType.SPIDERS:

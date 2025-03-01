@@ -593,11 +593,11 @@ func all_path_encounter_stats_at_depth(depth : int) -> Array[PathEncounterStat]:
 	return game_path.filter(func(a : PathEncounterStat) : return a.graph_pos.x == depth)
 
 func flood_fill_paths() -> void:
-	current_path_encounter_stat.visit()
 	for pes : PathEncounterStat in game_path:
 		pes.can_visit = false
-	var start_pes : PathEncounterStat = all_path_encounter_stats_at_depth(0)[0]
-	start_pes.flood_fill()
+	#var start_pes : PathEncounterStat = all_path_encounter_stats_at_depth(0)[0]
+	current_path_encounter_stat.visit()
+	current_path_encounter_stat.flood_fill()
 
 func unvisit_path_nodes() -> void:
 	for pes : PathEncounterStat in game_path:
