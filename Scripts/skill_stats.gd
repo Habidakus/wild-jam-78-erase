@@ -2,7 +2,7 @@ class_name SkillStats extends RefCounted
 
 enum SkillScope { SELF, FOE_UNDEAD, ALL_HEROES, ALL_DEAD_HEROES }
 enum SkillClass { NONE, ROGUE, FIGHTER, HOLY, MAGIC }
-enum SkillPhase { NONE, POST_COMBAT, PRE_COMBAT, RESURRECTION, WHEN_SELECTED }
+enum SkillPhase { NONE, HEALING, PRE_COMBAT, WHEN_SELECTED }
 
 var skill_name : String = "???"
 var max_level : int = 1
@@ -27,6 +27,29 @@ func get_summary() -> String:
 		ret_val += attack.get_summary()
 	return ret_val
 
+func get_healing_amount(caster_id : int, goodguys : Array[UnitStats]) -> Array[Array]: # [[id, amount]]
+	var ret_val : Array[Array]
+	if phase != SkillPhase.HEALING:
+		return ret_val
+	assert(adjust_initiative == 0, "Not set up for healing skills to adjust initiative")
+	assert(shield == 0, "Not set up for healing skills to add shields")
+	assert(adjust_health >= 0, "Not set up for damaging healing")
+	for hero : UnitStats in goodguys:
+		var heal_amount : float = hero.max_health * adjust_health * current_level
+		match scope:
+			SkillScope.SELF:
+				if hero.id == caster_id:
+					ret_val.append([hero.id, heal_amount])
+			SkillScope.FOE_UNDEAD:
+				assert(false, "Dont understand healing undead")
+			SkillScope.ALL_HEROES:
+				if hero.is_alive():
+					ret_val.append([hero.id, heal_amount])
+			SkillScope.ALL_DEAD_HEROES:
+				if !hero.is_alive():
+					ret_val.append([hero.id, heal_amount])
+	return ret_val
+
 func apply(_phase : SkillPhase, hero : UnitStats, heroes : Array[UnitStats], foes : Array[UnitStats]) -> void:
 	if phase != _phase:
 		return
@@ -41,14 +64,11 @@ func apply(_phase : SkillPhase, hero : UnitStats, heroes : Array[UnitStats], foe
 			for unit : UnitStats in heroes:
 				apply_to_unit(unit)
 		SkillScope.ALL_DEAD_HEROES:
-			for unit : UnitStats in heroes:
-				if !unit.is_alive():
-					apply_to_unit(unit)
-				elif unit.current_health == 1:
-					pass
+			assert(false, "Resurrection should be handled in get_healing_amount()")
 
 func apply_to_unit(unit : UnitStats) -> void:
 	if adjust_health != 0:
+		assert(adjust_health <= 0, "Healing should be handled by get_healing_amount")
 		var new_health : float = min(unit.current_health + unit.max_health * adjust_health * current_level, unit.max_health)
 		#if new_health != unit.current_health:
 		#	print("Healing " + unit.unit_name + " for " + str(new_health - unit.current_health) + " hp")
@@ -91,14 +111,14 @@ static func create_skill_hidden_cut() -> SkillStats:
 	return create("Hidden Cut", 1, SkillPhase.WHEN_SELECTED, SkillClass.ROGUE, SkillScope.SELF).add_attack(s_rogue_bleed_attack).set_advanced().set_description("Can apply a persistant bleed even to the most heavily armored foes.")
 
 static func create_skill_healing_herbs() -> SkillStats:
-	return create("Healing Herbs", 4, SkillPhase.PRE_COMBAT, SkillClass.FIGHTER, SkillScope.ALL_HEROES).mod_health(0.15).set_description("This hero knows how to prepare a tea of healing herbs between combats, helping restore the health of all wounded allies.")
+	return create("Healing Herbs", 4, SkillPhase.HEALING, SkillClass.FIGHTER, SkillScope.ALL_HEROES).mod_health(0.15).set_description("This hero knows how to prepare a tea of healing herbs between combats, helping restore the health of all wounded allies.")
 static func create_skill_walk_it_off() -> SkillStats:
-	return create("Walk It Off", 3, SkillPhase.PRE_COMBAT, SkillClass.FIGHTER, SkillScope.SELF).mod_health(0.25).set_description("This hero is a veteran of patching themselves up, and heals quickly between combats.")
+	return create("Walk It Off", 3, SkillPhase.HEALING, SkillClass.FIGHTER, SkillScope.SELF).mod_health(0.25).set_description("This hero is a veteran of patching themselves up, and heals quickly between combats.")
 static func create_skill_command() -> SkillStats:
 	return create("Go Now", 1, SkillPhase.WHEN_SELECTED, SkillClass.FIGHTER, SkillScope.SELF).add_attack(s_fighter_command_attack).set_advanced().set_description("This hero can get another hero to act next, regardless of their stunned state.")
 
 static func create_skill_healing_prayer() -> SkillStats:
-	return create("Resurrection", 6, SkillPhase.RESURRECTION, SkillClass.HOLY, SkillScope.ALL_DEAD_HEROES).mod_health(0.125).set_description("This holy hero helps restore the health of anyone who was defeated in a previous combat.")
+	return create("Resurrection", 6, SkillPhase.HEALING, SkillClass.HOLY, SkillScope.ALL_DEAD_HEROES).mod_health(0.125).set_description("This holy hero helps restore the health of anyone who was defeated in a previous combat.")
 static func create_skill_turn_undead() -> SkillStats:
 	return create("Turn Undead", 6, SkillPhase.PRE_COMBAT, SkillClass.HOLY, SkillScope.FOE_UNDEAD).mod_health(-0.125).set_description("This holy hero inflicts special damage on all undead before combat is joined.")
 static func create_skill_divine_wrath() -> SkillStats:

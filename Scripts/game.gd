@@ -99,12 +99,6 @@ func preserve_heroes() -> void:
 		var current_hero : UnitStats = game_state.get_unit_by_id(heroes[i].id)
 		heroes[i].prepare_for_next_battle(current_hero)
 
-func restore_defeated_heroes() -> void:
-	for i in range(0, heroes.size()):
-		if heroes[i].current_health < 1:
-			print("Resurrecting " + heroes[i].unit_name)
-			heroes[i].current_health = 1
-
 func perform_post_loop_heals_and_path_reset() -> void:
 	for i in range(0, heroes.size()):
 		heroes[i].current_health = heroes[i].max_health
@@ -184,15 +178,28 @@ func clean_up_game_state() -> void:
 	game_state.release()
 	game_state = null
 
-func perform_skills(phase : SkillStats.SkillPhase, goodguys : Array[UnitStats], badguys : Array[UnitStats]) -> void:
-	var skills_to_perform : Array[Array]
+func perform_healing_skills(goodguys : Array[UnitStats]) -> void:
+	var amount_healed : Dictionary # <id, amount>
+	for hero : UnitStats in goodguys:
+		if !hero.is_alive():
+			amount_healed[hero.id] = 1
+		for skill : SkillStats in hero.skills:
+			for id_amount_pair : Array in skill.get_healing_amount(hero.id, goodguys):
+				if amount_healed.has(id_amount_pair[0]):
+					amount_healed[id_amount_pair[0]] += id_amount_pair[1]
+				else:
+					amount_healed[id_amount_pair[0]] = id_amount_pair[1]
+	for hero : UnitStats in goodguys:
+		if amount_healed.has(hero.id):
+			if hero.current_health <= 0:
+				hero.current_health = min(hero.max_health, amount_healed[hero.id])
+			else:
+				hero.current_health = min(hero.max_health, hero.current_health + amount_healed[hero.id])
+
+func perform_other_skills(phase : SkillStats.SkillPhase, goodguys : Array[UnitStats], badguys : Array[UnitStats]) -> void:
 	for hero : UnitStats in goodguys:
 		for skill : SkillStats in hero.skills:
-			skills_to_perform.append([skill, hero])
-	# We want the most powerful skills performed first, so that, say, a lesser resurrection doesn't spoil a more powerful one
-	skills_to_perform.sort_custom(func(a, b) : return a[0].current_level > b[0].current_level)
-	for stp in skills_to_perform:
-		stp[0].apply(phase, stp[1], goodguys, badguys)
+			skill.apply(phase, hero, goodguys, badguys)
 
 var elo_values : Dictionary # <string, float>
 func dump_elo() -> void:
@@ -311,6 +318,7 @@ func update_trip_sheet() -> void:
 func get_viable_skills() -> Array[Array]: # [[unit, skill]]
 	var sort_list : Array[Array]
 	for userSkillTupple : Array in SkillStats.get_viable_skills(heroes):
+		print(userSkillTupple[1].describe_skill() + " is viable for " + userSkillTupple[0].unit_name)
 		sort_list.append([rnd.randf(), userSkillTupple[0], userSkillTupple[1]])
 	sort_list.sort_custom(func(a, b) : return a[0] < b[0])
 	var ret_val : Array[Array]
@@ -491,7 +499,8 @@ func run_one_turn() -> void:
 		setup_game_state()
 		var current_heroes : Array[UnitStats] = game_state.units.filter(func(a : UnitStats) : return a.side == UnitStats.Side.HUMAN)
 		var current_foes : Array[UnitStats] = game_state.units.filter(func(a : UnitStats) : return a.side == UnitStats.Side.COMPUTER)
-		perform_skills(SkillStats.SkillPhase.PRE_COMBAT, current_heroes, current_foes)
+		perform_healing_skills(current_heroes)
+		perform_other_skills(SkillStats.SkillPhase.PRE_COMBAT, current_heroes, current_foes)
 		update_trip_sheet()
 		update_battle_space()
 		return

@@ -26,8 +26,7 @@ func enter_state() -> void:
 	#game.calculate_elo()
 	game.preserve_heroes()
 	game.clean_up_game_state()
-	game.perform_skills(SkillStats.SkillPhase.POST_COMBAT, game.heroes, [])
-	game.restore_defeated_heroes()
+	#game.restore_defeated_heroes()
 	game.ready_battle_space()
 	
 	var skill_box : HBoxContainer = find_child("SkillBox") as HBoxContainer
