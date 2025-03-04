@@ -314,6 +314,41 @@ func update_trip_sheet() -> void:
 		label.size_flags_stretch_ratio = entry[0] - prev_time
 		prev_time = entry[0]
 		trip_sheet.add_child(label)
+		if entry[1] < 0:
+			if trip_sheet_labels.has(0 - entry[1]):
+				var original_seconds : float = 10000
+				var non_ghost_indexes : Array = sort_order.filter(func(a) : return a[1] == 0 - entry[1])
+				if non_ghost_indexes.size() == 1:
+					original_seconds = non_ghost_indexes[0][0]
+				var seconds : float = entry[0] - original_seconds
+				call_deferred("add_ghost_line", label, trip_sheet_labels[0 - entry[1]], seconds)
+
+func add_ghost_line(ghost_label : Label, current_label : Label, seconds : float) -> void:
+	for child : Node in ghost_label.get_children():
+		child.queue_free()
+	
+	var text_rect : Vector2 = ghost_label.get_theme_default_font().get_multiline_string_size(ghost_label.text, ghost_label.horizontal_alignment, -1, ghost_label.label_settings.font_size)
+	var line_start : Vector2 = Vector2(ghost_label.size.x / 2 + text_rect.x / 2, ghost_label.size.y - text_rect.y / 2)
+	var line_end_global : Vector2 = current_label.global_position + Vector2(text_rect.x, current_label.size.y - text_rect.y / 2)
+	var line_end : Vector2 = line_end_global - ghost_label.global_position
+	var line_mid : Vector2 = Vector2(ghost_label.size.x, (line_start.y + line_end.y) / 2)
+	
+	var line : Line2D = Line2D.new()
+	line.add_point(line_start)
+	line.add_point(line_mid)
+	line.add_point(line_end)
+	line.width = 2
+	ghost_label.add_child(line)
+	
+	var seconds_label : Label = Label.new()
+	seconds_label.text = str(round(seconds * 10) / 10) + " sec"
+	seconds_label.position = line_mid - Vector2(0, text_rect.y / 2)
+	seconds_label.z_index = 5;
+	seconds_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	seconds_label.label_settings = LabelSettings.new()
+	seconds_label.label_settings.font_color = Color.WHITE
+	seconds_label.label_settings.font_color.a = 0.85
+	line.add_child(seconds_label)
 
 func get_viable_skills() -> Array[Array]: # [[unit, skill]]
 	var sort_list : Array[Array]
