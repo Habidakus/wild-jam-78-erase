@@ -37,7 +37,7 @@ func calculate_offset(index : int, c : int, r : float) -> float:
 		return 0
 	return lerpf(-r, r, float(index) / float(c - 1))
 
-func create_curve(from : Vector2, mid : Vector2, to: Vector2, count : int) -> Array[Vector2]:
+static func create_curve(from : Vector2, mid : Vector2, to: Vector2, count : int) -> Array[Vector2]:
 	var ret_val : Array[Vector2]
 	ret_val.append(from)
 	for i in range(1, count - 2):

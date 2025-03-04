@@ -339,9 +339,16 @@ func add_ghost_line(ghost_label : Label, current_label : Label, seconds : float)
 	var line_mid : Vector2 = Vector2(ghost_label.size.x, (line_start.y + line_end.y) / 2)
 	
 	var line : Line2D = Line2D.new()
+	
+	var points : Array[Vector2] = UnitGraphics.create_curve(line_end, line_mid, line_start, 24)
 	line.add_point(line_end)
-	line.add_point(line_mid)
+	for i : int in range(0, points.size()):
+		line.add_point(points[i])
 	line.add_point(line_start)
+	
+	#line.add_point(line_end)
+	#line.add_point(line_mid)
+	#line.add_point(line_start)
 	#line.width = 2
 	line.material = shader_material
 	line.texture = white_arrow_line_texture
@@ -352,7 +359,7 @@ func add_ghost_line(ghost_label : Label, current_label : Label, seconds : float)
 	
 	var seconds_label : Label = Label.new()
 	seconds_label.text = str(round(seconds * 10) / 10) + " sec"
-	seconds_label.position = line_mid - Vector2(0, text_rect.y / 2)
+	seconds_label.position = points[12] + Vector2(18, -text_rect.y / 2)
 	seconds_label.z_index = 5;
 	seconds_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	seconds_label.label_settings = LabelSettings.new()
