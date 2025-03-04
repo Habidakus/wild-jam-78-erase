@@ -11,6 +11,10 @@ var tooltip_widget : Control
 var summary_widget : Control
 var summary_alt_tip : Label
 
+const scrolling_line_shader : Shader = preload("res://Art/ScrollingRedArrow.gdshader")
+const white_arrow_line_texture : Texture = preload("res://Art/WhitePointerPath.png")
+var shader_material : ShaderMaterial = ShaderMaterial.new()
+
 const calculation_depth : int = 7 # This is how many look aheads the min-max engine computes
 const path_depth : int = 8 # 6 This is how many encounters before the chronotyrant
 const path_width : int = 4
@@ -26,6 +30,7 @@ func exit_state(next_state : StateMachineState) -> void:
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	rnd.seed = int(Time.get_unix_time_from_system())
+	shader_material.shader = scrolling_line_shader
 	tooltip_widget = find_child("Tooltip") as Control
 	summary_alt_tip = tooltip_widget.find_child("AltTip") as Label
 	tooltip_widget.hide()
@@ -334,10 +339,15 @@ func add_ghost_line(ghost_label : Label, current_label : Label, seconds : float)
 	var line_mid : Vector2 = Vector2(ghost_label.size.x, (line_start.y + line_end.y) / 2)
 	
 	var line : Line2D = Line2D.new()
-	line.add_point(line_start)
-	line.add_point(line_mid)
 	line.add_point(line_end)
-	line.width = 2
+	line.add_point(line_mid)
+	line.add_point(line_start)
+	#line.width = 2
+	line.material = shader_material
+	line.texture = white_arrow_line_texture
+	line.texture_mode = Line2D.LINE_TEXTURE_TILE
+	line.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
+	line.antialiased = true
 	ghost_label.add_child(line)
 	
 	var seconds_label : Label = Label.new()
@@ -348,6 +358,8 @@ func add_ghost_line(ghost_label : Label, current_label : Label, seconds : float)
 	seconds_label.label_settings = LabelSettings.new()
 	seconds_label.label_settings.font_color = Color.WHITE
 	seconds_label.label_settings.font_color.a = 0.85
+	seconds_label.label_settings.outline_size = 2
+	seconds_label.label_settings.outline_color = Color.BLACK
 	line.add_child(seconds_label)
 
 func get_viable_skills() -> Array[Array]: # [[unit, skill]]
