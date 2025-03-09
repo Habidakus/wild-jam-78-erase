@@ -42,6 +42,7 @@ func enter_state() -> void:
 
 	for path_encounter_stat : PathEncounterStat in game.game_path:
 		var graphic : Control = graphic_nodes[path_encounter_stat]
+		(graphic.find_child("Label") as Label).hide()
 		var poly : Polygon2D = graphic.find_child("Polygon2D") as Polygon2D
 
 		#var label : Label = graphic.find_child("Label") as Label
@@ -100,14 +101,16 @@ func exit_state(next_state: StateMachineState) -> void:
 	super.exit_state(next_state)
 
 func mouse_entered(path_encounter_stat : PathEncounterStat) -> void:
+	var graphic : Control = graphic_nodes[path_encounter_stat]
+	(graphic.find_child("Label") as Label).show()
 	if game.current_path_encounter_stat.east.has(path_encounter_stat):
-		var graphic : Control = graphic_nodes[path_encounter_stat]
 		var poly : Polygon2D = graphic.find_child("Polygon2D") as Polygon2D
 		poly.color = color_mouse_node
 		
 func mouse_exited(path_encounter_stat : PathEncounterStat) -> void:
+	var graphic : Control = graphic_nodes[path_encounter_stat]
+	(graphic.find_child("Label") as Label).hide()
 	if game.current_path_encounter_stat.east.has(path_encounter_stat):
-		var graphic : Control = graphic_nodes[path_encounter_stat]
 		var poly : Polygon2D = graphic.find_child("Polygon2D") as Polygon2D
 		poly.color = color_live_node
 
