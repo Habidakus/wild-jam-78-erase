@@ -7,6 +7,9 @@ const red_arrow_line_texture : Texture = preload("res://Art/RedPointerPath.png")
 const green_arrow_line_texture : Texture = preload("res://Art/GreenPointerPath.png")
 const scrolling_line_shader : Shader = preload("res://Art/ScrollingRedArrow.gdshader")
 var shader_material : ShaderMaterial = ShaderMaterial.new()
+var blood_health_background : ColorRect
+var alive_blood_color : Color
+var dead_blood_color : Color
 
 var attack_list : Array[UnitGraphics]
 var action_buttons : Array[Button]
@@ -28,7 +31,10 @@ static func create(unit_stats : UnitStats, game : Game) -> UnitGraphics:
 	return ret_val
 
 func _ready() -> void:
-	max_health_width = (find_child("Blood Background") as ColorRect).size.x
+	blood_health_background = find_child("Blood Background") as ColorRect
+	alive_blood_color = blood_health_background.color
+	dead_blood_color = 2 * (alive_blood_color / 3)
+	max_health_width = blood_health_background.size.x
 	shield_bar = (find_child("Shield") as ColorRect)
 	shader_material.shader = scrolling_line_shader
 
@@ -84,18 +90,22 @@ func set_health(unit : UnitStats) -> void:
 	var health_rect : ColorRect = find_child("Health") as ColorRect
 	var health_text : Label = find_child("HealthText") as Label
 	if unit.is_alive():
+		blood_health_background.color = alive_blood_color
 		var magic_shield : float = unit.get_magic_shield()
 		health_rect.show()
-		health_rect.size.x = max_health_width * unit.current_health / unit.max_health
 		health_text.text = str(max(1,round(unit.current_health))) + "/" + str(round(unit.max_health))
 		if magic_shield > 0:
 			shield_bar.show()
 			health_text.text += " +" + str(max(1, round(magic_shield)))
 		else:
 			shield_bar.hide()
+		var tween : Tween = create_tween()
+		var new_health_size : Vector2 = Vector2(max_health_width * unit.current_health / unit.max_health, health_rect.size.y)
+		tween.tween_property(health_rect, "size", new_health_size, 0.75)
 	else:
 		shield_bar.hide()
 		health_rect.hide()
+		blood_health_background.color = dead_blood_color
 		health_text.text = "DEAD" if unit.side == UnitStats.Side.COMPUTER else "defeated"
 
 func add_draw_action(attack : AttackStats, target_stats : UnitStats, hover_callback : Callable, click_callback : Callable) -> void:
