@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://Scripts/unit_mod_container.gd" id="1_4dc6v"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_deef4"]
-font_size = 32
+font_size = 48
 font_color = Color(0, 0, 0, 1)
 
 [node name="UnitModContainer" type="Control"]

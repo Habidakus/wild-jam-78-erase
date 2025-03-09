@@ -4,11 +4,11 @@
 [ext_resource type="Texture2D" uid="uid://yn1j86y4tp3v" path="res://icon.svg" id="2_exdoo"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_jvyq2"]
-font_size = 12
+font_size = 14
 font_color = Color(0, 0, 0, 1)
 
 [sub_resource type="LabelSettings" id="LabelSettings_yv15j"]
-font_size = 24
+font_size = 26
 font_color = Color(0, 0, 0, 1)
 
 [node name="Unit" type="Control"]

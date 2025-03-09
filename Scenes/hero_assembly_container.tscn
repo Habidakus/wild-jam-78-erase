@@ -1,9 +1,13 @@
-[gd_scene load_steps=3 format=3 uid="uid://d2aw31i2ulj27"]
+[gd_scene load_steps=4 format=3 uid="uid://d2aw31i2ulj27"]
 
 [ext_resource type="Script" path="res://Scripts/hero_assembly_container.gd" id="1_57ovc"]
 
+[sub_resource type="LabelSettings" id="LabelSettings_b2mbn"]
+font_size = 26
+font_color = Color(0, 0, 0, 1)
+
 [sub_resource type="LabelSettings" id="LabelSettings_deef4"]
-font_size = 24
+font_size = 30
 font_color = Color(0, 0, 0, 1)
 
 [node name="HeroAssemblyContainer" type="Control"]
@@ -26,7 +30,7 @@ offset_bottom = 225.0
 rotation = -1.5708
 text = "Sodel MacTinmonger
 the Dwarf"
-label_settings = SubResource("LabelSettings_deef4")
+label_settings = SubResource("LabelSettings_b2mbn")
 horizontal_alignment = 1
 vertical_alignment = 1
 

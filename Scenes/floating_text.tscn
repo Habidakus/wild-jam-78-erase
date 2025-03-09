@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://Scripts/floating_text.gd" id="1_5kvjq"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_5fpup"]
-font_size = 24
+font_size = 32
 font_color = Color(0.778002, 0.313239, 4.81307e-07, 1)
 outline_size = 2
 outline_color = Color(0, 0, 0, 1)

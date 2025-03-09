@@ -28,18 +28,6 @@ func load_work_area() -> void:
 
 func setup_column(_column_name : String, _mods : Array[UnitMod]) -> void:
 	pass
-	#var column : VBoxContainer = find_child(column_name) as VBoxContainer
-	#for mod : UnitMod in mods:
-		#var label : Label = Label.new()
-		#label.text = mod.get_mod_name()
-		#label.label_settings = LabelSettings.new()
-		#label.label_settings.font_color = Color.BLACK
-		#label.label_settings.font_size = 28
-		#var color_rectbox : ColorRect = ColorRect.new()
-		#color_rectbox.set_anchors_preset(PRESET_FULL_RECT)
-		#color_rectbox.show_behind_parent = true
-		#label.add_child(color_rectbox)
-		#column.add_child(label)
 
 func change_phase(new_phase : Phase) -> void:
 	if phase == new_phase:

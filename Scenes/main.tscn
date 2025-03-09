@@ -170,7 +170,7 @@ outline_size = 16
 outline_color = Color(0.00184107, 0.00184107, 0.00184107, 1)
 
 [sub_resource type="LabelSettings" id="LabelSettings_c44qh"]
-font_size = 24
+font_size = 32
 font_color = Color(0, 0, 0, 1)
 outline_size = 2
 
@@ -330,7 +330,6 @@ theme_override_font_sizes/font_size = 32
 text = "Credits"
 
 [node name="Credits" type="Control" parent="OverStateMachine" node_paths=PackedStringArray("next_state")]
-visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -371,7 +370,7 @@ columns = 2
 [node name="ProgLab" type="Label" parent="OverStateMachine/Credits/MarginContainer/GridContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 31
+theme_override_font_sizes/font_size = 36
 text = "Programming:
 "
 horizontal_alignment = 2
@@ -379,13 +378,13 @@ horizontal_alignment = 2
 [node name="ProgValue" type="Label" parent="OverStateMachine/Credits/MarginContainer/GridContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 31
+theme_override_font_sizes/font_size = 36
 text = "Jason Abbott"
 
 [node name="DesignLab" type="Label" parent="OverStateMachine/Credits/MarginContainer/GridContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 31
+theme_override_font_sizes/font_size = 36
 text = "Design:
 "
 horizontal_alignment = 2
@@ -393,13 +392,13 @@ horizontal_alignment = 2
 [node name="DesignValue" type="Label" parent="OverStateMachine/Credits/MarginContainer/GridContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 31
+theme_override_font_sizes/font_size = 36
 text = "Jason Abbott"
 
 [node name="ArtLab" type="Label" parent="OverStateMachine/Credits/MarginContainer/GridContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 31
+theme_override_font_sizes/font_size = 36
 text = "Art:
 "
 horizontal_alignment = 2
@@ -407,13 +406,13 @@ horizontal_alignment = 2
 [node name="ArtValue" type="Label" parent="OverStateMachine/Credits/MarginContainer/GridContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 31
+theme_override_font_sizes/font_size = 36
 text = "Jason Abbott"
 
 [node name="PlayTestLab" type="Label" parent="OverStateMachine/Credits/MarginContainer/GridContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 31
+theme_override_font_sizes/font_size = 36
 text = "Design Feedback:
 
 "
@@ -422,14 +421,14 @@ horizontal_alignment = 2
 [node name="PlayTestValue" type="Label" parent="OverStateMachine/Credits/MarginContainer/GridContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 31
+theme_override_font_sizes/font_size = 36
 text = "Jeff Hamilton
 Andy Kirton"
 
 [node name="ToolsLab" type="Label" parent="OverStateMachine/Credits/MarginContainer/GridContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 31
+theme_override_font_sizes/font_size = 36
 text = "Tools:
 
 
@@ -440,7 +439,7 @@ horizontal_alignment = 2
 [node name="ToolsValue" type="Label" parent="OverStateMachine/Credits/MarginContainer/GridContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 31
+theme_override_font_sizes/font_size = 36
 text = "Godot 4
 Audacity
 Wavosaur
@@ -449,25 +448,42 @@ Gimp"
 [node name="SourceLab" type="Label" parent="OverStateMachine/Credits/MarginContainer/GridContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 31
+theme_override_font_sizes/font_size = 36
 text = "Source Code:"
 horizontal_alignment = 2
 
 [node name="SourceValue" type="LinkButton" parent="OverStateMachine/Credits/MarginContainer/GridContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 31
+theme_override_font_sizes/font_size = 36
 text = "Github wild-jam-78-erase"
 uri = "https://github.com/Habidakus/wild-jam-78-erase"
+
+[node name="Font" type="Label" parent="OverStateMachine/Credits/MarginContainer/GridContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 36
+text = "Font:
+"
+horizontal_alignment = 2
+
+[node name="FontValue" type="LinkButton" parent="OverStateMachine/Credits/MarginContainer/GridContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 36
+text = "Libertinus Serif Regular"
+uri = "https://github.com/alerque/libertinus"
 
 [node name="Label" type="Label" parent="OverStateMachine/Credits/MarginContainer"]
 layout_mode = 2
 size_flags_vertical = 8
 theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 20
 text = "(hit any key to continue)"
 horizontal_alignment = 1
 
 [node name="Game" type="Control" parent="OverStateMachine"]
+visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -482,6 +498,7 @@ initial_state = NodePath("Idle")
 
 [node name="PreGame" type="Control" parent="OverStateMachine/Game/GameStateMachine"]
 process_mode = 3
+visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -518,23 +535,23 @@ layout_mode = 2
 
 [node name="Label" type="Label" parent="OverStateMachine/Game/GameStateMachine/PreGame"]
 layout_mode = 2
-offset_left = 173.0
-offset_top = 600.0
-offset_right = 879.0
-offset_bottom = 634.0
+offset_left = 40.0
+offset_top = 599.0
+offset_right = 842.0
+offset_bottom = 636.0
 text = "Drag selections onto your five heroes to build them, or just:   "
 label_settings = SubResource("LabelSettings_c44qh")
 
 [node name="RandomButton" type="Button" parent="OverStateMachine/Game/GameStateMachine/PreGame"]
 layout_mode = 2
-offset_left = 883.0
-offset_top = 590.0
-offset_right = 978.0
-offset_bottom = 644.0
+offset_left = 844.0
+offset_top = 593.0
+offset_right = 1092.0
+offset_bottom = 640.0
 size_flags_horizontal = 4
 size_flags_vertical = 8
-text = "Randomize
-and Go!"
+theme_override_font_sizes/font_size = 30
+text = "Randomize and Go!"
 
 [node name="LoopExposition" type="Control" parent="OverStateMachine/Game/GameStateMachine" node_paths=PackedStringArray("next_state")]
 visible = false
@@ -572,7 +589,7 @@ theme_override_constants/margin_bottom = 40
 [node name="RichTextLabel" type="RichTextLabel" parent="OverStateMachine/Game/GameStateMachine/LoopExposition/MarginContainer"]
 layout_mode = 2
 theme_override_colors/default_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/normal_font_size = 22
+theme_override_font_sizes/normal_font_size = 28
 bbcode_enabled = true
 text = "Your team has been through much... prevailing against all odds to overthrow the rule of the brutal Chronotyrant."
 fit_content = true
@@ -590,7 +607,7 @@ offset_right = 20.0
 grow_horizontal = 2
 grow_vertical = 0
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 22
+theme_override_font_sizes/font_size = 24
 text = "(hit any key to continue)"
 
 [node name="Combat" type="Control" parent="OverStateMachine/Game/GameStateMachine"]
