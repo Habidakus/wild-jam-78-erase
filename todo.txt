@@ -1,3 +1,4 @@
+- Add slimes as enemies
 - Re-evaluate how armor works
 - add Shops & Chests to the overland map
 - Add a mimic
