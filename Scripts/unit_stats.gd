@@ -163,8 +163,11 @@ static func create_difficulty_foes_slime_fight(difficulty : float, rnd : RandomN
 		var selector : Array[int]
 		if difficulty <= 30:
 			selector.append(10)
-		if difficulty >= 30 && can_generate_ooze:
-			selector.append(20)
+		if difficulty >= 30:
+			if can_generate_ooze:
+				selector.append(20)
+			else:
+				selector.append(10)
 		if difficulty >= 50:
 			selector.append(40)
 		var v = selector[rnd.randi_range(0, selector.size() - 1)]
@@ -361,7 +364,7 @@ func create_tooltip() -> String:
 		ret_val += "\nbleeding"
 	if damage_shield != 0:
 		assert(damage_shield > 0)
-		ret_val += "\nUnarmored attackers take " + str(damage_shield) + " retaliation damage"
+		ret_val += "\nUnprotected attackers take " + str(damage_shield) + " retaliation damage"
 	ret_val += "\n"
 	if attacks.size() > 1:
 		ret_val += "Attack: "

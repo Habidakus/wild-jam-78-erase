@@ -329,6 +329,8 @@ func apply(actor : UnitStats, target : UnitStats, fx : ActionFXContainer) -> voi
 	var new_bleed_ticks : bool = true if bleed_ticks > 0 && bleed_ticks > target.bleeding_ticks else false
 	var dmg : float = target.calculate_damage_from_attack(self)
 	var damage_shield_damage : float = max(target.damage_shield - actor.armor, 0)
+	if actor.magic_shield > 0:
+		damage_shield_damage = 0
 
 	if acts_on_allies:
 		if fx != null:

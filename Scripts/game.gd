@@ -700,7 +700,7 @@ func initialize_path() -> void:
 		needs_paths.remove_at(0)
 		needs_paths = game_path.filter(func(a : PathEncounterStat) : return a.needs_paths())
 	var allocation_array : Array = [
-		["Goblin", PathEncounterStat.EncounterType.GOBLIN], 
+		["Goblin", PathEncounterStat.EncounterType.GOBLIN],
 		["Spiderkin", PathEncounterStat.EncounterType.SPIDERS],
 		["Sewers", PathEncounterStat.EncounterType.SLIMES],
 		["Draconic", PathEncounterStat.EncounterType.DRACONIC],
