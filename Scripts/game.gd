@@ -610,14 +610,14 @@ func harvest_fx(action : EAction) -> void:
 func human_hover_over_action(b : bool, move : EAction) -> void:
 	if b:
 		var target : UnitStats = game_state.get_unit_by_id(move.targetID)
+		var actor : UnitStats = game_state.get_unit_by_id(move.actorID)
 
 		if move.attack != null:
 			tooltip_widget.show()
 			summary_alt_tip.hide()
-			tooltip_widget.find_child("TooltipTextArea").text = move.attack.generate_tooltip(target)
+			tooltip_widget.find_child("TooltipTextArea").text = move.attack.generate_tooltip(actor, target)
 
 		#var dmg : float = game_state.get_unit_by_id(move.targetID).calculate_damage_from_attack(move.attack)
-		var actor : UnitStats = game_state.get_unit_by_id(move.actorID)
 		ghost_trip_sheet_pos[move.actorID] = actor.next_attack + move.attack.get_cost_in_time(actor)
 		
 		var target_slow : float = move.attack.get_cost_in_time_for_target(actor, target)
@@ -702,6 +702,7 @@ func initialize_path() -> void:
 	var allocation_array : Array = [
 		["Goblin", PathEncounterStat.EncounterType.GOBLIN], 
 		["Spiderkin", PathEncounterStat.EncounterType.SPIDERS],
+		["Sewers", PathEncounterStat.EncounterType.SLIMES],
 		["Draconic", PathEncounterStat.EncounterType.DRACONIC],
 		["Undead", PathEncounterStat.EncounterType.UNDEAD],
 	]

@@ -1,6 +1,6 @@
 class_name PathEncounterStat extends RefCounted
 
-enum EncounterType { UNDEFINED, GOBLIN, SPIDERS, DRACONIC, UNDEAD, MISC, CHEST, CHRONOTYRANT}
+enum EncounterType { UNDEFINED, GOBLIN, SPIDERS, SLIMES, DRACONIC, UNDEAD, MISC, CHEST, CHRONOTYRANT}
 
 var encounter_type : EncounterType = EncounterType.UNDEFINED
 var graph_pos : Vector2i
@@ -18,6 +18,7 @@ const chronotyrant_texture : Texture = preload("res://Art/Hourglass.png")
 const undead_texture : Texture = preload("res://Art/TombStone.png")
 const spider_texture : Texture = preload("res://Art/SpiderMapIcon.png")
 const dragon_texture : Texture = preload("res://Art/DragonMapIcon.png")
+const sewer_texture : Texture = preload("res://Art/Path_Sewer.png")
 
 func visit() -> void:
 	visited = true
@@ -30,11 +31,9 @@ func flood_fill() -> void:
 func get_icon() -> Texture:
 	if encounter_type == EncounterType.SPIDERS:
 		return spider_texture
-	if encounter_type == EncounterType.DRACONIC:
+	elif encounter_type == EncounterType.DRACONIC:
 		return dragon_texture
-	if encounter_type == EncounterType.GOBLIN:
-		return goblin_texture
-	if encounter_type == EncounterType.GOBLIN:
+	elif encounter_type == EncounterType.GOBLIN:
 		return goblin_texture
 	elif encounter_type == EncounterType.CHRONOTYRANT:
 		return chronotyrant_texture
@@ -42,6 +41,8 @@ func get_icon() -> Texture:
 		return undead_texture
 	elif encounter_type == EncounterType.CHEST:
 		return chest_texture
+	elif encounter_type == EncounterType.SLIMES:
+		return sewer_texture
 	else:
 		return null
 

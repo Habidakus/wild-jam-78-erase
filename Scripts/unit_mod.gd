@@ -4,6 +4,7 @@ var extra_health : float = 0
 var elo_name : String = "?"
 var extra_armor : float = 0
 var extra_slowness : float = 0
+var damage_shield : float = 0
 var attacks : Array[AttackStats]
 var naming_function : String
 var icon : UnitStats.Icon = UnitStats.Icon.UNSET
@@ -38,6 +39,9 @@ func get_stat_summary() -> String:
 		if !data.is_empty():
 			data += ", "
 		data += "+" + str(extra_armor) + " armor"
+	if damage_shield != 0:
+		assert(damage_shield > 0)
+		data += "+" + str(damage_shield) + " damage shield"
 	if extra_slowness != 0:
 		if !data.is_empty():
 			data += ", "
@@ -105,6 +109,10 @@ func add_slowness(amount : float) -> UnitMod:
 
 func set_attack(attack : AttackStats) -> UnitMod:
 	attacks.append(attack)
+	return self
+
+func set_damage_shield(dmg : float) -> UnitMod:
+	damage_shield = dmg
 	return self
 
 func set_namer(function_name : String) -> UnitMod:
@@ -214,6 +222,18 @@ static var s_species_mantis_queen : UnitMod = create("Mantis Queen").add_health(
 static var s_occupation_mantis : UnitMod = create("Mantis")
 static var s_equipment_mantis_drone : UnitMod = create("Wicked Sword").set_attack(s_mantis_drone_attack)
 static var s_equipment_mantis_queen : UnitMod = create("Wicked Sword").set_attack(s_mantis_queen_bite_attack).add_slowness(3).set_attack(s_mantis_queen_sting_attack)
+
+static var s_slime_attack_heavy : AttackStats = AttackStats.create("Bash", AttackStats.AttackTarget.FRONT_MOST).adjust_damage(1.1).adjust_speed(1.2)
+static var s_slime_attack_light : AttackStats = AttackStats.create("Swat", AttackStats.AttackTarget.FIRST_TWO).adjust_damage(0.7).adjust_speed(0.8)
+static var s_slime_attack_engulf : AttackStats = AttackStats.create("Engulf", AttackStats.AttackTarget.FRONT_MOST).adjust_damage(0.8).set_stun(0.75).has_cooldown().set_bleed(3)
+static var s_slime_protect : AttackStats = AttackStats.create("Shield", AttackStats.AttackTarget.CLOSEST_TO_DEATH).adjust_damage(0).set_on_allies().grants_block()
+
+static var s_species_slime_green : UnitMod = create("Green Slime").add_health(-50).set_damage_shield(7.5).set_attack(s_slime_attack_heavy).set_icon(UnitStats.Icon.Slime_Green)
+static var s_species_slime_blue : UnitMod = create("Blue Slime").add_health(-50).set_damage_shield(7.5).add_slowness(-1.5).set_attack(s_slime_attack_light).set_icon(UnitStats.Icon.Slime_Blue)
+static var s_species_ooze : UnitMod = create("Ooze").add_health(75).set_damage_shield(10).add_armor(15).set_attack(s_slime_attack_light).set_attack(s_slime_protect).set_icon(UnitStats.Icon.Ooze)
+static var s_species_gelatinous_cube : UnitMod = create("Gelatinous Cube").set_damage_shield(15).add_health(250).set_attack(s_slime_attack_engulf).set_attack(s_slime_attack_heavy).set_icon(UnitStats.Icon.Gelatinous_Cube)
+static var s_occupation_slime : UnitMod = create("Slime")
+static var s_equipment_slime : UnitMod = create("Slime")
 
 static var s_rusty_sword_attack : AttackStats = AttackStats.create("Rusty Sword", AttackStats.AttackTarget.TWO_FARTHEST_FROM_DEATH).adjust_damage(0.8).tires(1.1)
 static var s_goblin_sword_attack : AttackStats = AttackStats.create("Goblin Sword", AttackStats.AttackTarget.TWO_FARTHEST_FROM_DEATH).adjust_damage(1.1)
@@ -348,7 +368,8 @@ static var s_attack_halberd : AttackStats = AttackStats.create("Halberd", Attack
 static var s_attack_zweihander : AttackStats = AttackStats.create("Zweihander", AttackStats.AttackTarget.FRONT_MOST).adjust_damage(2).adjust_speed(2.2).tires(1.085)
 static var s_attack_shield : AttackStats = AttackStats.create("Shield Bash", AttackStats.AttackTarget.FRONT_MOST).adjust_damage(0.35).set_stun(0.5)
 
-static var s_equipment_shield : UnitMod = create("Shield").add_armor(5).set_attack(s_attack_shield)
+static var s_equipment_buckler : UnitMod = create("Buckler").add_armor(5).set_attack(s_attack_shield)
+static var s_equipment_spiked_shield : UnitMod = create("Spiked Shield").add_armor(5).set_damage_shield(8)
 static var s_equipment_armor : UnitMod = create("Plate Mail").add_armor(22.5).add_slowness(1)
 static var s_equipment_halberd : UnitMod = create("Halberd").set_attack(s_attack_halberd)
 static var s_equipment_potion : UnitMod = create("Potion").set_attack(s_attack_potion)
@@ -359,7 +380,8 @@ static func create_equipment_shuffle(rnd : RandomNumberGenerator) -> Array[UnitM
 		[rnd.randf(), s_equipment_zweihander],
 		[rnd.randf(), s_equipment_halberd],
 		[rnd.randf(), s_equipment_armor],
-		[rnd.randf(), s_equipment_shield],
+		[rnd.randf(), s_equipment_buckler],
+		[rnd.randf(), s_equipment_spiked_shield],
 		[rnd.randf(), s_equipment_potion],
 	]
 	sort_order.sort_custom(func(a,b) : return a[0] < b[0])
@@ -369,7 +391,7 @@ static func create_equipment_shuffle(rnd : RandomNumberGenerator) -> Array[UnitM
 	return ret_var
 	
 static func pick_random_equipment(rnd : RandomNumberGenerator) -> UnitMod:
-	match rnd.randi_range(0, 4):
+	match rnd.randi_range(0, 5):
 		0:
 			return s_equipment_zweihander
 		1: # Halberd
@@ -377,8 +399,10 @@ static func pick_random_equipment(rnd : RandomNumberGenerator) -> UnitMod:
 		2: # Armor
 			return s_equipment_armor
 		3:
-			return s_equipment_shield
+			return s_equipment_buckler
 		4:
 			return s_equipment_potion
+		5:
+			return s_equipment_spiked_shield
 	assert(false)
 	return null

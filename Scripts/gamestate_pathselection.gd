@@ -130,6 +130,8 @@ func gui_input(event: InputEvent, path_encounter_stat : PathEncounterStat) -> vo
 				our_state_machine.switch_state("Combat")
 			PathEncounterStat.EncounterType.SPIDERS:
 				our_state_machine.switch_state("Combat")
+			PathEncounterStat.EncounterType.SLIMES:
+				our_state_machine.switch_state("Combat")
 			PathEncounterStat.EncounterType.UNDEAD:
 				our_state_machine.switch_state("Combat")
 			PathEncounterStat.EncounterType.CHRONOTYRANT:

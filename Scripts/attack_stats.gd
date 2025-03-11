@@ -195,7 +195,7 @@ func get_summary() -> String:
 
 	return ret_val
 
-func generate_tooltip(target : UnitStats) -> String:
+func generate_tooltip(actor : UnitStats, target : UnitStats) -> String:
 	var dmg : float = target.calculate_damage_from_attack(self)
 	var ret_val : String = str(round(dmg * 10.0)/10.0)
 	if acts_on_allies:
@@ -208,7 +208,10 @@ func generate_tooltip(target : UnitStats) -> String:
 	else:
 		assert(is_command == false)
 		ret_val += " Damage"
-		
+		var damage_shield_dmg : float = max(target.damage_shield - actor.armor, 0)
+		if damage_shield_dmg > 0:
+			ret_val += ", " + str(round(damage_shield_dmg * 10.0) / 10.0) + " retaliatory damage"
+
 	if armor_piercing:
 		ret_val += ", ignores armor"
 	elif stun > 0:
@@ -325,10 +328,14 @@ func apply(actor : UnitStats, target : UnitStats, fx : ActionFXContainer) -> voi
 
 	var new_bleed_ticks : bool = true if bleed_ticks > 0 && bleed_ticks > target.bleeding_ticks else false
 	var dmg : float = target.calculate_damage_from_attack(self)
+	var damage_shield_damage : float = max(target.damage_shield - actor.armor, 0)
 
 	if acts_on_allies:
-		if fx != null && dmg != 0:
-			fx.apply_heal(target, dmg)
+		if fx != null:
+			if blocks:
+				fx.apply_shield(actor, target)
+			elif dmg != 0:
+				fx.apply_heal(target, dmg)
 		else:
 			if is_command:
 				pass # we already moved them forward
@@ -342,17 +349,13 @@ func apply(actor : UnitStats, target : UnitStats, fx : ActionFXContainer) -> voi
 	else:
 		if fx != null && dmg != 0:
 			fx.apply_damage(actor, target, dmg)
+			if damage_shield_damage > 0:
+				fx.apply_damage_shield(target, actor, damage_shield_damage)
 		else:
-			if target.magic_shield > dmg:
-				target.magic_shield -= dmg
-				dmg = 0
-			elif target.magic_shield > 0:
-				dmg -= target.magic_shield
-				target.magic_shield = 0
-				
-			target.current_health -= dmg
-			if dmg <= 1:
-				new_bleed_ticks = false
+			new_bleed_ticks = target.apply_damage_to_shield_or_health(dmg) and new_bleed_ticks
+			if damage_shield_damage > 0:
+				var _ignore_damage_shield_bleed_boolean : bool = actor.apply_damage_to_shield_or_health(damage_shield_damage)
+			
 			if new_bleed_ticks:
 				target.bleeding_ticks = bleed_ticks
 	
