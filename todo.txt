@@ -1,3 +1,5 @@
+- better hover-over-attack tooltip that says how much retaliatory damage you will take
+- allow player to pass as an attack option if they would take retaliatory damage
 - Re-evaluate how armor works
 - add Shops & Chests to the overland map
 - Add a mimic
