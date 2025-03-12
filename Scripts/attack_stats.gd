@@ -208,7 +208,7 @@ func generate_tooltip(actor : UnitStats, target : UnitStats) -> String:
 	else:
 		assert(is_command == false)
 		ret_val += " Damage"
-		var damage_shield_dmg : float = max(target.damage_shield - actor.armor, 0)
+		var damage_shield_dmg : float = calculate_retaliatory_damage(actor, target)
 		if damage_shield_dmg > 0:
 			ret_val += ", " + str(round(damage_shield_dmg * 10.0) / 10.0) + " retaliatory damage"
 
@@ -306,6 +306,12 @@ func generate_fx(actor : UnitStats, target : UnitStats) -> ActionFXContainer:
 	apply(actor, target, ret_val)
 	return ret_val
 
+func calculate_retaliatory_damage(attacker : UnitStats, defender : UnitStats) -> float:
+	if attacker.magic_shield > 0:
+		return 0
+	else:
+		return max(defender.damage_shield - attacker.armor, 0)
+
 func apply(actor : UnitStats, target : UnitStats, fx : ActionFXContainer) -> void:
 	# Must be computed before actor goes slower, our attack might be the command "Go Now"
 	var target_stun_cost : float = get_cost_in_time_for_target(actor, target)
@@ -328,9 +334,7 @@ func apply(actor : UnitStats, target : UnitStats, fx : ActionFXContainer) -> voi
 
 	var new_bleed_ticks : bool = true if bleed_ticks > 0 && bleed_ticks > target.bleeding_ticks else false
 	var dmg : float = target.calculate_damage_from_attack(self)
-	var damage_shield_damage : float = max(target.damage_shield - actor.armor, 0)
-	if actor.magic_shield > 0:
-		damage_shield_damage = 0
+	var damage_shield_damage : float = calculate_retaliatory_damage(actor, target)
 
 	if acts_on_allies:
 		if fx != null:
