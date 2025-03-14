@@ -1,6 +1,5 @@
-[gd_scene load_steps=41 format=3 uid="uid://b5t3tpb66grx0"]
+[gd_scene load_steps=40 format=3 uid="uid://b5t3tpb66grx0"]
 
-[ext_resource type="Script" path="res://Scripts/main.gd" id="1_2rnjo"]
 [ext_resource type="Script" path="res://addons/statemachine/StateMachine.gd" id="1_p7e6l"]
 [ext_resource type="Script" path="res://addons/statemachine/StateMachineState_AnyKeyToContinue.gd" id="2_mqr82"]
 [ext_resource type="Script" path="res://Scripts/menu.gd" id="3_hyt6b"]
@@ -231,7 +230,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_2rnjo")
 
 [node name="OverStateMachine" type="Node" parent="." node_paths=PackedStringArray("initial_state")]
 script = ExtResource("1_p7e6l")

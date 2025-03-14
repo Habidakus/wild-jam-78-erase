@@ -83,8 +83,20 @@ func get_human_moves() -> Array[MMCAction]:
 			moves.append(action)
 		else:
 			moves = unit_to_go_next.get_moves(units, true)
+			var all_moves_cause_harm : bool = true
 			for action : MMCAction in moves:
-				(action as EAction).resulting_state = apply_action(action)
+				var eaction : EAction = action as EAction
+				eaction.resulting_state = apply_action(action)
+				if !eaction.has_negative_consiquences:
+					all_moves_cause_harm = false
+			if all_moves_cause_harm:
+				# If everything the player does potentially causes harm, give them the option to pass
+				var action : EAction = EAction.create_pass()
+				action.actorID = unit_to_go_next.id
+				action.targetID = unit_to_go_next.id
+				action.attack = AttackStats.get_pass_action()
+				action.resulting_state = apply_action(action)
+				moves.append(action)
 	return moves
 
 func get_score() -> MMCScore:

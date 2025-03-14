@@ -30,6 +30,12 @@ static func create(_name : String, _attack_target : AttackTarget) -> AttackStats
 	s_attack_id += 1
 	return ret_val
 
+static var s_pass_action : AttackStats
+static func get_pass_action() -> AttackStats:
+	if s_pass_action == null:
+		s_pass_action = create("Do Nothing", AttackTarget.SELF)
+	return s_pass_action
+
 func set_divine_wrath() -> AttackStats:
 	assert(divine_wrath == false)
 	divine_wrath = true
@@ -312,58 +318,71 @@ func calculate_retaliatory_damage(attacker : UnitStats, defender : UnitStats) ->
 	else:
 		return max(defender.damage_shield - attacker.armor, 0)
 
+func has_negative_consiquences(actor : UnitStats, target : UnitStats) -> bool:
+	if cooldown || single_use:
+		return true
+	if blocks:
+		return true
+	if calculate_retaliatory_damage(actor, target) > 0:
+		return true
+	return false
+
 func apply(actor : UnitStats, target : UnitStats, fx : ActionFXContainer) -> void:
+
 	# Must be computed before actor goes slower, our attack might be the command "Go Now"
 	var target_stun_cost : float = get_cost_in_time_for_target(actor, target)
 	actor.blocking = -1
 
 	if fx == null:
 		actor.next_attack += get_cost_in_time(actor)
-		
-	if tiring > 1:
-		if fx != null:
-			fx.add_tiring(actor)
-		else:
-			actor.tired *= tiring
 
-	if target_stun_cost:
-		if fx != null:
-			fx.add_stun(actor, target, target_stun_cost)
-		else:
-			target.next_attack += target_stun_cost
-
-	var new_bleed_ticks : bool = true if bleed_ticks > 0 && bleed_ticks > target.bleeding_ticks else false
-	var dmg : float = target.calculate_damage_from_attack(self)
-	var damage_shield_damage : float = calculate_retaliatory_damage(actor, target)
-
-	if acts_on_allies:
-		if fx != null:
-			if blocks:
-				fx.apply_shield(actor, target)
-			elif dmg != 0:
-				fx.apply_heal(target, dmg)
-		else:
-			if is_command:
-				pass # we already moved them forward
-			elif blocks:
-				actor.blocking = target.id
-			else:
-				# healing
-				target.current_health = min(target.current_health + dmg, target.max_health)
-				if target.bleeding_ticks > 0:
-					target.bleeding_ticks = 0
-	else:
-		if fx != null && dmg != 0:
-			fx.apply_damage(actor, target, dmg)
-			if damage_shield_damage > 0:
-				fx.apply_damage_shield(target, actor, damage_shield_damage)
-		else:
-			new_bleed_ticks = target.apply_damage_to_shield_or_health(dmg) and new_bleed_ticks
-			if damage_shield_damage > 0:
-				var _ignore_damage_shield_bleed_boolean : bool = actor.apply_damage_to_shield_or_health(damage_shield_damage)
+	# Only do passive stuff if the actor decided to do nothing this turn
+	if self != s_pass_action:
 			
-			if new_bleed_ticks:
-				target.bleeding_ticks = bleed_ticks
+		if tiring > 1:
+			if fx != null:
+				fx.add_tiring(actor)
+			else:
+				actor.tired *= tiring
+
+		if target_stun_cost:
+			if fx != null:
+				fx.add_stun(actor, target, target_stun_cost)
+			else:
+				target.next_attack += target_stun_cost
+
+		var new_bleed_ticks : bool = true if bleed_ticks > 0 && bleed_ticks > target.bleeding_ticks else false
+		var dmg : float = target.calculate_damage_from_attack(self)
+		var damage_shield_damage : float = calculate_retaliatory_damage(actor, target)
+
+		if acts_on_allies:
+			if fx != null:
+				if blocks:
+					fx.apply_shield(actor, target)
+				elif dmg != 0:
+					fx.apply_heal(target, dmg)
+			else:
+				if is_command:
+					pass # we already moved them forward
+				elif blocks:
+					actor.blocking = target.id
+				else:
+					# healing
+					target.current_health = min(target.current_health + dmg, target.max_health)
+					if target.bleeding_ticks > 0:
+						target.bleeding_ticks = 0
+		else:
+			if fx != null && dmg != 0:
+				fx.apply_damage(actor, target, dmg)
+				if damage_shield_damage > 0:
+					fx.apply_damage_shield(target, actor, damage_shield_damage)
+			else:
+				new_bleed_ticks = target.apply_damage_to_shield_or_health(dmg) and new_bleed_ticks
+				if damage_shield_damage > 0:
+					var _ignore_damage_shield_bleed_boolean : bool = actor.apply_damage_to_shield_or_health(damage_shield_damage)
+				
+				if new_bleed_ticks:
+					target.bleeding_ticks = bleed_ticks
 	
 	if fx != null:
 		if cooldown:

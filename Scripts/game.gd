@@ -588,6 +588,9 @@ func run_one_turn() -> void:
 	if !combat_state_machine_state.has_human_moves():
 		var human_moves : Array[MMCAction] = game_state.get_human_moves()
 		assert(human_moves != null)
+		
+		# If the only human move is to pass, then don't bother having the human actually respond, 
+		# just move on to the next computer action.
 		if human_moves.size() == 1:
 			var emove : EAction = human_moves[0] as EAction
 			if emove.attack == null:

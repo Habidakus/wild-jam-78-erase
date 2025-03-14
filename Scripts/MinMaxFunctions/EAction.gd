@@ -4,6 +4,7 @@ var resulting_state : EGameState = null
 var actorID : int = 0
 var targetID : int = 0
 var attack : AttackStats = null
+var has_negative_consiquences : bool = false
 
 func release() -> void:
 	if resulting_state != null:
@@ -19,6 +20,7 @@ static func create(_actor : UnitStats, _target : UnitStats, _attack : AttackStat
 	ret_val.actorID = _actor.id
 	ret_val.targetID = _target.id
 	ret_val.attack = _attack
+	ret_val.has_negative_consiquences = _attack.has_negative_consiquences(_actor, _target)
 	return ret_val
 
 func _to_string() -> String:
