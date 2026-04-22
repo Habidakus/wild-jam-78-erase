@@ -58,7 +58,8 @@ func _process(_delta: float) -> void:
 func accepted_defeat() -> void:
 	heroes.clear()
 	foes.clear()
-	game_state.release()
+	if game_state != null:
+		game_state.release()
 	game_state = null
 	combat_state_machine_state.restart()
 	find_child("LoopExposition").restart(rnd)
