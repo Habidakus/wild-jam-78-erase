@@ -2,6 +2,8 @@ extends Node
 
 const snap_mp3 : AudioStreamMP3 = preload("res://Sounds/SnapCase.mp3")
 const switch_wav : AudioStreamWAV = preload("res://Sounds/Switch.wav")
+const enter_wav : AudioStreamWAV = preload("res://Sounds/002_tock_enter.wav")
+const leave_wav : AudioStreamWAV = preload("res://Sounds/001_tock_leave.wav")
 var button_player : AudioStreamPlayer = AudioStreamPlayer.new()
 
 func _ready() -> void:
@@ -13,7 +15,7 @@ func _ready() -> void:
 	tree.node_added.connect(Callable(self, "_on_node_added"))
 
 func play_button_hover_start() -> void:
-	button_player.stream = switch_wav
+	button_player.stream = enter_wav
 	button_player.volume_db = -9
 	button_player.play()
 
