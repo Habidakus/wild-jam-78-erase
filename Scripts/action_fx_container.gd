@@ -16,6 +16,7 @@ const texture_shield : Texture = preload("res://Art/Shield.png")
 const texture_thorns : Texture = preload("res://Art/Thorns.png")
 const net_sound : AudioStreamWAV = preload("res://Sounds/008_slow.wav")
 const shield_sound : AudioStreamWAV = preload("res://Sounds/003_shield_buff.wav")
+const thorn_sound : AudioStreamWAV = preload("res://Sounds/003_parry.wav")
 
 func render_fx(unit_graphics_map : Dictionary) -> void: # <unit id, UnitGraphics>
 	render_stunned(unit_graphics_map)
@@ -69,6 +70,8 @@ func generate_thorns(target_graphics : UnitGraphics, attacker_graphics : UnitGra
 	thorns.position = attacker_graphics.global_position - target_graphics.global_position 
 	target_graphics.add_child(thorns)
 	thorns.rotation_degrees = 90 if thorns.position.x < 0 else -90
+	tween.tween_callback(Callable(target_graphics, "play_sound").bind(thorn_sound)).set_delay(0.5)
+	tween.parallel()
 	tween.tween_property(thorns, "position", target_graphics.size / 2, 0.75)
 	tween.tween_property(thorns, "modulate", Color(1, 1, 1, 0), 0.20)
 	tween.tween_callback(Callable(self, "clean_up_net").bind(target_graphics, thorns))
