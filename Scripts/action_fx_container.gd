@@ -15,6 +15,7 @@ const texture_sweat_drop : Texture = preload("res://Art/SweatDrop.png")
 const texture_shield : Texture = preload("res://Art/Shield.png")
 const texture_thorns : Texture = preload("res://Art/Thorns.png")
 const net_sound : AudioStreamWAV = preload("res://Sounds/008_slow.wav")
+const shield_sound : AudioStreamWAV = preload("res://Sounds/003_shield_buff.wav")
 
 func render_fx(unit_graphics_map : Dictionary) -> void: # <unit id, UnitGraphics>
 	render_stunned(unit_graphics_map)
@@ -90,6 +91,8 @@ func throw_shield(target_graphics : UnitGraphics, attacker_graphics : UnitGraphi
 	shield.position = attacker_graphics.global_position - target_graphics.global_position 
 	target_graphics.add_child(shield)
 	#tween.tween_property(net, "rotation_degrees", 90, 0.95)
+	tween.parallel()
+	tween.tween_callback(Callable(target_graphics, "play_sound").bind(shield_sound)).set_delay(0.5)
 	tween.parallel()
 	tween.tween_property(shield, "position", target_graphics.size / 2, 0.75)
 	tween.tween_property(shield, "modulate", Color(1, 1, 1, 0), 0.20)
