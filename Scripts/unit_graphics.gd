@@ -10,6 +10,7 @@ var shader_material : ShaderMaterial = ShaderMaterial.new()
 var blood_health_background : ColorRect
 var alive_blood_color : Color
 var dead_blood_color : Color
+var audio_player : AudioStreamPlayer
 
 var attack_list : Array[UnitGraphics]
 var action_buttons : Array[Button]
@@ -32,11 +33,16 @@ static func create(unit_stats : UnitStats, game : Game) -> UnitGraphics:
 
 func _ready() -> void:
 	blood_health_background = find_child("Blood Background") as ColorRect
+	audio_player = find_child("AudioStreamPlayer") as AudioStreamPlayer
 	alive_blood_color = blood_health_background.color
 	dead_blood_color = 2 * (alive_blood_color / 3)
 	max_health_width = blood_health_background.size.x
 	shield_bar = (find_child("Shield") as ColorRect)
 	shader_material.shader = scrolling_line_shader
+
+func play_sound(sound : AudioStreamWAV) -> void:
+	audio_player.stream = sound
+	audio_player.play()
 
 func calculate_offset(index : int, c : int, r : float) -> float:
 	if c == 1:

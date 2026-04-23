@@ -14,6 +14,7 @@ const texture_blood_drop : Texture = preload("res://Art/BloodDrop.png")
 const texture_sweat_drop : Texture = preload("res://Art/SweatDrop.png")
 const texture_shield : Texture = preload("res://Art/Shield.png")
 const texture_thorns : Texture = preload("res://Art/Thorns.png")
+const net_sound : AudioStreamWAV = preload("res://Sounds/008_slow.wav")
 
 func render_fx(unit_graphics_map : Dictionary) -> void: # <unit id, UnitGraphics>
 	render_stunned(unit_graphics_map)
@@ -53,6 +54,8 @@ func render_stunned(unit_graphics_map : Dictionary) -> void:
 		net.position = attacker_graphics.global_position - unit_graphics.global_position 
 		unit_graphics.add_child(net)
 		tween.tween_property(net, "rotation_degrees", 90, 0.95)
+		tween.parallel()
+		tween.tween_callback(Callable(unit_graphics, "play_sound").bind(net_sound)).set_delay(0.5)
 		tween.parallel()
 		tween.tween_property(net, "position", unit_graphics.size / 2, 0.75)
 		tween.tween_property(net, "modulate", Color(1, 1, 1, 0), 0.20)
